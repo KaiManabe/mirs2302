@@ -7,7 +7,8 @@ void get_batt() {
   char str[100], str_batt[10];
 
   batt = io_get_batt();
-
+  batt *= 10
+  batt_send(batt);
 /*
 //バッテリ値　元の値：batt, 文字表現：str_batt
   while (1) {

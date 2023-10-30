@@ -89,6 +89,10 @@ int serial_receive(bool moving){
                 dt[idx] = new_value;
               }
               return(0);
+          }else if(inc_bytes[0] == 8){
+              if(moving){return(-1);}
+              get_batt();
+              return(0);
           }else{
             return(-1);
           }
@@ -116,6 +120,15 @@ void serial_send(long enc, int mode){
   }
   Serial.write((byte)254);
   
+  return 0;
+}
+
+void batt_send(long batt){
+
+  Serial.write((byte)255);
+  Serial.write((byte)batt);
+  Serial.write((byte)254);
+
   return 0;
 }
 
