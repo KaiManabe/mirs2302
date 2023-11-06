@@ -93,6 +93,10 @@ int serial_receive(bool moving){
               if(moving){return(-1);}
               get_batt();
               return(0);
+          }else if(inc_bytes[0] == 9){
+              if(moving){return(-1);}
+              get_module_mng();
+              return(0);
           }else{
             return(-1);
           }
@@ -123,6 +127,7 @@ void serial_send(long enc, int mode){
   return 0;
 }
 
+//バッテリ電圧送信
 void batt_send(long batt){
 
   Serial.write((byte)255);
@@ -130,6 +135,13 @@ void batt_send(long batt){
   Serial.write((byte)254);
 
   return 0;
+}
+
+//モジュール識別抵抗値送信
+void module_send(double module_r){
+  Serial.write((byte)255);
+  Serial.write((byte)module_r)
+  Serial.write((byte)254);
 }
 
 /*指定されたゲインをラズパイに送信(100倍されたゲインを送信)

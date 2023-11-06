@@ -36,6 +36,14 @@
 //バッテリー監視ピン
 #define BATT A5
 
+//モジュールの抵抗測定ピン
+#define MODULE1 A2
+#define MODULE2 A3
+#define MODULE3 A4
+
+//モジュール抵抗
+#define MODULE_R[3] = {1000,1200,1500}
+
 //バッテリ分圧比
 #define V_RATIO 0.5 
 
