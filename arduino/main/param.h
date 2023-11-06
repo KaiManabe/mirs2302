@@ -42,7 +42,9 @@
 #define MODULE3 A4
 
 //モジュール抵抗
-#define MODULE_R[3] = {1000,1200,1500}
+#define MODULE_R1 1000
+#define MODULE_R2 1500
+#define MODULE_R3 2000
 
 //バッテリ分圧比
 #define V_RATIO 0.5 

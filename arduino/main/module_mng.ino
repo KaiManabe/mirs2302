@@ -3,7 +3,14 @@ void gett_module_mng(){
     double module_mng[3];
 
     for(int i=0; i<3; i++){
-        module_r = MODULE_R[i];
+        int module_r;
+        if(i == 0){
+            module_r = MODULE_R1;
+        }else if(i == 1){
+            module_r = MODULE_R2;
+        }else if(i == 2){
+            module_r = MODULE_R3;
+        }
         module_mng[i] = read_module(module_num[i] , module_r);
     }
     
