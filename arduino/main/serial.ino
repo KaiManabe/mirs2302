@@ -97,7 +97,7 @@ int serial_receive(bool moving){
               if(moving){return(-1);}
               get_module_mng();
               return(0);
-          }else if(inc_bytes[0] == 10){
+          }/*else if(inc_bytes[0] == 10){
               if(moving){return(-1);}
               if(inc_bytes[1] == 0){
                 servo_open();
@@ -105,13 +105,47 @@ int serial_receive(bool moving){
                 servo_close();
               }
               return(0);
-          }else{
+          }*/else{
             return(-1);
           }
         }
     }
 }
 
+
+/*指定されたゲインをラズパイに送信(100倍されたゲインを送信)
+gain_num
+0:STRAIGHT_GAIN_L_SPD
+1:STRAIGHT_GAIN_R_SPD
+2:STRAIGHT_GAIN_LR_ENC
+3:ROTATE_GAIN_L
+4:ROTATE_GAIN_R
+5:ROTATE_GAIN_LR
+*/
+void gain_send(int gain_num){
+    int send_gain[3] = {0,};
+    int send_value[6] = {0,};
+    
+    for(int i=0; i<3; i++){
+      send_gain[i] = (int)(all_gain[gain_num][i]*10000);
+      send_value[2*i] = send_gain[i]/254;
+      send_value[2*i+1] = send_gain[i]%254;
+    }
+
+    for(int i=0; i<6; i++){
+      send_value[i] = (int)(send_gain[i]/254%254L);
+    }
+    
+    Serial.write((byte)255);
+    Serial.write((byte)3);
+    Serial.write((byte)gain_num);
+    for(int i=0; i<6; i++){
+      Serial.write((byte)send_value[i]);
+    }
+    Serial.write((byte)254);
+
+    return 0;
+}
 
 void serial_send(long enc, int mode){
   bool sign = 0;
@@ -148,40 +182,6 @@ void batt_send(long batt){
 //モジュール識別抵抗値送信
 void module_send(double module_r){
   Serial.write((byte)255);
-  Serial.write((byte)module_r)
+  Serial.write((byte)module_r);
   Serial.write((byte)254);
-}
-
-/*指定されたゲインをラズパイに送信(100倍されたゲインを送信)
-gain_num
-0:STRAIGHT_GAIN_L_SPD
-1:STRAIGHT_GAIN_R_SPD
-2:STRAIGHT_GAIN_LR_ENC
-3:ROTATE_GAIN_L
-4:ROTATE_GAIN_R
-5:ROTATE_GAIN_LR
-*/
-void gain_send(int gain_num){
-    int send_gain[3] = {0,};
-    int send_value[6] = {0,};
-    
-    for(int i=0; i<3; i++){
-      send_gain[i] = (int)(all_gain[gain_num][i]*10000);
-      send_value[2*i] = send_gain[i]/254;
-      send_value[2*i+1] = send_gain[i]%254;
-    }
-
-    for(int i=0; i<6; i++){
-      send_value[i] = (int)(send_gain[i]/254%254L);
-    }
-    
-    Serial.write((byte)255);
-    Serial.write((byte)3);
-    Serial.write((byte)gain_num);
-    for(int i=0; i<6; i++){
-      Serial.write((byte)send_value[i]);
-    }
-    Serial.write((byte)254);
-
-    return 0;
 }

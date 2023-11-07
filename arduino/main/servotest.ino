@@ -1,6 +1,6 @@
 #include <Servo.h>
 Servo servo;
-
+/*
 void setup() {
   pinMode(3, OUTPUT);
   servo.attach(3, 500, 2400);
@@ -35,4 +35,4 @@ void loop() {
   */
 
 
-}
+//}

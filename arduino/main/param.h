@@ -46,6 +46,9 @@
 #define MODULE_R2 1500
 #define MODULE_R3 2000
 
+//モジュール基本抵抗
+#define MODULE_R 1000
+
 //バッテリ分圧比
 #define V_RATIO 0.5 
 
