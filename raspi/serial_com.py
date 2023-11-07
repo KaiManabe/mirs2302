@@ -1,13 +1,5 @@
 import serial
 import time
-# import run_ctrl
-
-"""
-ser = serial.Serial("COM6",115200)
-time.sleep(2)
-ser.write(bytes([255,2,2,3,4,5,254]))
-ser.close()
-"""
 
 # クラス
 class arduino_serial:
