@@ -95,27 +95,18 @@ int serial_receive(bool moving){
               return(0);
           }else if(inc_bytes[0] == 9){
               if(moving){return(-1);}
-              get_module_mng();
+              get_module_r();
               return(0);
-          }/*else if(inc_bytes[0] == 10){
+          }else if(inc_bytes[0] == 10){
               if(moving){return(-1);}
-              if(inc_bytes[1] == 0){
+              if(inc_bytes[1] == 1){
                 servo_open();
-              }else if(inc_bytes[1] == 1){
+              }else if(inc_bytes[0] == 0){
                 servo_close();
               }
               return(0);
-          }*/else if(inc_bytes[0] == 10){
-              if(moving){return(-1);}
-              int pwm_l;
-              int pwm_r;
-              pwm_l = inc_bytes[1];
-              pwm_r = inc_bytes[2];
-              
-              pwm_write(pwm_l, pwm_r);
-
-            }else{
-            return(-1);
+          }else{
+              return(-1);
           }
         }
     }
@@ -179,7 +170,7 @@ void serial_send(long enc, int mode){
 }
 
 //バッテリ電圧送信
-void batt_send(long batt){
+void batt_send(int batt){
 
   Serial.write((byte)255);
   Serial.write((byte)batt);

@@ -1,13 +1,13 @@
-void get_module_mng(){
+void get_module_r(){
     int module_num[3] = {MODULE1,MODULE2,MODULE3};
-    double module_mng[3];
+    double module[3];
 
     for(int i=0; i<3; i++){
-        module_mng[i] = read_module(module_num[i]);
+        module[i] = read_module(module_num[i]);
     }
     
     for(int i=0; i<3; i++){
-        module_send(module_mng[i]);
+        module_send(module[i]);
     }
 }
 
@@ -16,4 +16,15 @@ double read_module(int module_num){
     ans = analogRead(module_num) * 5.0 / 1024.0 / V_RATIO;
 
     return MODULE_R*(5.0 / ans - 1);
+}
+
+
+//鍵開閉
+void servo_open(){
+  analogWrite(SERVO, 70);
+  delay(10);
+}
+
+void servo_close(){
+  analogWrite(SERVO, 150);
 }

@@ -1,13 +1,14 @@
 double io_get_batt(){
-  return analogRead(BATT) * 5.0 / 1024.0 / V_RATIO;
+  float batt;
+  batt = analogRead(BATT) * 5.0 / 1024.0;
+  return batt / V_RATIO * 10.0;
 }
 
 void get_batt(){
-  double batt;
+  int batt;
   
   batt = io_get_batt();
-  batt *= 10;
   batt_send(batt);
-  digitalWrite(13, HIGH);
-  Serial.print(batt);
+  //Serial.println(batt);
+  delay(10);
 }

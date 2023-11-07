@@ -1,4 +1,5 @@
 #include "param.h"
+#include<stdio.h>
 
 void setup(){
     init_pin(); //ピンの初期化をする関数
@@ -30,6 +31,8 @@ void loop(){
 
     //バッテリ値読み取り
     get_batt();
+    delay(100);
+    while(1){}
 }
 
 void init_pin(){

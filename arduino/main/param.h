@@ -37,20 +37,23 @@
 #define BATT A5
 
 //モジュールの抵抗測定ピン
-#define MODULE1 A2
-#define MODULE2 A3
-#define MODULE3 A4
+#define MODULE1 A2  //1段目
+#define MODULE2 A3  //2段目
+#define MODULE3 A4  //3段目
 
 //モジュール抵抗
-#define MODULE_R1 100  //食品
-#define MODULE_R2 150  //紙
-#define MODULE_R3 200  //小物
+#define MODULE_R1 200  //食品
+#define MODULE_R2 300  //紙
+#define MODULE_R3 430  //小物
 
 //モジュール基本抵抗
 #define MODULE_R 1000
 
 //バッテリ分圧比
 #define V_RATIO 0.5 
+
+//サーボpwm値出力ピン
+#define SERVO 10
 
 //型ごとの最大値
 #define UINTMAX 65535
