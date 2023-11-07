@@ -97,6 +97,14 @@ int serial_receive(bool moving){
               if(moving){return(-1);}
               get_module_mng();
               return(0);
+          }else if(inc_bytes[0] == 10){
+              if(moving){return(-1);}
+              if(inc_bytes[1] == 0){
+                servo_open();
+              }else if(inc_bytes[1] == 1){
+                servo_close();
+              }
+              return(0);
           }else{
             return(-1);
           }

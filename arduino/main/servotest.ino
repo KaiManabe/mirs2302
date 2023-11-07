@@ -8,6 +8,14 @@ void setup() {
   pinMode(13, OUTPUT);
 }
 
+void servo_open(){
+  servo.write(70);
+}
+
+void servo_open(){
+  servo.write(-70);
+}
+
 void loop() {
   /*サーボを150(deg)の位置まで回転させる
     servo.write(150);
