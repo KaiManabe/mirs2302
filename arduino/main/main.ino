@@ -25,11 +25,11 @@ void loop(){
     //while(1){}
 
     //シリアル通信をする
-    serial_receive(false);
+    //serial_receive(false);
     //delay(100);
 
     //バッテリ値読み取り
-    //get_batt();
+    get_batt();
 }
 
 void init_pin(){

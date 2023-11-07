@@ -15,5 +15,5 @@ double read_module(int module_num){
     double ans;
     ans = analogRead(module_num) * 5.0 / 1024.0 / V_RATIO;
 
-    return ans*MODULE_R/(5-ans);
+    return MODULE_R*(5.0 / ans - 1);
 }

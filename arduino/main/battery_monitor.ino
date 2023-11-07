@@ -5,9 +5,9 @@ double io_get_batt(){
 void get_batt(){
   double batt;
   
-
   batt = io_get_batt();
   batt *= 10;
   batt_send(batt);
-
+  digitalWrite(13, HIGH);
+  Serial.print(batt);
 }

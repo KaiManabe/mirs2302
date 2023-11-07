@@ -105,7 +105,16 @@ int serial_receive(bool moving){
                 servo_close();
               }
               return(0);
-          }*/else{
+          }*/else if(inc_bytes[0] == 10){
+              if(moving){return(-1);}
+              int pwm_l;
+              int pwm_r;
+              pwm_l = inc_bytes[1];
+              pwm_r = inc_bytes[2];
+              
+              pwm_write(pwm_l, pwm_r);
+
+            }else{
             return(-1);
           }
         }

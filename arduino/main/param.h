@@ -1,12 +1,12 @@
 //PID用
 #define STRAIGHT_GAIN_L_SPD {1.0, 0.04, 0.3}    //左のスピード
 #define STRAIGHT_GAIN_R_SPD {1.0, 0.04, 0.3}    //右のスピード
-#define STRAIGHT_LR_ENC {0.5, 0.2, 0.0}    //偏角差
+#define STRAIGHT_LR_ENC {0.0, 0.0, 0.0}    //偏角差
 #define STRAIGHT_DELTA_T 15 //[ms]
 
 #define ROTATE_GAIN_L {1.0, 0.02, 0.3}    //左のスピード
 #define ROTATE_GAIN_R {1.0, 0.02, 0.3}    //右のスピード
-#define ROTATE_GAIN_LR {0.5, 0.2, 0.0}    //偏角差
+#define ROTATE_GAIN_LR {0.0, 0.0, 0.0}    //偏角差
 #define ROTATE_DELTA_T 15
 
 //機体パラメータ
@@ -42,9 +42,9 @@
 #define MODULE3 A4
 
 //モジュール抵抗
-#define MODULE_R1 1000
-#define MODULE_R2 1500
-#define MODULE_R3 2000
+#define MODULE_R1 100  //食品
+#define MODULE_R2 150  //紙
+#define MODULE_R3 200  //小物
 
 //モジュール基本抵抗
 #define MODULE_R 1000
