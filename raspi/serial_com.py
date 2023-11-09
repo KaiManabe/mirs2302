@@ -82,10 +82,10 @@ while(1):
 
 # 以下テスト用
 #run_data(1,3000,500)
-test = [255,8,254]
+test = [255,1,0,10,0,1,247,254]
+#test = [255,5,254]
 for i in test:
     s.send(i)
-    print(i)
+    print('send:'+str(i))
     
-
 s.close()
