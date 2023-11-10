@@ -48,7 +48,7 @@ class run_controller():
         引数：
             speed -> float : 速度[m/s]
         """
-        serial.send([123])
+        self.serial.send([123])
 
 
 if __name__ == "__main__":
