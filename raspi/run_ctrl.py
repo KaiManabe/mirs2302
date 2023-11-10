@@ -26,4 +26,5 @@ def read_sequence():
     
     print(ls_2[1][0])
 
-read_sequence()
+if __name__ == "__main__":
+    read_sequence()
