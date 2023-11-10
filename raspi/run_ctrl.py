@@ -26,5 +26,30 @@ def read_sequence():
     
     print(ls_2[1][0])
 
+
+class run_controller():
+    """
+    走行を制御するクラス(作成途中)
+    """
+    
+    def __init__(self, serial_port):
+        """
+        コンストラクタ
+        
+        引数：
+            serial_port -> serial object : serial_com.pyのarduino_serialクラスのオブジェクトを渡す
+        """
+        self.serial = serial_port
+    
+    def set_l_speed(self):
+        """
+        左モータのスピードをセットする
+        
+        引数：
+            speed -> float : 速度[m/s]
+        """
+        serial.send([123])
+
+
 if __name__ == "__main__":
     read_sequence()
