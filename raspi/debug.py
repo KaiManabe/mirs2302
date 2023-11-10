@@ -62,6 +62,9 @@ def sendstraight(spd):
     s.send([255,2,0,hb, lb, 254])
     
 def yukkuri():
+    for i in range(11):
+        sendstraight( i*30)
+        time.sleep(0.1)
     sendstraight(300)
     time.sleep(5)
     for i in range(11):

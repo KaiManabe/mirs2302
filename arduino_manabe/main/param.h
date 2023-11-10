@@ -1,5 +1,5 @@
-#define GAIN_L {1.0, 0.04, 0.3}
-#define GAIN_R {0.1, 0.01, 0.1}
+#define GAIN_L {1.0, 0.01, 0.3}
+#define GAIN_R {1.0, 0.01, 0.3}
 #define GAIN_LR {0.1, 0.01, 0.1}
 #define DELTA_T 20
 
