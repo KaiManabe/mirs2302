@@ -51,7 +51,7 @@ class arduino_serial():
                 continue
             
             """以下、接続に成功した場合の処理"""
-            time.sleep(1)#接続後すぐに処理が走らないようキープする
+            time.sleep(3)#接続後すぐに処理が走らないようキープする
             initialize_result = True
             break
         
@@ -98,7 +98,7 @@ class arduino_serial():
                 sys.exit(1)
         
         
-        return self.serial_port.write(send_data)
+        return self.serial_port.write(bytes(send_data))
     
 
 
