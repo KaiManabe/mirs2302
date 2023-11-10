@@ -36,7 +36,7 @@ class arduino_serial:
         
     # メソッドclear
     def clear(self):
-        self.serial_port.reset_input_buffer()
+        self.serial_port.reset_input_buffer() # バッファをクリア
     
     # メソッドclose
     def close(self):
@@ -44,6 +44,7 @@ class arduino_serial:
 
 s = arduino_serial()
 
+# 送信用にデータを分解する関数
 def run_data(mode,dist,spd):
     # 距離、速度をhigh bit, low bit に分解
     dhb = int(abs(dist)/253)
@@ -71,21 +72,15 @@ def update_serv(mode, dist, spd):
         run_data(tmp[0], tmp[1], tmp[2])
 
 
-
-tmp = [0, 0, 0] # tmpの初期化
-# 一生実行
-"""
-while(1):
-    update_serv(run_ctrl.mode, run_ctrl.dist, run_ctrl.spd) # run_ctrl.py の変数を引数として代入
-    s.close() # (s=)arduino_serial という class の close メソッドを実行
-"""
-
 # 以下テスト用
-#run_data(1,3000,500)
-test = [255,1,0,10,0,1,247,254]
-#test = [255,5,254]
-for i in test:
-    s.send(i)
-    print('send:'+str(i))
+if __name__ == "__main__":
+    tmp = [0, 0, 0] # tmpの初期化
     
-s.close()
+    #run_data(1,3000,500)
+    test = [255,1,0,10,0,1,247,254]
+    #test = [255,5,254]
+    for i in test:
+        s.send(i)
+        print('send:'+str(i))
+        
+    s.close()
