@@ -1,5 +1,5 @@
 import serial_com
-import run_ctl
+import run_ctrl
 
 ser = serial_com.arduino_serial()
 
