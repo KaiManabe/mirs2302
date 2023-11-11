@@ -17,7 +17,8 @@ int dt = DELTA_T;
 
 bool stop_signal = 0;
 
-/*
+
+/*うまく動かないので保留
 void gain_eep_replace(){
     for(int i = 0; i < 3; i++){
         for(int ii = 0; ii < 3; ii++){
@@ -47,10 +48,16 @@ void gain_eep_write(){
 
 */
 
+
+
 /*
 ロータリーエンコーダのパルスをmmに変換する関数
-引数：long型のエンコーダ値
-戻り値：距離(mm)をfloat型で
+
+引数：
+    long p : エンコーダ値
+
+戻り値：
+    距離[mm] -> long
 */
 float pulse_to_mm(long p){
     float mm;
@@ -58,10 +65,16 @@ float pulse_to_mm(long p){
     return mm;
 }
 
+
+
 /*
 mmをロータリーエンコーダのパルスに変換する関数
-引数：float型で距離(mm)
-戻り値：long型でエンコーダ値
+
+引数：
+    long mm : 距離(mm)
+
+戻り値：
+    エンコーダ値 -> long
 */
 long mm_to_pulse(long mm){
     float p;
@@ -71,9 +84,9 @@ long mm_to_pulse(long mm){
 
 /*
 pwm値でモータに電圧を印加する関数
-引数１：左の電圧   (-255~255)
-引数２：右の電圧   (-255~255)
-（範囲外の値は強制的に-255~255に変換されます）
+引数１：左の電圧   (-255～255)
+引数２：右の電圧   (-255～255)
+（範囲外の値は強制的に-255～255に変換されます）
 */
 void pwm_write(int l, int r){
     //正負を判定してDIRピンを出力する
@@ -103,28 +116,35 @@ void pwm_write(int l, int r){
 }
 
 
+/*
+左モータのpid制御を初期化する関数
+停止状態から走行状態に移行するためには、これを実行する必要がある
 
-void straight_dist(long dist){
-    long l_enc_target = mm_to_pulse(dist) + l_enc;
-    long r_enc_target = mm_to_pulse(dist) + r_enc;
+引数:
+    なし
 
-
-    
-}
-
-
+戻り値:
+    なし
+*/
 void pid_init_l(){
-    //pid関数をループさせる前に初期化する
-
     l_err_prev = 0L;
     l_err_sum = 0L;
 
     l_enc_target = l_enc;
 }
 
-void pid_init_r(){
-    //pid関数をループさせる前に初期化する
 
+/*
+右モータのpid制御を初期化する関数
+停止状態から走行状態に移行するためには、これを実行する必要がある
+
+引数:
+    なし
+
+戻り値:
+    なし
+*/
+void pid_init_r(){
     r_err_prev = 0L;
     r_err_sum = 0L;
 
@@ -132,6 +152,19 @@ void pid_init_r(){
 }
 
 
+
+
+/*
+pid制御の1周期を担う関数
+void loop()の中にこれを入れて、制御周期よりも短い間隔でこれを実行する必要がある
+
+
+引数:
+    なし
+
+戻り値:
+    なし
+*/
 void pid(){
     //前回pid関数が実行された時刻を覚えておくstatic変数
     static long cmillis = 0L;
@@ -158,6 +191,8 @@ void pid(){
     float l_pid = (float)l_err * all_gain[0][0] + (float)(l_err - l_err_prev) * all_gain[0][1] + (float)(l_err_sum) * all_gain[0][2]; 
     float r_pid = (float)r_err * all_gain[0][0] + (float)(r_err - r_err_prev) * all_gain[0][1] + (float)(r_err_sum) * all_gain[0][2]; 
 
+
+    /*目標速度が0に設定されているならばモータに出力を加えないようにする*/
     if(l_spd_target != 0L && r_spd_target != 0L){
         pwm_write((int)l_pid, (int)r_pid);
     }
