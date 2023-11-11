@@ -49,6 +49,7 @@ void check_serial(){
             break;
         
         case 5:
+            send_batt();
             break;
         
         case 6:
@@ -232,6 +233,28 @@ void send_module(){
         Serial.Write(lb);
     }
 
+    Serial.Write(254);
+}
+
+
+
+
+/*
+バッテリ電圧を送信する
+
+引数：
+    なし
+
+戻り値:
+    なし
+*/
+void send_batt(){
+    Serial.write((byte)255);
+    Serial.write((byte)11);
+
+    int value = (int)(io_get_batt() * 10.0);
+    Serial.Write(value);
+    
     Serial.Write(254);
 }
 
