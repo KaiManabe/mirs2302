@@ -40,10 +40,7 @@ void setup(){
     //gain_eep_replace();
 }
 
-void loop(){/*
-    l_spd_target = 500L;
-    r_spd_target = 500L;*/
+void loop(){
     check_serial();
     pid();
-
 }

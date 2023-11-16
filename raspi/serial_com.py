@@ -12,7 +12,7 @@ import sys
 
 #使用されうるポートを列挙しておく
 #ここにあるポートに順番に接続を試みる
-PORTS =  ["/dev/ttyACM0", "/dev/ttyACM1", "/dev/ttyACM2", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "/dev/cu.usbmodem14101"]
+PORTS =  ["/dev/ttyACM0", "/dev/ttyACM1", "/dev/ttyACM2", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "/dev/cu.usbmodem14101","/dev/cu.usbmodem14201"]
 
 
 
@@ -105,6 +105,6 @@ class arduino_serial():
 if __name__ == "__main__":
     """モジュールではなく、コマンドラインから呼ばれた場合に以下の処理を実行"""
     s = arduino_serial()
-    s.send([255,1,0,1,1,1,1,254])
+    s.send([255,1,0,1,247,254])
     
     sys.exit(0)
