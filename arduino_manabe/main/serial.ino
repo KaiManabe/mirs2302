@@ -72,7 +72,7 @@ void set_l_spd(int dir, int hb, int lb){
     }
     long value = (long)(hb * 254 + lb);
     if(dir == 1){
-        value *= (long)-1;
+        value = value * (long)-1;
     }
     l_spd_target = value;
 }
@@ -84,7 +84,7 @@ void set_r_spd(int dir, int hb, int lb){
     }
     long value = (long)(hb * 254 + lb);
     if(dir == 1){
-        value *= (long)-1;
+        value = value * (long)-1;
     }
     r_spd_target = value;
 }

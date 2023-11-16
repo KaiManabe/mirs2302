@@ -144,8 +144,17 @@ void pid(){
 
 
     //目標量の計算
-    l_enc_target -= long((float)mm_to_pulse(l_spd_target) * (float)(dt) / (float)(1000.0));
-    r_enc_target -= long((float)mm_to_pulse(r_spd_target) * (float)(dt) / (float)(1000.0));
+    if(l_spd_target > 0L){
+        l_enc_target += long(abs((float)mm_to_pulse(l_spd_target) * (float)(dt) / (float)(1000.0)));
+    }else{
+        l_enc_target -= long(abs((float)mm_to_pulse(l_spd_target) * (float)(dt) / (float)(1000.0)));
+    }
+
+    if(r_spd_target > 0L){
+        r_enc_target += long(abs((float)mm_to_pulse(r_spd_target) * (float)(dt) / (float)(1000.0)));
+    }else{
+        r_enc_target -= long(abs((float)mm_to_pulse(r_spd_target) * (float)(dt) / (float)(1000.0)));
+    }
     /*Serial.print(r_enc_target);
     Serial.print(",");
     Serial.println(r_enc);*/
