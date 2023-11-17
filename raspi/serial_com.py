@@ -78,7 +78,8 @@ class arduino_serial():
         戻り値：
             バッファの長さ
         """
-        return self.serial_port.in_waiting
+        global buffer
+        return len(buffer)
     
     def read(self):
         """
