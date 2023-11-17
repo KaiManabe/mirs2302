@@ -1,24 +1,18 @@
-//PID用
-#define STRAIGHT_GAIN_L_SPD {1.0, 0.04, 0.3}    //左のスピード
-#define STRAIGHT_GAIN_R_SPD {1.0, 0.04, 0.3}    //右のスピード
-#define STRAIGHT_LR_ENC {0.0, 0.0, 0.0}    //偏角差
-#define STRAIGHT_DELTA_T 15 //[ms]
-
-#define ROTATE_GAIN_L {1.0, 0.02, 0.3}    //左のスピード
-#define ROTATE_GAIN_R {1.0, 0.02, 0.3}    //右のスピード
-#define ROTATE_GAIN_LR {0.0, 0.0, 0.0}    //偏角差
-#define ROTATE_DELTA_T 15
+#define GAIN_L {1.0, 0.01, 0.3}
+#define GAIN_R {1.0, 0.01, 0.3}
+#define GAIN_LR {0.1, 0.01, 0.1}
+#define DELTA_T 20
 
 //機体パラメータ
 #define ENC_PPR 26  //エンコーダの回転毎のパルス
 #define GEAR_RATIO 13.733564    //ギア比
-#define TIRE_DIAM 87.5 //タイヤ直径[mm]
+#define TIRE_GEAR_TOOTH 20  //タイヤについてるギアの歯数
+#define MOTOR_GEAR_TOOTH 10     //モータについてるギアの歯数
+#define TIRE_DIAM 177   //タイヤの直径
 
-#define TIRE_PITCH 320
+#define TIRE_PITCH 320  //タイヤの間隔
 
 #define PI 3.141592653589
-
-#define DEFAULT_ALPHA 1.4
 
 
 //エンコーダ入力ピン
@@ -53,9 +47,14 @@
 #define V_RATIO 0.5 
 
 //サーボpwm値出力ピン
-#define SERVO 10
+#define SERVO 5
 
 //型ごとの最大値
 #define UINTMAX 65535
 #define LONGMAX 2147483647
 #define LONGMIN -2147483648
+
+
+
+//EEPの番地 変えるな
+#define EEP_ORIGIN 22
