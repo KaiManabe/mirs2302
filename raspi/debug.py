@@ -79,3 +79,12 @@ def yukkuri():
     for i in range(11):
         sendstraight(300 - i*30)
         time.sleep(0.1)
+        
+def servo():
+    s.send([255,10,0,254])
+    time.sleep(5)
+    s.send([255,10,1,254])
+    
+    
+if __name__ == "__main__":
+    servo()

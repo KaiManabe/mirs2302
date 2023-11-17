@@ -17,9 +17,6 @@ class sequence_file():
         with open('./sequence.csv', mode='a', newline = '') as csv_file:
             writer = csv.writer(csv_file)
             
-            #if type(data) != list(list()):
-                #print("[エラー] run_ctrl : writerow()メソッドの引数はリストである必要があります")
-            #else:
             for i in data:
                 writer.writerow(i)
                 
