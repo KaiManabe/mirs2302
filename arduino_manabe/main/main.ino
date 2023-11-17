@@ -29,7 +29,7 @@ void init_pin(){
 
     //サーボモータの出力ピン宣言
     pinMode(SERVO, OUTPUT);
-    servo.attach(SERVO, 500, 2500);
+    //servo.attach(SERVO, 500, 2500);
 }
 
 
