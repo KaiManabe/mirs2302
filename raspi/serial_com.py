@@ -8,7 +8,7 @@ import serial
 import threading
 import time
 import sys
-
+import config
 
 #使用されうるポートを列挙しておく
 #ここにあるポートに順番に接続を試みる
@@ -30,6 +30,9 @@ def receive_buffer(serial_port):
         time.sleep(0.05)
         while(serial_port.in_waiting > 0):
             buffer.append(serial_port.read())
+            
+            if len(buffer) > config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER:
+                buffer = buffer[(-1 * config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER):]
     
 
 
@@ -65,6 +68,17 @@ class arduino_serial():
         buf_monitor_thread.setDaemon(True)
         buf_monitor_thread.start()
         
+    def length(self):
+        """
+        バッファの長さを返す関数
+        
+        引数：
+            なし
+        
+        戻り値：
+            バッファの長さ
+        """
+        return self.serial_port.in_waiting
     
     def read(self):
         """
