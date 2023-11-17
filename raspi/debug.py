@@ -60,8 +60,8 @@ def sendstraight(spd):
         dir = 0
     else:
         dir = 1
-    hb = int(spd / 254)
-    lb = int(spd % 254)
+    hb = int(abs(spd) / 254)
+    lb = int(abs(spd) % 254)
     s.send([255,1,dir, hb, lb, 254])
     s.send([255,2,dir, hb, lb, 254])
     
@@ -74,8 +74,8 @@ def sendrotate(spd):
     else:
         dir = 1
         dir2 = 0
-    hb = int(spd / 254)
-    lb = int(spd % 254)
+    hb = int(abs(spd) / 254)
+    lb = int(abs(spd) % 254)
     s.send([255,1,dir, hb, lb, 254])
     s.send([255,2,dir2, hb, lb, 254])
     
