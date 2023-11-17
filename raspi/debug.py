@@ -108,6 +108,9 @@ def receive_enc(bytes_arr):
     
     for i in range(len(int_arr)):
         if(int_arr[i] == 255):
+            if len(int_arr) >= i + 10:
+                continue
+            
             if(int_arr[i+1] == 14 and int_arr[i+10] == 254):
                 val = -2081157128
                 for ii in range(4):
