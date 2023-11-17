@@ -97,8 +97,7 @@ def servo():
 
 
 
-def receive_enc():
-    bytes_arr = s.read()
+def receive_enc(bytes_arr):
     int_arr = []
     
     for b in bytes_arr:
@@ -123,6 +122,13 @@ def receive_enc():
     
     return l, r
     
+def rec():
+  s.read()
+  sendstraight(300)
+  time.sleep(2)
+  sendstraight(0)
+  return s.read()
+
 if __name__ == "__main__":
     #servo()
     sendstraight(100)
