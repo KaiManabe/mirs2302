@@ -56,18 +56,28 @@ def setgain(LR, PID, value):
 
 
 def sendstraight(spd):
+    if spd > 0:
+        dir = 0
+    else:
+        dir = 1
     hb = int(spd / 254)
     lb = int(spd % 254)
-    s.send([255,1,1, hb, lb, 254])
-    s.send([255,2,1, hb, lb, 254])
+    s.send([255,1,dir, hb, lb, 254])
+    s.send([255,2,dir, hb, lb, 254])
     
 
 
 def sendrotate(spd):
+    if spd > 0:
+        dir = 0
+        dir2=1
+    else:
+        dir = 1
+        dir2 = 0
     hb = int(spd / 254)
     lb = int(spd % 254)
-    s.send([255,1,0, hb, lb, 254])
-    s.send([255,2,1, hb, lb, 254])
+    s.send([255,1,dir, hb, lb, 254])
+    s.send([255,2,dir2, hb, lb, 254])
     
 
 def yukkuri():
