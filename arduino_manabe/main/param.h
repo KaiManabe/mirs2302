@@ -47,7 +47,7 @@
 #define V_RATIO 0.5 
 
 //サーボpwm値出力ピン
-#define SERVO 10
+#define SERVO 5
 
 //型ごとの最大値
 #define UINTMAX 65535

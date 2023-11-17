@@ -17,13 +17,8 @@ double read_module(int module_num){
 
 //鍵開閉
 void servo_open(){
-  servo.write(150);
+  servo.write(0);
   //analogWrite(SERVO, 70);
-  delay(10);
-}
-
-void servo_close(){
-  servo.write(70);
-  //analogWrite(SERVO, 150);
-  delay(10);
+  delay(2000);
+  servo.write(80);
 }

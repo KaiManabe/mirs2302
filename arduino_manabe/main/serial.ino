@@ -70,10 +70,6 @@ void check_serial(){
             servo_open();
             break;
 
-        case 11:
-            servo_close();
-            break;
-
         default:
             break;
     }
@@ -237,11 +233,11 @@ void send_module(){
         double r = read_module(module_num[i]);
         int hb = (int)(r / 254.0);
         int lb = (int)(r - (double)(hb * 254.0));
-        Serial.Write(hb);
-        Serial.Write(lb);
+        Serial.write(hb);
+        Serial.write(lb);
     }
 
-    Serial.Write(254);
+    Serial.write(254);
 }
 
 
@@ -261,9 +257,7 @@ void send_batt(){
     Serial.write((byte)11);
 
     int value = (int)(io_get_batt() * 10.0);
-    Serial.Write(value);
+    Serial.write(value);
     
-    Serial.Write(254);
+    Serial.write(254);
 }
-
-
