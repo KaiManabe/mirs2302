@@ -100,9 +100,9 @@ int serial_receive(bool moving){
           }else if(inc_bytes[0] == 10){
               if(moving){return(-1);}
               if(inc_bytes[1] == 1){
-                servo_open();
-              }else if(inc_bytes[0] == 0){
                 servo_close();
+              }else if(inc_bytes[0] == 0){
+                servo_open();
               }
               return(0);
           }else{

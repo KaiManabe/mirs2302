@@ -60,6 +60,6 @@ void init_pin(){
     digitalWrite(BATT, LOW);
 
     //サーボモータの出力ピン宣言
-    pinMode(3, OUTPUT);
-    servo.attach(3, 500, 2500);
+    pinMode(SERVO, OUTPUT);
+    servo.attach(SERVO, 500, 2500);
 }

@@ -14,3 +14,16 @@ double read_module(int module_num){
     return ((double)MODULE_R * v) /  (5.0 - v);
 }
 
+
+//鍵開閉
+void servo_open(){
+  servo.write(150);
+  //analogWrite(SERVO, 70);
+  delay(10);
+}
+
+void servo_close(){
+  servo.write(70);
+  //analogWrite(SERVO, 150);
+  delay(10);
+}

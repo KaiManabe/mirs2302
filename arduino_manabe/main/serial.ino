@@ -66,6 +66,14 @@ void check_serial(){
             change_param(inc_bytes[1], inc_bytes[2], inc_bytes[3]);
             break;
         
+        case 10:
+            servo_open();
+            break;
+
+        case 11:
+            servo_close();
+            break;
+
         default:
             break;
     }
