@@ -1,7 +1,7 @@
 #include "param.h"
 #include <EEPROM.h>
-#include<Servo.h>
-Servo servo;
+//#include<Servo.h>
+//Servo servo;
 
 /*グローバル変数の宣言*/
 long l_spd_target = 0L;
@@ -28,7 +28,7 @@ void init_pin(){
     pinMode(R_MOT_PWM, OUTPUT);
 
     //サーボモータの出力ピン宣言
-    pinMode(SERVO, OUTPUT);
+    //pinMode(SERVO, OUTPUT);
     //servo.attach(SERVO, 500, 2500);
 }
 

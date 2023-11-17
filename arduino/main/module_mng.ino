@@ -14,7 +14,7 @@ double read_module(int module_num){
     return ((double)MODULE_R * v) /  (5.0 - v);
 }
 
-
+/*
 //鍵開閉
 void servo_open(){
   servo.write(0);
@@ -23,3 +23,5 @@ void servo_open(){
   servo.write(80);
   //analogWrite(SERVO, 80);
 }
+
+*/

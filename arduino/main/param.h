@@ -1,5 +1,13 @@
-#define GAIN_L {1.0, 0.01, 0.3}
-#define GAIN_R {1.0, 0.01, 0.3}
+//defineされている場合に、設定値ミリ秒ごとにエンコーダの値を送信する
+#define SEND_ENC 50
+
+
+//defineされている場合に、エンコーダ値に加えて目標値を送信する
+#define SEND_ENC_TARGET
+
+
+#define GAIN_L {1.0, 0.0, 0.0}
+#define GAIN_R {1.0, 0.0, 0.0}
 #define GAIN_LR {0.1, 0.01, 0.1}
 #define DELTA_T 20
 

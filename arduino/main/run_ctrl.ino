@@ -97,9 +97,9 @@ void pwm_write(int l, int r){
     }
 
     if (r > 0){
-        digitalWrite(R_MOT_DIR,0);
-    }else{
         digitalWrite(R_MOT_DIR,1);
+    }else{
+        digitalWrite(R_MOT_DIR,0);
     }
 
     //PWMを出力
@@ -175,6 +175,30 @@ void pid(){
     }
     
 
+    
+    #ifdef SEND_ENC
+    static long cmillis_ser = 0L;
+    if(millis() < cmillis_ser + (long)SEND_ENC){
+        Serial.write(255);
+        Serial.write(14);
+        long send_value_l = l_enc + (long)2081157128;
+        long send_value_r = r_enc + (long)2081157128;
+        int send_byte = 0;
+        for(int i = 0; i < 4; i++){
+            send_byte = (int)((send_value_l % (long)pow(254,i+1)) / (long)pow(254,i));
+            Serial.write(send_byte);
+        }
+        for(int i = 0; i < 4; i++){
+            send_byte = (int)((send_value_r % (long)pow(254,i+1)) / (long)pow(254,i));
+            Serial.write(send_byte);
+        }
+        Serial.write(254);
+        cmillis_ser = millis();
+    }
+
+
+    #endif
+
 
     //目標量の計算
     if(l_spd_target > 0L){
@@ -188,9 +212,11 @@ void pid(){
     }else{
         r_enc_target -= long(abs((float)mm_to_pulse(r_spd_target) * (float)(dt) / (float)(1000.0)));
     }
-    /*Serial.print(r_enc_target);
+    /*
+    Serial.print(r_enc_target);
     Serial.print(",");
-    Serial.println(r_enc);*/
+    Serial.println(r_enc);
+    */
     //pidする
     long l_err = l_enc - l_enc_target;
     long r_err = r_enc - r_enc_target;
@@ -198,7 +224,7 @@ void pid(){
     r_err_sum += r_err;
 
     float l_pid = (float)l_err * all_gain[0][0] + (float)(l_err - l_err_prev) * all_gain[0][1] + (float)(l_err_sum) * all_gain[0][2]; 
-    float r_pid = (float)r_err * all_gain[0][0] + (float)(r_err - r_err_prev) * all_gain[0][1] + (float)(r_err_sum) * all_gain[0][2]; 
+    float r_pid = (float)r_err * all_gain[1][0] + (float)(r_err - r_err_prev) * all_gain[1][1] + (float)(r_err_sum) * all_gain[1][2]; 
 
 
     /*目標速度が0に設定されているならばモータに出力を加えないようにする*/

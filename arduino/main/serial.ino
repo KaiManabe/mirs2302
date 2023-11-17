@@ -67,7 +67,7 @@ void check_serial(){
             break;
         
         case 10:
-            servo_open();
+            //servo_open();
             break;
 
         default:
@@ -92,7 +92,7 @@ void set_l_spd(int dir, int hb, int lb){
     if(l_spd_target == 0L){
         pid_init_l();
     }
-    long value = (long)(hb * 254 + lb);
+    long value = (long)((long)hb * (long)254 + (long)lb);
     if(dir == 1){
         value = value * (long)-1;
     }
@@ -115,7 +115,7 @@ void set_r_spd(int dir, int hb, int lb){
     if(r_spd_target == 0L){
         pid_init_r();
     }
-    long value = (long)(hb * 254 + lb);
+    long value = (long)((long)hb * (long)254 + (long)lb);
     if(dir == 1){
         value = value * (long)-1;
     }
