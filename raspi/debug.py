@@ -102,7 +102,7 @@ def receive_enc():
     int_arr = []
     
     for b in bytes_arr:
-        int_arr.append(int.from_bytes(b, byteorder=sys.byteorder)
+        int_arr.append(int.from_bytes(b, byteorder=sys.byteorder))
                        
     r = []
     l = []
