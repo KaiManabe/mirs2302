@@ -87,4 +87,5 @@ def servo():
 
     
 if __name__ == "__main__":
-    servo()
+    #servo()
+    sendstraight(100)
