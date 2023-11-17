@@ -99,3 +99,5 @@ def servo():
 if __name__ == "__main__":
     #servo()
     sendstraight(100)
+    time.sleep(1)
+    sendstraight(0)
