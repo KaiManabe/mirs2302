@@ -1,9 +1,10 @@
 #include "param.h"
 #include<stdio.h>
+#include<Servo.h>
+Servo servo;
 
 void setup(){
-    init_pin(); //ピンの初期化をする関数
-    
+    init_pin(); //ピンの初期化をする関数    
 
     //エンコーダの割り込み関数を割り当て
     attachInterrupt(digitalPinToInterrupt(L_ENC_A), l_enc_change, CHANGE);
@@ -26,13 +27,13 @@ void loop(){
     //while(1){}
 
     //シリアル通信をする
-    //serial_receive(false);
+    serial_receive(false);
     //delay(100);
 
     //バッテリ値読み取り
-    get_batt();
-    delay(100);
-    while(1){}
+    //get_batt();
+    //delay(100);
+    //while(1){}
 }
 
 void init_pin(){
@@ -57,4 +58,8 @@ void init_pin(){
     //バッテリの電圧測定のピン宣言
     pinMode(BATT, INPUT);
     digitalWrite(BATT, LOW);
+
+    //サーボモータの出力ピン宣言
+    pinMode(3, OUTPUT);
+    servo.attach(3, 500, 2500);
 }
