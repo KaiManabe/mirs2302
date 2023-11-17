@@ -1,33 +1,24 @@
-void get_module_r(){
-    int module_num[3] = {MODULE1,MODULE2,MODULE3};
-    double module[3];
+/*
+モジュールの抵抗値を返す
 
-    for(int i=0; i<3; i++){
-        module[i] = read_module(module_num[i]);
-    }
-    
-    for(int i=0; i<3; i++){
-        module_send(module[i]);
-    }
-}
+引数：
+    int module_num : 電圧を読むアナログピン番号
 
+戻り値:
+    抵抗値 -> double
+*/
 double read_module(int module_num){
-    double ans;
-    ans = analogRead(module_num) * 5.0 / 1024.0 / V_RATIO;
-
-    return MODULE_R*(5.0 / ans - 1);
+    double v;   //アナログ入力の電圧
+    v = (double)analogRead(module_num) * 5.0 / 1024.0;
+    
+    return ((double)MODULE_R * v) /  (5.0 - v);
 }
 
 
 //鍵開閉
 void servo_open(){
-  servo.write(150);
+  servo.write(0);
   //analogWrite(SERVO, 70);
-  delay(10);
-}
-
-void servo_close(){
-  servo.write(70);
-  //analogWrite(SERVO, 150);
-  delay(10);
+  delay(2000);
+  servo.write(80);
 }

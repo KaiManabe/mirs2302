@@ -1,175 +1,207 @@
-
 /*
-この関数を実行すると、一生シリアル通信を監視して、受信したデータ（バイト）に応じた動作をするモードになる
-シリアル通信のアルゴリズムを変えるときは、この関数をいじる
-引数：moving(動いているかどうかのフラグ、bool)
+シリアルの受信をチェックし、受信内容に応じた処理を実行する関数
+
+引数・戻り値なし
 */
-int serial_receive(bool moving){
-    int inc_bytes[10] = {-1,};
-    int idx = 0;
-    int tmp = 0;
+void check_serial(){
+    int inc_bytes[64] = {-1,};
 
-    while(Serial.available() > 0){
-        tmp = int(Serial.read());
-        if(tmp == 255){
+    /*ここから受信処理*/
+    if(Serial.available() > 0){
+        if(Serial.read() == 255){
+            int sread = 0;
+            int idx = 0;
             while(1){
-              tmp = int(Serial.read());
-              if(tmp == 254){
-                break;
-              }else if(tmp != -1){
-                inc_bytes[idx] = tmp;
-                idx += 1;
-              }
-              
+                while(Serial.available() < 1){}
+                sread = (int)Serial.read();
+                if(sread == 254){
+                    break;
+                }else if(sread != -1){
+                    inc_bytes[idx] = sread;
+                    idx += 1;
+                }
             }
-            while(Serial.available() > 0){
-              Serial.read();
-            }
-
-          if(inc_bytes[0] == 1){
-              if(moving){return(-1);}
-              long dist_1, spd_1;
-              dist_1 = long(inc_bytes[2]) * 253L + long(inc_bytes[3]);
-              spd_1 = long(inc_bytes[4]) * 253L + long(inc_bytes[5]);
-              if(inc_bytes[1] == 0){
-                dist_1 = -dist_1;
-              }
-              straight(float(dist_1),float(spd_1),alpha_var);
-              return(0);
-          }else if(inc_bytes[0] == 2){
-              if(moving){return(-1);}
-              long dist_2, spd_2;
-              dist_2 = long(inc_bytes[2]) * 253L + long(inc_bytes[3]);
-              spd_2 = long(inc_bytes[4]) * 253L + long(inc_bytes[5]);
-              if(inc_bytes[1] == 0){
-                dist_2 = -dist_2;
-              }
-              rotate(float(dist_2),float(spd_2),alpha_var);
-              return(0);
-          }else if(inc_bytes[0] == 3){
-              //if(moving){return(-1);}
-              long spd_3;
-              spd_3 = long(inc_bytes[2]) * 253L + long(inc_bytes[3]);
-              if(inc_bytes[1] == 0){
-                straight(-1000000.0,float(spd_3),1.0);
-              }else{
-                straight(1000000.0,float(spd_3),1.0);
-              }
-              return(0);
-          }else if(inc_bytes[0] == 4){
-              //if(moving){return(-1);}
-              long spd_4;
-              spd_4 = long(inc_bytes[2]) * 253L + long(inc_bytes[3]);
-              if(inc_bytes[1] == 0){
-                rotate(-1000000.0,float(spd_4),1.0);
-              }else{
-                rotate(1000000.0,float(spd_4),1.0);
-              }
-              return(0);
-          }else if(inc_bytes[0] == 5){
-              pwm_write(0,0);
-              stop_signal = true;
-              return(0);
-          }else if(inc_bytes[0] == 6){
-              long new_gain_int;
-              float new_gain;
-              int r,c;
-              new_gain_int = long(inc_bytes[3]) * 253L + long(inc_bytes[4]);
-              new_gain = float(new_gain_int) / 10000.0;
-              r = inc_bytes[1];
-              c = inc_bytes[2];
-              all_gain[r][c] = new_gain;
-              return(0);
-          }else if(inc_bytes[0] == 7){
-              int idx = inc_bytes[1];
-              int new_value = inc_bytes[2];
-              if(idx == 2){
-                alpha_var = float(new_value / 100.0);
-              }else{
-                dt[idx] = new_value;
-              }
-              return(0);
-          }else if(inc_bytes[0] == 8){
-              if(moving){return(-1);}
-              get_batt();
-              return(0);
-          }else if(inc_bytes[0] == 9){
-              if(moving){return(-1);}
-              get_module_r();
-              return(0);
-          }else if(inc_bytes[0] == 10){
-              if(moving){return(-1);}
-              if(inc_bytes[1] == 1){
-                servo_close();
-              }else if(inc_bytes[0] == 0){
-                servo_open();
-              }
-              return(0);
-          }else{
-              return(-1);
-          }
         }
     }
+    /*ここまで*/
+
+
+    /*ここから受信データに応じた処理*/
+    if(inc_bytes[0] == -1){
+        //なんもなければ終了
+        return;
+    }
+    switch(inc_bytes[0]){
+        case 1:
+            set_l_spd(inc_bytes[1], inc_bytes[2], inc_bytes[3]);
+            break;
+        
+        case 2:
+            set_r_spd(inc_bytes[1], inc_bytes[2], inc_bytes[3]);
+            break;
+        
+        case 3:
+            send_module();
+            break;
+        
+        case 4:
+            send_gain_param();
+            break;
+        
+        case 5:
+            send_batt();
+            break;
+        
+        case 6:
+            break;
+        
+        case 7:
+            break;
+        
+        case 8:
+            change_gain(inc_bytes[1], inc_bytes[2], inc_bytes[3], inc_bytes[4]);
+            break;
+        
+        case 9:
+            change_param(inc_bytes[1], inc_bytes[2], inc_bytes[3]);
+            break;
+        
+        case 10:
+            servo_open();
+            break;
+
+        default:
+            break;
+    }
+
+
 }
 
+/*
+左タイヤの速度をセットする関数
 
-/*指定されたゲインをラズパイに送信(100倍されたゲインを送信)
-gain_num
-0:STRAIGHT_GAIN_L_SPD
-1:STRAIGHT_GAIN_R_SPD
-2:STRAIGHT_GAIN_LR_ENC
-3:ROTATE_GAIN_L
-4:ROTATE_GAIN_R
-5:ROTATE_GAIN_LR
+引数:
+    int dir : 方向(0で直進, 1で後退)
+    int hb : 速度値[mm/s]のハイビット
+    int lb : 速度値[mm/s]のロービット
+
+戻り値:
+    なし
 */
-void gain_send(int gain_num){
-    int send_gain[3] = {0,};
-    int send_value[6] = {0,};
-    
-    for(int i=0; i<3; i++){
-      send_gain[i] = (int)(all_gain[gain_num][i]*10000);
-      send_value[2*i] = send_gain[i]/254;
-      send_value[2*i+1] = send_gain[i]%254;
+void set_l_spd(int dir, int hb, int lb){
+    if(l_spd_target == 0L){
+        pid_init_l();
     }
-
-    for(int i=0; i<6; i++){
-      send_value[i] = (int)(send_gain[i]/254%254L);
+    long value = (long)(hb * 254 + lb);
+    if(dir == 1){
+        value = value * (long)-1;
     }
-    
-    Serial.write((byte)255);
-    Serial.write((byte)3);
-    Serial.write((byte)gain_num);
-    for(int i=0; i<6; i++){
-      Serial.write((byte)send_value[i]);
-    }
-    Serial.write((byte)254);
-
-    return 0;
+    l_spd_target = value;
 }
 
-void serial_send(long enc, int mode){
-  bool sign = 0;
-  int send_value[4] = {0, 0, 0, 0};
 
-  for(int i=0; i<4; i++){
-    send_value[i] = (int)(abs(enc)/(long)pow(254, i)%254L);
-  }
-  if(enc<0L){
-    sign = 1;
+/*
+右タイヤの速度をセットする関数
+
+引数:
+    int dir : 方向(0で直進, 1で後退)
+    int hb : 速度値[mm/s]のハイビット
+    int lb : 速度値[mm/s]のロービット
+
+戻り値:
+    なし
+*/
+void set_r_spd(int dir, int hb, int lb){
+    if(r_spd_target == 0L){
+        pid_init_r();
     }
-
-  Serial.write((byte)255);
-  Serial.write((byte)mode);
-  Serial.write((byte)sign);
-  for(int i=0; i<4; i++){
-    Serial.write((byte)send_value[i]);
-  }
-  Serial.write((byte)254);
-  
-  return 0;
+    long value = (long)(hb * 254 + lb);
+    if(dir == 1){
+        value = value * (long)-1;
+    }
+    r_spd_target = value;
 }
 
-//バッテリ電圧送信
+
+
+/*
+ゲインを変更する関数
+
+引数:
+    int lr : ゲインの種類 (L/R/LR)
+    int pid : ゲインの種類 (P/I/D)
+    int hb : 新しい値*10000のハイビット
+    int lb : 新しい値*10000のロービット
+
+戻り値:
+    なし
+*/
+void change_gain(int lr, int pid, int hb, int lb){
+    float new_value = ((float)hb * (float)254.0) + (float)lb;
+    new_value /= (float)10000.0;
+    all_gain[lr][pid] = new_value;
+    //gain_eep_write();
+}
+
+
+
+
+/*
+パラメータを変更する関数
+
+引数:
+    int param : パラメータの種類 (dt)
+    int hb : 新しい値のハイビット／もしくは新しい値をそのままいれる
+    int lb : 新しい値のロービット／もしくは任意の値をいれる（無視される）
+
+戻り値:
+    なし
+*/
+void change_param(int param, int hb, int lb){
+    if(param == 0){
+        dt = hb;
+    }
+}
+
+
+
+/*
+現在のパラメータを送信する関数
+
+引数:
+    なし
+
+戻り値:
+    なし
+*/
+void send_gain_param(){
+    Serial.write(255);
+    Serial.write(13);
+
+    for(int i = 0; i < 3; i++){
+        for(int ii = 0; ii < 3; ii++){
+            int hb = (int)(all_gain[i][ii] * 10000.0 / 254.0);
+            int lb = (int)(all_gain[i][ii] * 10000.0) - (hb * 254);
+            Serial.write(hb);
+            Serial.write(lb);
+        }
+    }
+
+    Serial.write(dt);
+
+    Serial.write(254);
+}
+
+
+/*
+現在のパラメータを送信する関数
+
+引数:
+    バッテリのシリアル値
+
+戻り値:
+    なし
+*/
 void batt_send(int batt){
 
   Serial.write((byte)255);
@@ -179,9 +211,53 @@ void batt_send(int batt){
   return 0;
 }
 
-//モジュール識別抵抗値送信
-void module_send(double module_r){
-  Serial.write((byte)255);
-  Serial.write((byte)module_r);
-  Serial.write((byte)254);
+
+
+
+/*
+モジュールの抵抗値を送信する
+
+引数：
+    なし
+
+戻り値:
+    なし
+*/
+void send_module(){
+    int module_num[3] = {MODULE1,MODULE2,MODULE3};  //ピン番号
+
+    Serial.write((byte)255);
+    Serial.write((byte)12);
+
+    for(int i = 0; i < 3; i++){
+        double r = read_module(module_num[i]);
+        int hb = (int)(r / 254.0);
+        int lb = (int)(r - (double)(hb * 254.0));
+        Serial.write(hb);
+        Serial.write(lb);
+    }
+
+    Serial.write(254);
+}
+
+
+
+
+/*
+バッテリ電圧を送信する
+
+引数：
+    なし
+
+戻り値:
+    なし
+*/
+void send_batt(){
+    Serial.write((byte)255);
+    Serial.write((byte)11);
+
+    int value = (int)(io_get_batt() * 10.0);
+    Serial.write(value);
+    
+    Serial.write(254);
 }
