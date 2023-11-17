@@ -84,12 +84,6 @@ def servo():
     kai = [255,10,254]
     s.send(kai)
     print('send:'+str(kai))
-    
-    time.sleep(5)
-    
-    se = [255,11,254]
-    s.send(se)
-    print('send:'+str(se))
 
     
 if __name__ == "__main__":
