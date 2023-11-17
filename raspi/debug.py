@@ -81,13 +81,13 @@ def yukkuri():
         time.sleep(0.1)
         
 def servo():
-    kai = [255,10,0,254]
+    kai = [255,10,254]
     s.send(kai)
     print('send:'+str(kai))
     
     time.sleep(5)
     
-    se = [255,10,1,254]
+    se = [255,11,254]
     s.send(se)
     print('send:'+str(se))
 
