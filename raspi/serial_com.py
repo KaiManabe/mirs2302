@@ -31,7 +31,8 @@ def receive_buffer(serial_port):
         while(serial_port.in_waiting > 0):
             buffer.append(serial_port.read())
             
-            if len(buffer) > config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER:
+            #バッファの長さが制限を超えたらバッファの頭を削る
+            if len(buffer) > config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER and config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER != -1:
                 buffer = buffer[(-1 * config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER):]
     
 
@@ -46,7 +47,7 @@ class arduino_serial():
         """
         
         initialize_result  = False  #初期化の成功/失敗フラグ
-        print("[INFO][ser.py] : Arduinoに接続を試みています...")
+        print("[INFO][serial_com.arduino_serial] : Arduinoに接続を試みています...")
         for p in PORTS:
             try:
                 #タイムアウト1秒でarduinoに接続を試みる
@@ -57,19 +58,19 @@ class arduino_serial():
             """以下、接続に成功した場合の処理"""
             time.sleep(3)#接続後すぐに処理が走らないようキープする
             initialize_result = True
-            print("[INFO][ser.py] : ポート", p, "のArduinoと接続を確立しました")
+            print("[INFO][serial_com.arduino_serial] : ポート", p, "のArduinoと接続を確立しました")
             break
         
         if not(initialize_result):
             #エラー処理
-            print("[ERROR][ser.py] : arduinoとの接続に失敗しました")
+            print("[ERROR][serial_com.arduino_serial] : arduinoとの接続に失敗しました")
             sys.exit(1)
         
         #バッファを監視するスレッドを走らせる(これ以降常時実行)
         buf_monitor_thread = threading.Thread(target = receive_buffer, args = (self.serial_port,))
         buf_monitor_thread.setDaemon(True)
         buf_monitor_thread.start()
-        print("[INFO][ser.py] : シリアルバッファの監視を開始しました")
+        print("[INFO][serial_com.arduino_serial] : シリアルバッファの監視を開始しました")
         
     def length(self):
         """
@@ -107,12 +108,12 @@ class arduino_serial():
         
         """データのチェック"""
         if type(send_data) != list:
-            print("[ERROR][ser.py] : write()メソッドの引数はint型のリストである必要があります")
+            print("[ERROR][serial_com.arduino_serial] : send()メソッドの引数はint型のリストである必要があります")
             return -1
         
         for d in send_data:
             if type(d) != int or d > 255:
-                print("[ERROR][ser.py] : write()メソッドの引数に256以上の値が存在します")
+                print("[ERROR][serial_com.arduino_serial] : send()メソッドの引数に256以上の値が存在します")
             return -1
         
         
