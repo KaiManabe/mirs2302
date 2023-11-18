@@ -46,6 +46,7 @@ class arduino_serial():
         """
         
         initialize_result  = False  #初期化の成功/失敗フラグ
+        print("[INFO][ser.py] : Arduinoに接続を試みています...")
         for p in PORTS:
             try:
                 #タイムアウト1秒でarduinoに接続を試みる
@@ -56,17 +57,19 @@ class arduino_serial():
             """以下、接続に成功した場合の処理"""
             time.sleep(3)#接続後すぐに処理が走らないようキープする
             initialize_result = True
+            print("[INFO][ser.py] : ポート", p, "のArduinoと接続を確立しました")
             break
         
         if not(initialize_result):
             #エラー処理
-            print("[エラー] ser.py : arduinoとの接続に失敗")
+            print("[ERROR][ser.py] : arduinoとの接続に失敗しました")
             sys.exit(1)
         
         #バッファを監視するスレッドを走らせる(これ以降常時実行)
         buf_monitor_thread = threading.Thread(target = receive_buffer, args = (self.serial_port,))
         buf_monitor_thread.setDaemon(True)
         buf_monitor_thread.start()
+        print("[INFO][ser.py] : シリアルバッファの監視を開始しました")
         
     def length(self):
         """
@@ -104,13 +107,13 @@ class arduino_serial():
         
         """データのチェック"""
         if type(send_data) != list:
-            print("[エラー] ser.py : write()メソッドの引数はint型のリストである必要があります")
-            sys.exit(1)
+            print("[ERROR][ser.py] : write()メソッドの引数はint型のリストである必要があります")
+            return -1
         
         for d in send_data:
             if type(d) != int or d > 255:
-                print("[エラー] ser.py : write()メソッドの引数に256以上の値が存在します")
-                sys.exit(1)
+                print("[ERROR][ser.py] : write()メソッドの引数に256以上の値が存在します")
+            return -1
         
         
         return self.serial_port.write(bytes(send_data))
