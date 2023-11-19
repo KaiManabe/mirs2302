@@ -20,6 +20,8 @@ def convertdata(received_data):
     out = np.zeros([int(len(received_data) / 10), 3])
     idx = 0
     for i in range(len(received_data)):
+        if (i+9) >= len(received_data):
+            break
         if received_data[i] == 255 and received_data[i+9] == 254:
             if received_data[i+1] == 11:
                 for ii in range(3):
