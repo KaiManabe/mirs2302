@@ -16,7 +16,7 @@ def receive_buffer(socket_class):
         なし
     """
     while(1):
-        received_data = socket_class.client.recv(1024)
+        received_data = socket_class.client.recv(65536)
         for r in received_data:
             socket_class.buf.append(r)
         
