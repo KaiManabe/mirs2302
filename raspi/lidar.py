@@ -21,10 +21,9 @@ def convertdata(received_data):
         if received_data[i] == 255 and received_data[i+9] == 254:
             if received_data[i+1] == 11:
                 for ii in range(3):
-                    out[idx,0] += received_data[i+2+ii] * np.power(254,i)
+                    out[idx,0] += received_data[i+2+ii] * np.power(254,i) / 1000.0
                     out[idx,1] += received_data[i+5+ii] * np.power(254,i)
                 out[idx,2] = received_data[i+8]
-                out[idx,0] /= 1000.0
                 
                 idx += 1
     
