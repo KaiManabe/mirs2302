@@ -8,6 +8,9 @@ import numpy as np
 
 
 s = sock.sock_server(config.RASPI_IP, config.SOCKET_PORT)
+time.sleep(1)
+sp.run("ssh -i /home/pi/.ssh/id_rsa_jetson mirs2302@192.168.1.3 sh /home/mirs2302/git/mirs2302/jetson/start_lidar.sh")
+
 
 def getdata():
     s.send([255,3,254])
