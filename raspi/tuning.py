@@ -275,8 +275,8 @@ def record(s:ser.arduino_serial, speed:int, rectime:int):
 #ゲインを与えて20秒走らせて振幅と周期の情報を取得
 #I,Dゲインは0であることが前提
 def analyze(gain):
-    setgain("R", "P", gain)
-    setgain("L", "P", gain)
+    setgain(s, "R", "P", gain)
+    setgain(s, "L", "P", gain)
     result = record(s, 500, 20)
     data = tuning_client.moving_average(convert_data(result),5)
     amp = tuning_client.getamplitude(data)
