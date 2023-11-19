@@ -45,7 +45,13 @@ def plotter(nparr):
 
 def p():
     s.read()
-    plotter(convertdata(getdata()))
+    received_data = []
+    while(1):
+        received_data = getdata()
+        if len(received_data > 10):
+            break
+        time.sleep(0.5)
+    plotter(convertdata(received_data))
 
 if __name__ == "__main__":
     s = sock.sock_server(config.RASPI_IP, config.SOCKET_PORT)
