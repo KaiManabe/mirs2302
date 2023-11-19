@@ -63,7 +63,7 @@ static inline void delay(sl_word_size_t ms){
 #include <cerrno>
 
 //ultra_simpleに元々備わっていた出力機能(測距ログ)を無効化する場合にdefineする
-//#define DISABLE_DEFAULT_OUTPUTS
+#define DISABLE_DEFAULT_OUTPUTS
 
 
 //ソケット通信のバッファサイズ
@@ -364,16 +364,14 @@ int main(int argc, const char * argv[]) {
             drv->ascendScanData(nodes, count);
             for (int pos = 0; pos < (int)count ; ++pos) {
                 #ifndef DISABLE_DEFAULT_OUTPUTS
-                if(pos == 12){
                     printf("%s theta: %03.2f Dist: %08.2f Q: %d \n", 
                         (nodes[pos].flag & SL_LIDAR_RESP_HQ_FLAG_SYNCBIT) ?"S ":"  ", 
                         (nodes[pos].angle_z_q14 * 90.f) / 16384.f,
                         nodes[pos].dist_mm_q2/4.0f,
                         nodes[pos].quality >> SL_LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
-                }
                 #endif
 
-                //printf("%d, %f, %d\n", pos, nodes[pos].dist_mm_q2, nodes[pos].quality >> SL_LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
+                printf("%f, %f, %d\n", nodes[pos].angle_z_q14 * 90.f) / 16384.f, nodes[pos].dist_mm_q2, nodes[pos].quality >> SL_LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
 
                 /*測距データの提供を命令されていたら送信*/
                 if(send_data == 1){
