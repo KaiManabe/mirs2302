@@ -78,7 +78,7 @@ def setgain(s: ser.arduino_serial, LR:str, PID:str, value:float):
         なし
     """
     
-    current_param = getgain(output = False)
+    current_param = getgain(s, output = False)
     
     hb = int(value * 10000 / 254)
     lb = int(value * 10000) - (hb * 254)
@@ -102,7 +102,7 @@ def setgain(s: ser.arduino_serial, LR:str, PID:str, value:float):
         s.send([255, 8 ,lr , pid, hb, lb])
         time.sleep(0.25)
         retries += 1
-        if getgain(output = False) != current_param:
+        if getgain(s, output = False) != current_param:
             print("[INFO][setgain()] : ゲインの変更に成功しました")
             break
         if retries > 5:
@@ -123,7 +123,7 @@ def setparam(s:ser.arduino_serial, dt:int):
         なし
     """
     
-    current_param = getgain(output = False)
+    current_param = getgain(s, output = False)
     
     if dt < 1 or dt >= 254:
         print("[ERROR][setparam()] : パラメータの値が不正です")
@@ -134,7 +134,7 @@ def setparam(s:ser.arduino_serial, dt:int):
         s.send([255, 9 ,0 , dt, 254])
         time.sleep(0.25)
         retries += 1
-        if getgain(output = False) != current_param:
+        if getgain(s, output = False) != current_param:
             print("[INFO][setparam()] : パラメータの変更に成功しました")
             break
         if retries > 5:
