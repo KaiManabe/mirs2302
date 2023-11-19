@@ -44,6 +44,7 @@ def plotter(nparr):
     plt.show()
 
 def p():
+    s.read()
     plotter(convertdata(getdata()))
 
 if __name__ == "__main__":
