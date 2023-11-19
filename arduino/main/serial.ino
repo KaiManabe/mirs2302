@@ -140,7 +140,7 @@ void change_gain(int lr, int pid, int hb, int lb){
     float new_value = ((float)hb * (float)254.0) + (float)lb;
     new_value /= (float)10000.0;
     all_gain[lr][pid] = new_value;
-    //gain_eep_write();
+    gain_eep_write();
 }
 
 

@@ -7,13 +7,17 @@ import threading
 s = ser.arduino_serial()
 
 def getgain():
-    s.read()
-    s.send([255,4,254])
-    time.sleep(0.1)
-    response = s.read()
-    resp_int = []
-    for resp in response:
-        resp_int.append(int.from_bytes(resp, byteorder=sys.byteorder))
+    while(1):
+        s.read()
+        s.send([255,4,254])
+        time.sleep(0.1)
+        response = s.read()
+        resp_int = []
+        for resp in response:
+            resp_int.append(int.from_bytes(resp, byteorder=sys.byteorder))
+        
+        if len(resp_int) >= 18:
+            break
     
     if resp_int[0] != 255 or resp_int[1] != 13 or resp_int[-1] != 254:
         print("異常なデータを受け取りました")

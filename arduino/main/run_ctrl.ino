@@ -18,11 +18,11 @@ int dt = DELTA_T;
 bool stop_signal = 0;
 
 
-/*うまく動かないので保留
+
 void gain_eep_replace(){
     for(int i = 0; i < 3; i++){
         for(int ii = 0; ii < 3; ii++){
-            int address = (i * 6) + (i * 2) + EEP_ORIGIN;
+            int address = (i * 6) + (ii * 2) + EEP_ORIGIN;
             int hb = EEPROM.read(address);
             int lb = EEPROM.read(address + 1);
 
@@ -39,14 +39,13 @@ void gain_eep_write(){
         for(int ii = 0; ii < 3; ii++){
             int hb = (int)(all_gain[i][ii] * 10000.0 / 254.0);
             int lb = (int)(all_gain[i][ii] * 10000.0) - (hb * 254);
-            int address = (i * 6) + (i * 2) + EEP_ORIGIN;
+            int address = (i * 6) + (ii * 2) + EEP_ORIGIN;
             EEPROM.update(address, hb);
             EEPROM.update(address+1, lb);
         }
     }
 }
 
-*/
 
 
 
