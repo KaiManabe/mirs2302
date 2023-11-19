@@ -13,6 +13,7 @@ def getdata():
     while(1):
         if s.buffer_length() > 10:
             break
+        time.sleep(0.1)
     
     return s.read()
 
@@ -55,6 +56,7 @@ def p():
         received_data = getdata()
         if len(received_data) > 10:
             break
+        time.sleep(0.5)
     nparr = convertdata(received_data)
     plotter(nparr)
 
