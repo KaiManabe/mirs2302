@@ -167,7 +167,7 @@ def receive_enc(bytes_arr):
     
     for i in range(len(int_arr)):
         if(int_arr[i] == 255):
-            if len(int_arr) < i + 10:
+            if len(int_arr) <= i + 10:
                 continue
             
             if(int_arr[i+1] == 14 and int_arr[i+10] == 254):
@@ -209,7 +209,7 @@ def receive_enc_target(bytes_arr):
     
     for i in range(len(int_arr)):
         if(int_arr[i] == 255):
-            if len(int_arr) < i + 10:
+            if len(int_arr) <= i + 10:
                 continue
             
             if(int_arr[i+1] == 15 and int_arr[i+10] == 254):
@@ -262,7 +262,9 @@ def record(s:ser.arduino_serial, speed:int, rectime:int):
     ctrl.send_straight(speed)
     time.sleep(rectime)
     ctrl.send_straight(0)
+    time.sleep(0.25)
     s.send([255,6,0,254])
+    time.sleep(0.25)
     bytes_data = s.read()
     
     return bytes_data
