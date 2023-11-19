@@ -73,6 +73,7 @@ def setgain(LR, PID, value):
     while(1):
         s.send([255, 8 ,lr , pid, hb, lb])
         time.sleep(0.25)
+        retries += 1
         if getgain(output = False) != current_param:
             print("[INFO][setgain()] : ゲインの変更に成功しました")
             break
