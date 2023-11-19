@@ -384,13 +384,13 @@ int main(int argc, const char * argv[]) {
                     send_num[1] = static_cast<unsigned char>(11);
                     for(int i = 0; i < 3; i++){
                         int val;
-                        val = (int)((deg % (long)std::pow(254,i+1)) / (long)pow(254,i));
+                        val = (int)((deg % (long)std::pow(254,i+1)) / (long)std::pow(254,i));
                         send_num[i+2] = static_cast<unsigned char>(val);
                     }
 
                     for(int i = 0; i < 3; i++){
                         int val;
-                        val = (int)((dist % (long)std::pow(254,i+1)) / (long)pow(254,i));
+                        val = (int)((dist % (long)std::pow(254,i+1)) / (long)std::pow(254,i));
                         send_num[i+5] = static_cast<unsigned char>(val);
                     }
                     send_num[8] = nodes[pos].quality;
