@@ -44,6 +44,6 @@ def plotter(data, dontshow = False):
     
     directory = "../../"
     fname = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + ".png"
-    fig.savefig(directory + fname, format = "png", dpi = 600)
+    fig.savefig(directory + fname, format = "png", dpi = 10, figsize=(192,108))
     if not(dontshow):
         plt.show()
