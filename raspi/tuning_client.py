@@ -11,7 +11,8 @@ time.sleep(2)
 def receive():
     a = c.read()
     b = tuning.convert_data(a)
-    plotter(b, dontshow=False)
+    c = moving_average(b,5)
+    plotter(c, dontshow=False)
 
 
 
