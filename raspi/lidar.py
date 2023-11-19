@@ -8,8 +8,12 @@ import numpy as np
 
 
 def getdata():
+    s.read()
     s.send([255,3,254])
-    time.sleep(0.25)
+    while(1):
+        if s.buffer_length > 10:
+            break
+    
     return s.read()
 
 def convertdata(received_data):
@@ -44,14 +48,16 @@ def plotter(nparr):
     plt.show()
 
 def p():
-    s.read()
+    ctime = time.time()
     received_data = []
     while(1):
         received_data = getdata()
         if len(received_data) > 10:
             break
         time.sleep(0.5)
-    plotter(convertdata(received_data))
+    nparr = convertdata(received_data)
+    print(time.time() - ctime)
+    plotter()
 
 if __name__ == "__main__":
     s = sock.sock_server(config.RASPI_IP, config.SOCKET_PORT)
