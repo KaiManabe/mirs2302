@@ -1,5 +1,5 @@
 import sock
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import config
 import subprocess as sp
 import sys
