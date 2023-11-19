@@ -72,8 +72,6 @@ if __name__ == "__main__":
     while(1):
         if(s.server_started == True):
             break
-        else:
-            time.sleep(0.1)
     
     print("[INFO][lidar.py] : jetsonとのソケット通信を確立しています...")
     sp.run(["ssh",
@@ -83,8 +81,9 @@ if __name__ == "__main__":
             "sh",
             "/home/mirs2302/git/mirs2302/jetson/start_lidar.sh"])
     
-    while(s.isconnected() < 1):
-        time.sleep(0.1)
+    while(1):
+        if (s.isconnected() > 0):
+            break
     
     time.sleep(1)
     

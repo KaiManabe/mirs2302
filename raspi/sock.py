@@ -64,6 +64,7 @@ class sock_server():
             なし
         """
         
+        self.server_started = False
         #サーバを立てる
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
@@ -74,10 +75,10 @@ class sock_server():
         self.server.listen(0)
         print("[INFO][sock.sock_server] : ポート", port, "にてサーバーをリッスンしました")
         
+        self.server_started = True
         
         #クライアントからの接続を待機（並列処理なので注意）
         self.connected_clients = 0
-        self.server_started = False
         server_starter_thread = threading.Thread(target = server_starter, args = (self,))
         server_starter_thread.setDaemon(True)
         server_starter_thread.start()
@@ -96,8 +97,8 @@ class sock_server():
             バッファ(リスト)の長さ -> int
             失敗した場合 -> -1
         """
-        #サーバが立っているかチェック
-        if not(self.server_started):
+        #クライアントと接続しているかチェック
+        if not(self.connected_clients == 0):
             print("[ERROR][sock.sock_server] : サーバがクライアントと接続していない状態でbuffer_length()メソッドが実行されました")
             return -1
         
@@ -127,8 +128,8 @@ class sock_server():
             バッファ -> list
             失敗した場合 -> -1
         """
-        #サーバが立っているかチェック
-        if not(self.server_started):
+        #クライアントと接続しているかチェック
+        if not(self.connected_clients == 0):
             print("[ERROR][sock.sock_server] : サーバがクライアントと接続していない状態でread()メソッドが実行されました")
             return -1
         
@@ -149,8 +150,8 @@ class sock_server():
             送信データの長さ
             失敗した場合 -> -1
         """
-        #サーバが立っているかチェック
-        if not(self.server_started):
+        #クライアントと接続しているかチェック
+        if not(self.connected_clients == 0):
             print("[ERROR][sock.sock_server] : サーバがクライアントと接続していない状態でsend()メソッドが実行されました")
             return -1
         
