@@ -36,6 +36,7 @@ void gain_eep_replace(){
             all_gain[i][ii] = new_value;
         }
     }
+    dt = (int)EEPROM.read(EEP_ORIGIN + 20);
 }
 
 
@@ -50,6 +51,7 @@ void gain_eep_write(){
             EEPROM.update(address+1, lb);
         }
     }
+    EEPROM.update(EEP_ORIGIN + 20, dt);
 }
 
 
