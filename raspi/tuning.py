@@ -5,6 +5,9 @@ import threading
 import run_ctrl as controller
 import sock
 import config
+import tuning_client
+import numpy as np
+
 
 def getgain(s:ser.arduino_serial, output:bool = True):
     """
@@ -269,7 +272,24 @@ def record(s:ser.arduino_serial, speed:int, rectime:int):
     
     return bytes_data
 
-   
+#ゲインを与えて20秒走らせて振幅と周期の情報を取得
+#I,Dゲインは0であることが前提
+def analyze(gain):
+    setgain("R", "P", gain)
+    setgain("L", "P", gain)
+    result = record(s, 500, 20)
+    data = tuning_client.moving_average(convert_data(result),5)
+    amp = tuning_client.getamplitude(data)
+    per = tuning_client.getperiod(data)
+    
+    print("amplitude")
+    print("L  :  min : ", np.min(amp[0]), " , max : ", np.max(amp[0]), " , mean : ", np.mean(amp[0]), "std : ", np.std(amp[0]))
+    print("R  :  min : ", np.min(amp[1]), " , max : ", np.max(amp[1]), " , mean : ", np.mean(amp[1]), "std : ", np.std(amp[1]))
+    
+    print("\nperiod")
+    print("L  :  min : ", np.min(per[0]), " , max : ", np.max(per[0]), " , mean : ", np.mean(per[0]), "std : ", np.std(per[0]))
+    print("R  :  min : ", np.min(per[1]), " , max : ", np.max(per[1]), " , mean : ", np.mean(per[1]), "std : ", np.std(per[1]))
+    
 
 #record()関数の戻り値をそのまま与えること.
 def sendresult(result):
