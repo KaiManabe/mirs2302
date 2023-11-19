@@ -157,8 +157,11 @@ def receive_enc(bytes_arr):
     int_arr = []
     
     for b in bytes_arr:
-        int_arr.append(int.from_bytes(b, byteorder=sys.byteorder))
-                       
+        if type(b) != int:
+            int_arr.append(int.from_bytes(b, byteorder=sys.byteorder))
+        else:
+            int_arr.append(b)
+    
     r = []
     l = []
     
@@ -196,7 +199,10 @@ def receive_enc_target(bytes_arr):
     int_arr = []
     
     for b in bytes_arr:
-        int_arr.append(int.from_bytes(b, byteorder=sys.byteorder))
+        if type(b) != int:
+            int_arr.append(int.from_bytes(b, byteorder=sys.byteorder))
+        else:
+            int_arr.append(b)
                        
     r = []
     l = []
@@ -265,8 +271,6 @@ def record(s:ser.arduino_serial, speed:int, rectime:int):
 
 #record()関数の戻り値をそのまま与えること.
 def sendresult(result):
-    #学内LANにサーバを公開
-    serv = sock.sock_server(config.RASPI_IP_NCT,55555)
     while(1):
         if serv.isconnected() > 0:
             break
@@ -278,10 +282,11 @@ def sendresult(result):
     
     serv.send(int_arr)
     
-    serv.server.close()
     
 
 if __name__ == "__main__":
+    #学内LANにサーバを公開
+    serv = sock.sock_server(config.RASPI_IP_NCT,55555)
     s = ser.arduino_serial()
     ctrl = controller.run_controller(s)
     
