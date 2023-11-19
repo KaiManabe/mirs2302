@@ -429,7 +429,6 @@ int main(int argc, const char * argv[]) {
 
 
             }
-            break;
         }
 
 
@@ -468,11 +467,13 @@ int main(int argc, const char * argv[]) {
             switch(received_data[0]){
                 case 1:
                     //ソケット通信で測距データの提供を開始
+                    printf("[INFO][ultra_simple] : 測距データの送信を開始します\n");
                     send_data = 1;
                     break;
                 
                 case 2:
                     //ソケット通信での測距データの提供を停止
+                    printf("[INFO][ultra_simple] : 測距データの送信を停止します\n");
                     send_data = 0;
                     break;
                 
