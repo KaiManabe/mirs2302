@@ -61,7 +61,7 @@ static inline void delay(sl_word_size_t ms){
 #include <sys/socket.h>
 #include <fcntl.h>
 #include <cerrno>
-#include <cmath>
+
 
 //ultra_simpleに元々備わっていた出力機能(測距ログ)を無効化する場合にdefineする
 #define DISABLE_DEFAULT_OUTPUTS
@@ -123,6 +123,31 @@ void ctrlc(int)
 {
     ctrl_c_pressed = true;
 }
+
+/*******************************************************
+**********************ここから追記***********************
+*******************************************************/
+
+/*
+std::powがなぜかコンパイルできなかったので自作した
+x^yをlongで返す関数
+引数：
+    x -> int
+    y -> int
+戻り値：
+    x^y -> long
+*/
+long pow(int x, int y){
+    long value = (long)1;
+    for(int i = 0; i < y; i++){
+        value = value * (long)x;
+    }
+    return value;
+}
+/*******************************************************
+**********************ここまで追記***********************
+*******************************************************/
+
 
 int main(int argc, const char * argv[]) {
 	const char * opt_is_channel = NULL; 
@@ -384,13 +409,13 @@ int main(int argc, const char * argv[]) {
                     send_num[1] = static_cast<unsigned char>(11);
                     for(int i = 0; i < 3; i++){
                         int val;
-                        val = (int)((deg % (long)std::pow(254,i+1)) / (long)std::pow(254,i));
+                        val = (int)((deg % (long)pow(254,i+1)) / (long)pow(254,i));
                         send_num[i+2] = static_cast<unsigned char>(val);
                     }
 
                     for(int i = 0; i < 3; i++){
                         int val;
-                        val = (int)((dist % (long)std::pow(254,i+1)) / (long)std::pow(254,i));
+                        val = (int)((dist % (long)pow(254,i+1)) / (long)pow(254,i));
                         send_num[i+5] = static_cast<unsigned char>(val);
                     }
                     send_num[8] = nodes[pos].quality;
