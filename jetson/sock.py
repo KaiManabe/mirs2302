@@ -16,7 +16,7 @@ def receive_buffer(socket_class):
         なし
     """
     while(1):
-        received_data = socket_class.client.recv(1024)
+        received_data = socket_class.client.recv(65536)
         for r in received_data:
             socket_class.buf.append(r)
         
@@ -42,6 +42,7 @@ def server_starter(server_class):
     
     #接続を確立したらバッファ変数を宣言して、ソケットのバッファ監視を開始する
     print("[INFO][sock.sock_server] : クライアント" , server_class.client_addr , "から接続を受け付けました")
+    server_class.connected_clients += 1
     server_class.buf = []
     buf_monitor_thread = threading.Thread(target = receive_buffer, args = (server_class,))
     buf_monitor_thread.setDaemon(True)
@@ -63,6 +64,7 @@ class sock_server():
             なし
         """
         
+        self.server_started = False
         #サーバを立てる
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
@@ -73,9 +75,10 @@ class sock_server():
         self.server.listen(0)
         print("[INFO][sock.sock_server] : ポート", port, "にてサーバーをリッスンしました")
         
+        self.server_started = True
         
         #クライアントからの接続を待機（並列処理なので注意）
-        self.server_started = False
+        self.connected_clients = 0
         server_starter_thread = threading.Thread(target = server_starter, args = (self,))
         server_starter_thread.setDaemon(True)
         server_starter_thread.start()
@@ -94,13 +97,25 @@ class sock_server():
             バッファ(リスト)の長さ -> int
             失敗した場合 -> -1
         """
-        #サーバが立っているかチェック
-        if not(self.server_started):
+        #クライアントと接続しているかチェック
+        if self.connected_clients == 0:
             print("[ERROR][sock.sock_server] : サーバがクライアントと接続していない状態でbuffer_length()メソッドが実行されました")
             return -1
         
         return len(self.buf)
     
+    
+    def isconnected(self):
+        """
+        サーバにクライアントからの接続があるか確認する関数
+        
+        引数：
+            なし
+        
+        戻り値：
+            接続されているクライアントの数
+        """
+        return self.connected_clients
     
     def read(self):
         """ 
@@ -113,8 +128,8 @@ class sock_server():
             バッファ -> list
             失敗した場合 -> -1
         """
-        #サーバが立っているかチェック
-        if not(self.server_started):
+        #クライアントと接続しているかチェック
+        if self.connected_clients == 0:
             print("[ERROR][sock.sock_server] : サーバがクライアントと接続していない状態でread()メソッドが実行されました")
             return -1
         
@@ -135,8 +150,8 @@ class sock_server():
             送信データの長さ
             失敗した場合 -> -1
         """
-        #サーバが立っているかチェック
-        if not(self.server_started):
+        #クライアントと接続しているかチェック
+        if self.connected_clients == 0:
             print("[ERROR][sock.sock_server] : サーバがクライアントと接続していない状態でsend()メソッドが実行されました")
             return -1
         
