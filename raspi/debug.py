@@ -26,16 +26,25 @@ def getgain(output = True):
     else:
         arr = resp_int[2:-1]
     
-    print("    P               I               D")
+    if(output):
+        print("    P               I               D")
+    
     for i in range(3):
         for ii in range(3):
             value = arr[i * 6 + ii * 2] * 254 + arr[i * 6 + ii * 2 + 1]
             value /= 10000.0
-            print(str(value).ljust(9,"0"), end = "  ,  ")
+            
+            if(output):
+                print(str(value).ljust(9,"0"), end = "  ,  ")
+            
             pid[i][ii] = value
-        print("")
         
-    print("\ndt : ", arr[-1])
+        if(output):
+            print("")
+        
+    if(output):
+        print("\ndt : ", arr[-1])
+    
     pid[-1] = arr[-1]
     return pid
     
@@ -60,8 +69,18 @@ def setgain(LR, PID, value):
     elif PID == "D" or PID == "d":
         pid = 2
     
-    s.send([255, 8 ,lr , pid, hb, lb])
-    print("GAIN CHANGED.")
+    retries = 0
+    while(1):
+        s.send([255, 8 ,lr , pid, hb, lb])
+        time.sleep(0.25)
+        if getgain() != current_param:
+            print("[INFO][setgain()] : ゲインの変更に成功しました")
+            break
+        if retries > 5:
+            print("[ERROR][setgain()] : ゲインの変更に失敗しました")
+            break
+    
+    
     
 
 
