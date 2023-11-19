@@ -114,7 +114,7 @@ class arduino_serial():
         for d in send_data:
             if type(d) != int or d > 255:
                 print("[ERROR][serial_com.arduino_serial] : send()メソッドの引数に256以上の値が存在します")
-            return -1
+                return -1
         
         
         return self.serial_port.write(bytes(send_data))
