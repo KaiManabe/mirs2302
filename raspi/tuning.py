@@ -204,11 +204,11 @@ def record(s:ser.arduino_serial, speed:int, rectime:int):
     """
     ctrl = controller.run_controller(s)
     s.read()
-    s.send([255,6,2,0])
+    s.send([255,6,2,254])
     ctrl.send_straight(speed)
     time.sleep(rectime)
     ctrl.send_straight(0)
-    s.send([255,6,0,0])
+    s.send([255,6,0,254])
     bytes_data = s.read()
     
     l_enc , r_enc = receive_enc(bytes_data)
@@ -218,7 +218,7 @@ def record(s:ser.arduino_serial, speed:int, rectime:int):
 
 
 if __name__ == "__main__":
-    serv = sock.sock_client("172.25.10.50",55555)
+    #serv = sock.sock_client("172.25.10.50",55555)
     s = ser.arduino_serial()
     ctrl = controller.run_controller(s)
     
