@@ -6,7 +6,8 @@ import threading
 
 s = ser.arduino_serial()
 
-def getgain():
+def getgain(output = True):
+    pid = [[0,0,0],[0,0,0],[0,0,0],0]
     while(1):
         s.read()
         s.send([255,4,254])
@@ -31,12 +32,17 @@ def getgain():
             value = arr[i * 6 + ii * 2] * 254 + arr[i * 6 + ii * 2 + 1]
             value /= 10000.0
             print(str(value).ljust(9,"0"), end = "  ,  ")
+            pid[i][ii] = value
         print("")
         
     print("\ndt : ", arr[-1])
+    pid[-1] = arr[-1]
+    return pid
     
 
 def setgain(LR, PID, value):
+    current_param = getgain(output = False)
+    
     hb = int(value * 10000 / 254)
     lb = int(value * 10000) - (hb * 254)
     
