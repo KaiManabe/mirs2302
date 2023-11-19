@@ -110,6 +110,38 @@ def setgain(s: ser.arduino_serial, LR:str, PID:str, value:float):
             break
     
 
+def setparam(s:ser.arduino_serial, dt:int):
+    """
+    パラメータを変更する関数
+
+    引数：
+        arduino_serialクラスオブジェクト
+        
+        dt -> int
+
+    戻り値
+        なし
+    """
+    
+    current_param = getgain(output = False)
+    
+    if dt < 1 or dt >= 254:
+        print("[ERROR][setparam()] : パラメータの値が不正です")
+        return -1
+    
+    retries = 0
+    while(1):
+        s.send([255, 9 ,0 , dt, 254])
+        time.sleep(0.25)
+        retries += 1
+        if getgain(output = False) != current_param:
+            print("[INFO][setparam()] : パラメータの変更に成功しました")
+            break
+        if retries > 5:
+            print("[ERROR][setparam()] : パラメータの変更に失敗しました")
+            break
+
+
 def receive_enc(bytes_arr):
     """
     bytes型の走行データ(エンコーダ値)をintに変換する関数
