@@ -98,7 +98,7 @@ class sock_server():
             失敗した場合 -> -1
         """
         #クライアントと接続しているかチェック
-        if not(self.connected_clients == 0):
+        if self.connected_clients == 0:
             print("[ERROR][sock.sock_server] : サーバがクライアントと接続していない状態でbuffer_length()メソッドが実行されました")
             return -1
         
@@ -129,7 +129,7 @@ class sock_server():
             失敗した場合 -> -1
         """
         #クライアントと接続しているかチェック
-        if not(self.connected_clients == 0):
+        if self.connected_clients == 0:
             print("[ERROR][sock.sock_server] : サーバがクライアントと接続していない状態でread()メソッドが実行されました")
             return -1
         
@@ -151,7 +151,7 @@ class sock_server():
             失敗した場合 -> -1
         """
         #クライアントと接続しているかチェック
-        if not(self.connected_clients == 0):
+        if self.connected_clients == 0:
             print("[ERROR][sock.sock_server] : サーバがクライアントと接続していない状態でsend()メソッドが実行されました")
             return -1
         
