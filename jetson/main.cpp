@@ -404,9 +404,6 @@ int main(int argc, const char * argv[]) {
 
                 /*測距データの提供を命令されていたら送信*/
                 if(send_data > 0){
-                    if(send_data == 2){
-                        send_data = 0;
-                    }
                     unsigned char send_num[10];     
                     send_num[0] = static_cast<unsigned char>(255);
                     send_num[1] = static_cast<unsigned char>(11);
@@ -431,6 +428,10 @@ int main(int argc, const char * argv[]) {
                 }
 
 
+            }
+            
+            if(send_data == 2){
+                send_data = 0;
             }
         }
 
