@@ -50,16 +50,16 @@ def plotter(nparr):
     plt.show()
 
 def p():
-    ctime = time.time()
+    print("getdata, ", time.time())
     received_data = []
     while(1):
         received_data = getdata()
         if len(received_data) > 10:
             break
-        time.sleep(0.5)
+    print("convertdata, ", time.time())
     nparr = convertdata(received_data)
-    print(time.time() - ctime)
-    plotter()
+    print("finished, ", time.time())
+    plotter(nparr)
 
 if __name__ == "__main__":
     print("[INFO][lidar.py] : jetsonのデーモンプロセスをキルしています...")
