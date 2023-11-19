@@ -196,7 +196,7 @@ def plotter(data, dontshow = False):
     plt2.legend()
     
     plt3 = plt.subplot(2,3,3)
-    plt3.plot(tl, label = "t_l")
+    plt3.plot(tl, label = "v_l_period")
     plt3.legend()
     
     plt4 = plt.subplot(2,3,4)
@@ -209,7 +209,7 @@ def plotter(data, dontshow = False):
     plt5.legend()
     
     plt6 = plt.subplot(2,3,6)
-    plt6.plot(tr, label = "t_r")
+    plt6.plot(tr, label = "v_r_period")
     plt6.legend()
     
     directory = "../../"
