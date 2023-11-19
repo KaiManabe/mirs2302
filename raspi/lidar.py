@@ -60,8 +60,17 @@ def p():
     plotter()
 
 if __name__ == "__main__":
-    s = sock.sock_server(config.RASPI_IP, config.SOCKET_PORT)
+    sp.run(["ssh",
+            "-i",
+            "/home/pi/.ssh/id_rsa_jetson",
+            "mirs2302@192.168.1.3",
+            "sh",
+            "/home/mirs2302/git/mirs2302/jetson/terminate_screen.sh"])
     time.sleep(1)
+    s = sock.sock_server(config.RASPI_IP, config.SOCKET_PORT)
+    while(1):
+        if(s.server_started):
+            break
     sp.run(["ssh",
             "-i",
             "/home/pi/.ssh/id_rsa_jetson",
