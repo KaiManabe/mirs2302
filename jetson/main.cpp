@@ -372,7 +372,7 @@ int main(int argc, const char * argv[]) {
                 #endif
 
                 float angle_in_degrees = nodes[pos].angle_z_q14 * 90.f / (1 << 14);
-                float distance_in_meters = nodes[pos].dist_mm_q2 / 1000.f / (1 << 2);
+                float distance_in_meters = nodes[pos].dist_mm_q2 / (1 << 2);
                 int quality = (int)nodes[pos].quality;
 
                 printf("%lf, %lf, %d \n", angle_in_degrees, distance_in_meters, quality);
