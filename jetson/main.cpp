@@ -372,10 +372,12 @@ int main(int argc, const char * argv[]) {
                 #endif
 
                 float angle_in_degrees = nodes[pos].angle_z_q14 * 90.f / (1 << 14);
+                long deg = (long) angle_in_degrees * (float)1000;
                 float distance_in_meters = nodes[pos].dist_mm_q2 / (1 << 2);
+                long dist = (long)distance_in_meters;
                 int quality = (int)nodes[pos].quality;
 
-                printf("%lf, %lf, %d \n", angle_in_degrees, distance_in_meters, quality);
+                printf("%ld, %ld, %d \n", deg, dist, quality);
 
                 /*測距データの提供を命令されていたら送信*/
                 if(send_data == 1){
@@ -384,6 +386,7 @@ int main(int argc, const char * argv[]) {
 
 
             }
+            break;
         }
 
 
