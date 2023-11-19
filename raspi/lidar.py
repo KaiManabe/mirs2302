@@ -60,6 +60,7 @@ def p():
     plotter()
 
 if __name__ == "__main__":
+    print("[INFO][lidar.py] : jetsonのデーモンプロセスをキルしています...")
     sp.run(["ssh",
             "-i",
             "/home/pi/.ssh/id_rsa_jetson",
@@ -69,8 +70,12 @@ if __name__ == "__main__":
     time.sleep(1)
     s = sock.sock_server(config.RASPI_IP, config.SOCKET_PORT)
     while(1):
-        if(s.server_started):
+        if(s.server_started == True):
             break
+        else:
+            time.sleep(0.1)
+    
+    print("[INFO][lidar.py] : jetsonとのソケット通信を確立しています...")
     sp.run(["ssh",
             "-i",
             "/home/pi/.ssh/id_rsa_jetson",
