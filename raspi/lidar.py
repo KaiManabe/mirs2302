@@ -33,4 +33,13 @@ def disconnect():
     s.send([255,9,254])
     time.sleep(0.25)
     s.server.close()
+
+
+def plotter(nparr):
+    xy = np.zeros([len(nparr), 2])
+    for i in range(len(nparr)):
+        xy[i,0] = nparr[i,1] * np.cos(nparr[i,0] / 180.0 * np.pi)
+        xy[i,1] = nparr[i,1] * np.sin(nparr[i,0] / 180.0 * np.pi)
     
+    plt.scatter(xy[:,0], xy[:,1])
+    plt.show()
