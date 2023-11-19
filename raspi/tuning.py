@@ -292,6 +292,4 @@ if __name__ == "__main__":
     s = ser.arduino_serial()
     ctrl = controller.run_controller(s)
     
-    #debug
-    record(s, 500,1)
     

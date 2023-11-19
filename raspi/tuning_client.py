@@ -4,9 +4,9 @@ import time
 import datetime
 import numpy as np
 
-
-c = sock.sock_client(config.RASPI_IP_NCT, 55555)
-time.sleep(2)
+if __name__ == "__main__":
+    c = sock.sock_client(config.RASPI_IP_NCT, 55555)
+    time.sleep(2)
 
 def receive():
     a = c.read()
@@ -26,6 +26,114 @@ def moving_average(data, dt:int):
     return out
     
     
+def getamplitude(data):
+    err_l = []
+    err_r = []
+    vl_target = []
+    vr_target = []
+    vl = []
+    vr = []
+    tl = []
+    tr = []
+    vl_relat = []
+    vr_relat = []
+    ampl = []
+    ampr = []
+
+    for i in range(max([len(data[0]),len(data[1]),len(data[2]),len(data[3])])):
+        if i+1 < len(data[0]) and i+1 < len(data[1]):
+            err_l.append(data[0][i] - data[1][i])
+            vl.append(data[0][i+1] - data[0][i])
+            vl_target.append(data[1][i+1] - data[1][i])
+            vl_relat.append(vl[-1] - vl_target[-1])
+            
+        if i+1 < len(data[2]) and i+1 < len(data[3]):
+            err_r.append(data[2][i] - data[3][i])
+            vr.append(data[2][i+1] - data[2][i])
+            vr_target.append(data[3][i+1] - data[3][i])
+            vr_relat.append(vr[-1] - vr_target[-1])
+
+    current_idx = 0
+    for i in range(len(vl)):
+        if vl_relat[i] < 0:
+            for ii in range(i):
+                if vl_relat[i - ii - 1] < 0:
+                    break
+                if vl_relat[i - ii - 1] > 0:
+                    if current_idx != 0:
+                        tl.append(i - current_idx)
+                        ampl.append(max(vl_relat[current_idx:i]) - min(vl_relat[current_idx:i]))
+                    current_idx = i
+                    break
+    
+    current_idx = 0           
+    for i in range(len(vr)):
+        if vr_relat[i] < 0:
+            for ii in range(i):
+                if vr_relat[i - ii - 1] < 0:
+                    break
+                if vr_relat[i - ii - 1] > 0:
+                    if current_idx != 0:
+                        tr.append(i - current_idx)
+                        ampr.append(max(vr_relat[current_idx:i]) - min(vr_relat[current_idx:i]))
+                    current_idx = i
+                    break
+                
+    return ampl, ampr
+        
+    
+
+
+def getperiod(data):
+    err_l = []
+    err_r = []
+    vl_target = []
+    vr_target = []
+    vl = []
+    vr = []
+    tl = []
+    tr = []
+    vl_relat = []
+    vr_relat = []
+
+    for i in range(max([len(data[0]),len(data[1]),len(data[2]),len(data[3])])):
+        if i+1 < len(data[0]) and i+1 < len(data[1]):
+            err_l.append(data[0][i] - data[1][i])
+            vl.append(data[0][i+1] - data[0][i])
+            vl_target.append(data[1][i+1] - data[1][i])
+            vl_relat.append(vl[-1] - vl_target[-1])
+            
+        if i+1 < len(data[2]) and i+1 < len(data[3]):
+            err_r.append(data[2][i] - data[3][i])
+            vr.append(data[2][i+1] - data[2][i])
+            vr_target.append(data[3][i+1] - data[3][i])
+            vr_relat.append(vr[-1] - vr_target[-1])
+
+    current_idx = 0
+    for i in range(len(vl)):
+        if vl_relat[i] < 0:
+            for ii in range(i):
+                if vl_relat[i - ii - 1] < 0:
+                    break
+                if vl_relat[i - ii - 1] > 0:
+                    if current_idx != 0:
+                        tl.append(i - current_idx)
+                    current_idx = i
+                    break
+    current_idx = 0           
+    for i in range(len(vr)):
+        if vr_relat[i] < 0:
+            for ii in range(i):
+                if vr_relat[i - ii - 1] < 0:
+                    break
+                if vr_relat[i - ii - 1] > 0:
+                    if current_idx != 0:
+                        tr.append(i - current_idx)
+                    current_idx = i
+                    break
+                
+    return tl, tr
+
 
 
 def plotter(data, dontshow = False):
