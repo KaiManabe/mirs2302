@@ -220,6 +220,21 @@ def receive_enc_target(bytes_arr):
     
     return l, r
 
+def convert_data(bytes_data):
+    """
+    生の測定データをint配列に変換する
+    
+    引数：
+        bytes_data : 生の測定データ
+        
+    戻り値：
+        [左エンコーダ・左エンコーダ目標値・右エンコーダ・右エンコーダ目標値]
+    """
+    l_enc , r_enc = receive_enc(bytes_data)
+    l_enc_target , r_enc_target = receive_enc_target(bytes_data)
+    
+    return [l_enc, l_enc_target, r_enc, r_enc_target]
+
 
 def record(s:ser.arduino_serial, speed:int, rectime:int):
     """
@@ -233,7 +248,7 @@ def record(s:ser.arduino_serial, speed:int, rectime:int):
         rectime : 計測する時間[s] -> int
         
     戻り値：
-        エンコーダ値のリスト
+        生の測定データ
     """
     ctrl = controller.run_controller(s)
     s.read()
@@ -244,10 +259,9 @@ def record(s:ser.arduino_serial, speed:int, rectime:int):
     s.send([255,6,0,254])
     bytes_data = s.read()
     
-    l_enc , r_enc = receive_enc(bytes_data)
-    l_enc_target , r_enc_target = receive_enc_target(bytes_data)
-    
-    return [l_enc, l_enc_target, r_enc, r_enc_target]
+    return bytes_data
+
+   
 
 #record()関数の戻り値をそのまま与えること.
 def sendresult(result):
@@ -257,10 +271,9 @@ def sendresult(result):
         if serv.isconnected() > 0:
             break
     
-    for arr in result:
-        serv.send([255])
-        serv.send(arr)
-        serv.send([254])
+    serv.send(result)
+    
+    serv.server.close()
     
 
 if __name__ == "__main__":
