@@ -371,7 +371,7 @@ int main(int argc, const char * argv[]) {
                         nodes[pos].quality >> SL_LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
                 #endif
                 
-                printf("%s, %s, %s",typeid(nodes[pos].angle_z_914).name(), typeid(nodes[pos].dist_mm_q2).name(), typeid(nodes[pos].quality).name());
+                printf("%s, %s, %s",typeid(nodes[pos].angle_z_q14).name(), typeid(nodes[pos].dist_mm_q2).name(), typeid(nodes[pos].quality).name());
 
                 //printf("%f, %f, %d\n", (nodes[pos].angle_z_q14 * 90.f) / 16384.f, nodes[pos].dist_mm_q2, nodes[pos].quality >> SL_LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
 
