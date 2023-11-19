@@ -271,7 +271,12 @@ def sendresult(result):
         if serv.isconnected() > 0:
             break
     
-    serv.send(result)
+    int_arr = []
+    
+    for b in result:
+        int_arr.append(int.from_bytes(b, byteorder=sys.byteorder))
+    
+    serv.send(int_arr)
     
     serv.server.close()
     
