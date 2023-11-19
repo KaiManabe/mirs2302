@@ -1,5 +1,7 @@
 import csv
 import time
+import serial_com as ser
+
 
 class sequence_file():
     """
@@ -26,10 +28,10 @@ class sequence_file():
         
 class run_controller():
     """
-    走行を制御するクラス(作成途中)
+    走行を制御するクラス
     """
     
-    def __init__(self, serial_port):
+    def __init__(self, serial_port:ser.arduino_serial):
         """
         コンストラクタ
         
@@ -43,9 +45,16 @@ class run_controller():
         左モータのスピードをセットする
         
         引数：
-            speed -> float : 速度[m/s]
+            speed -> float : 速度[mm/s]
         """
-        self.serial.send([speed])
+        
+        if speed > 0:
+            dir = 0
+        else:
+            dir = 1
+        hb = int(abs(speed) / 254)
+        lb = int(abs(speed) % 254)
+        self.serial.send([255,1,dir, hb, lb, 254])
         
     def set_r_speed(self, speed):
         """
@@ -54,10 +63,36 @@ class run_controller():
         引数：
             speed -> float : 速度[m/s]
         """
-        self.serial.send([speed])
+        
+        if speed > 0:
+            dir = 0
+        else:
+            dir = 1
+        hb = int(abs(speed) / 254)
+        lb = int(abs(speed) % 254)
+        self.serial.send([255,2,dir, hb, lb, 254])
+    
+    
+    def send_straight(self, speed):
+        """
+        左右モータのスピードをセットする
+        
+        引数：
+            speed -> float : 速度[mm/s]
+        """
+        
+        if speed > 0:
+            dir = 0
+        else:
+            dir = 1
+        hb = int(abs(speed) / 254)
+        lb = int(abs(speed) % 254)
+        self.serial.send([255,1,dir, hb, lb, 254])
+        self.serial.send([255,2,dir, hb, lb, 254])
 
 
 if __name__ == "__main__":
+    """
     seq = sequence_file()
     print('status = read:')
     seq.read()
@@ -73,3 +108,4 @@ if __name__ == "__main__":
     
     data_to_write = [["rotate", 90, 90],["straight", 20, 0.5], ["straight", 5, -0.3]]
     seq.write(data_to_write)
+    """

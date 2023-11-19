@@ -2,11 +2,23 @@ import serial_com as ser
 import time
 import sys
 import threading
+import run_ctrl as controller
 
 
-s = ser.arduino_serial()
+def getgain(s:ser.arduino_serial, output:bool = True):
+    """
+    ゲインを取得する関数
 
-def getgain(output = True):
+    引数：
+        arduino_serialクラスオブジェクト
+        
+        output(任意) -> bool
+
+    戻り値
+        ゲインの可変長リスト
+        
+        失敗した場合 -1
+    """
     pid = [[0,0,0],[0,0,0],[0,0,0],0]
     while(1):
         s.read()
@@ -49,7 +61,23 @@ def getgain(output = True):
     return pid
     
 
-def setgain(LR, PID, value):
+def setgain(s: ser.arduino_serial, LR:str, PID:str, value:float):
+    """
+    ゲインを変更する関数
+
+    引数：
+        arduino_serialクラスオブジェクト
+        
+        "L" or "R" or "LR" -> string
+        
+        "P" or "I" or "D" -> string
+        
+        value -> float
+
+    戻り値
+        なし
+    """
+    
     current_param = getgain(output = False)
     
     hb = int(value * 10000 / 254)
@@ -81,89 +109,9 @@ def setgain(LR, PID, value):
             print("[ERROR][setgain()] : ゲインの変更に失敗しました")
             break
     
-    
 
-
-
-def sendstraight(spd):
-    if spd > 0:
-        dir = 0
-    else:
-        dir = 1
-    hb = int(abs(spd) / 254)
-    lb = int(abs(spd) % 254)
-    s.send([255,1,dir, hb, lb, 254])
-    s.send([255,2,dir, hb, lb, 254])
-    
-
-
-def sendrotate(spd):
-    if spd > 0:
-        dir = 0
-        dir2=1
-    else:
-        dir = 1
-        dir2 = 0
-    hb = int(abs(spd) / 254)
-    lb = int(abs(spd) % 254)
-    s.send([255,1,dir, hb, lb, 254])
-    s.send([255,2,dir2, hb, lb, 254])
-    
-
-def yukkuri():
-    for i in range(11):
-        sendstraight( i*30)
-        time.sleep(0.1)
-    sendstraight(300)
-    time.sleep(5)
-    for i in range(11):
-        sendstraight(300 - i*30)
-        time.sleep(0.1)
-        
-def servo():
-    kai = [255,10,254]
-    s.send(kai)
-    print('send:'+str(kai))
-
-
-
-def receive_enc(bytes_arr):
-    int_arr = []
-    
-    for b in bytes_arr:
-        int_arr.append(int.from_bytes(b, byteorder=sys.byteorder))
-                       
-    r = []
-    l = []
-    
-    for i in range(len(int_arr)):
-        if(int_arr[i] == 255):
-            if len(int_arr) < i + 10:
-                continue
-            
-            if(int_arr[i+1] == 14 and int_arr[i+10] == 254):
-                val = -2081157128
-                for ii in range(4):
-                    val += int_arr[i+2+ii] * pow(254,ii)
-                r.append(val)
-                
-                
-                val = -2081157128
-                for ii in range(4):
-                    val += int_arr[i+6+ii] * pow(254,ii)
-                l.append(val)
-    
-    return l, r
-    
-def rec():
-  s.read()
-  sendstraight(300)
-  time.sleep(2)
-  sendstraight(0)
-  return s.read()
 
 if __name__ == "__main__":
-    #servo()
-    sendstraight(100)
-    time.sleep(1)
-    sendstraight(0)
+    s = ser.arduino_serial()
+    ctrl = controller.run_controller(s)
+    

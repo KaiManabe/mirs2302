@@ -52,7 +52,7 @@ def server_starter(server_class):
 
 
 class sock_server():
-    def __init__(self, address, port):
+    def __init__(self, address:str, port:int):
         """ 
         コンストラクタ
 
@@ -170,7 +170,7 @@ class sock_server():
 
 
 class sock_client():
-    def __init__(self, address, port):
+    def __init__(self, address:str, port:int):
         """ 
         コンストラクタ
 
@@ -229,7 +229,7 @@ class sock_client():
         return buffer
     
     
-    def send(self, send_data):
+    def send(self, send_data:list):
         
         """ 
         サーバにデータを送信するメソッド
