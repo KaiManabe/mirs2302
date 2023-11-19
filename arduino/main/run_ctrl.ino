@@ -10,7 +10,13 @@ long l_enc_target = long(0), r_enc_target = long(0);
 //ゲインを動的に変更できるように、配列にしてある
 float all_gain[3][3] = {GAIN_L, GAIN_R, GAIN_LR};
 
-
+/*
+pid中にシリアル通信でenc値を送るかどうか
+0ならなにもしない
+1ならencのみ送信
+2ならencとenc_targetを送信
+*/
+int pid_serial_mode = 0;
 
 //制御周期を動的に変更できるように、配列にしてある
 int dt = DELTA_T;
@@ -175,9 +181,7 @@ void pid(){
     
 
     
-    #ifdef SEND_ENC
-    static long cmillis_ser = 0L;
-    if(millis() < cmillis_ser + (long)SEND_ENC){
+    if(pid_serial_mode > 0){
         Serial.write(255);
         Serial.write(14);
         long send_value_l = l_enc + (long)2081157128;
@@ -192,11 +196,24 @@ void pid(){
             Serial.write(send_byte);
         }
         Serial.write(254);
-        cmillis_ser = millis();
     }
 
-
-    #endif
+    if(pid_serial_mode == 2){
+        Serial.write(255);
+        Serial.write(15);
+        long send_value_l = l_enc_target + (long)2081157128;
+        long send_value_r = r_enc_target + (long)2081157128;
+        int send_byte = 0;
+        for(int i = 0; i < 4; i++){
+            send_byte = (int)((send_value_l % (long)pow(254,i+1)) / (long)pow(254,i));
+            Serial.write(send_byte);
+        }
+        for(int i = 0; i < 4; i++){
+            send_byte = (int)((send_value_r % (long)pow(254,i+1)) / (long)pow(254,i));
+            Serial.write(send_byte);
+        }
+        Serial.write(254);
+    }
 
 
     //目標量の計算

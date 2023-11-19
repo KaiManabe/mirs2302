@@ -53,6 +53,7 @@ void check_serial(){
             break;
         
         case 6:
+            set_pid_ser_mode(inc_bytes[1]);
             break;
         
         case 7:
@@ -76,6 +77,22 @@ void check_serial(){
 
 
 }
+
+/*
+シリアル通信でエンコーダ値を送信するモードを設定する
+
+引数:
+    int mode : 0なら何も送信しない  1ならenc値を送信    2ならenc, enc_target値も送信
+
+戻り値:
+    なし
+*/
+void set_pid_ser_mode(int val){
+    pid_serial_mode = val;
+}
+
+
+
 
 /*
 左タイヤの速度をセットする関数
