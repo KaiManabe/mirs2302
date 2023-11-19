@@ -56,6 +56,10 @@ if __name__ == "__main__":
             "mirs2302@192.168.1.3",
             "sh",
             "/home/mirs2302/git/mirs2302/jetson/start_lidar.sh"])
+    
+    while(s.isconnected() < 1):
+        time.sleep(0.1)
+    
     time.sleep(1)
     
     p()
