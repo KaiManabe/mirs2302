@@ -50,15 +50,12 @@ def plotter(nparr):
     plt.show()
 
 def p():
-    print("getdata, ", time.time())
     received_data = []
     while(1):
         received_data = getdata()
         if len(received_data) > 10:
             break
-    print("convertdata, ", time.time())
     nparr = convertdata(received_data)
-    print("finished, ", time.time())
     plotter(nparr)
 
 if __name__ == "__main__":
