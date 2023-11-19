@@ -63,7 +63,7 @@ static inline void delay(sl_word_size_t ms){
 #include <cerrno>
 
 //ultra_simpleに元々備わっていた出力機能(測距ログ)を無効化する場合にdefineする
-#define DISABLE_DEFAULT_OUTPUTS
+//#define DISABLE_DEFAULT_OUTPUTS
 
 
 //ソケット通信のバッファサイズ
