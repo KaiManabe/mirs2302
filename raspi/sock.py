@@ -42,6 +42,7 @@ def server_starter(server_class):
     
     #接続を確立したらバッファ変数を宣言して、ソケットのバッファ監視を開始する
     print("[INFO][sock.sock_server] : クライアント" , server_class.client_addr , "から接続を受け付けました")
+    server_class.connected_clients += 1
     server_class.buf = []
     buf_monitor_thread = threading.Thread(target = receive_buffer, args = (server_class,))
     buf_monitor_thread.setDaemon(True)
@@ -75,6 +76,7 @@ class sock_server():
         
         
         #クライアントからの接続を待機（並列処理なので注意）
+        self.connected_clients = 0
         self.server_started = False
         server_starter_thread = threading.Thread(target = server_starter, args = (self,))
         server_starter_thread.setDaemon(True)
@@ -101,6 +103,18 @@ class sock_server():
         
         return len(self.buf)
     
+    
+    def isconnected(self):
+        """
+        サーバにクライアントからの接続があるか確認する関数
+        
+        引数：
+            なし
+        
+        戻り値：
+            接続されているクライアントの数
+        """
+        return self.connected_clients
     
     def read(self):
         """ 
