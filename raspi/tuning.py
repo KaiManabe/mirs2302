@@ -174,13 +174,13 @@ def receive_enc(bytes_arr):
                 val = -2081157128
                 for ii in range(4):
                     val += int_arr[i+2+ii] * pow(254,ii)
-                r.append(val)
+                l.append(val)
                 
                 
                 val = -2081157128
                 for ii in range(4):
                     val += int_arr[i+6+ii] * pow(254,ii)
-                l.append(val)
+                r.append(val)
     
     return l, r
 
@@ -216,13 +216,13 @@ def receive_enc_target(bytes_arr):
                 val = -2081157128
                 for ii in range(4):
                     val += int_arr[i+2+ii] * pow(254,ii)
-                r.append(val)
+                l.append(val)
                 
                 
                 val = -2081157128
                 for ii in range(4):
                     val += int_arr[i+6+ii] * pow(254,ii)
-                l.append(val)
+                r.append(val)
     
     return l, r
 
