@@ -38,8 +38,12 @@ def disconnect():
 def plotter(nparr):
     xy = np.zeros([len(nparr), 2])
     for i in range(len(nparr)):
-        xy[i,0] = nparr[i,1] * np.cos(nparr[i,0] / 180.0 * np.pi)
+        xy[i,0] = -1 * nparr[i,1] * np.cos(nparr[i,0] / 180.0 * np.pi)
         xy[i,1] = nparr[i,1] * np.sin(nparr[i,0] / 180.0 * np.pi)
     
     plt.scatter(xy[:,0], xy[:,1])
+    plt.scatter([0],[0], c = "red", marker = "x")
     plt.show()
+
+def p():
+    plotter(convertdata(getdata()))
