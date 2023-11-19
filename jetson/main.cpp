@@ -61,6 +61,7 @@ static inline void delay(sl_word_size_t ms){
 #include <sys/socket.h>
 #include <fcntl.h>
 #include <cerrno>
+#include <cmath>
 
 //ultra_simpleに元々備わっていた出力機能(測距ログ)を無効化する場合にdefineする
 #define DISABLE_DEFAULT_OUTPUTS
@@ -73,7 +74,7 @@ static inline void delay(sl_word_size_t ms){
 
 /*サーバのアドレスとポートは適宜変更　もしくはプログラム内外で取得すること*/
 #define PORT_NUMBER 55555
-#define ADDRESS "192.168.1.100"
+#define ADDRESS "127.0.0.1"
 
 /*******************************************************
 **********************ここまで追記***********************
@@ -375,13 +376,30 @@ int main(int argc, const char * argv[]) {
                 long deg = (long)(angle_in_degrees * (float)1000);
                 float distance_in_meters = nodes[pos].dist_mm_q2 / (1 << 2);
                 long dist = (long)distance_in_meters;
-                int quality = (int)nodes[pos].quality;
-
-                printf("%ld, %ld, %d \n", deg, dist, quality);
 
                 /*測距データの提供を命令されていたら送信*/
                 if(send_data == 1){
+                    unsigned char send_num[10];     
+                    send_num[0] = static_cast<unsigned char>(255);
+                    send_num[1] = static_cast<unsigned char>(11);
+                    for(int i = 0; i < 3; i++){
+                        int val;
+                        val = (int)((deg % (long)std::pow(254,i+1)) / (long)pow(254,i))
+                        send_num[i+2] = static_cast<unsigned char>(val);
+                    }
 
+                    for(int i = 0; i < 3; i++){
+                        int val;
+                        val = (int)((dist % (long)std::pow(254,i+1)) / (long)pow(254,i))
+                        send_num[i+5] = static_cast<unsigned char>(val);
+                    }
+                    send_num[8] = nodes[pos].quality;
+                    send_num[9] = static_cast<unsigned char>(254);
+
+                    int data_sent = -1;
+                    while(data_sent == -1){
+                        data_sent = send(sock, send_num, sizeof(send_num), 0);
+                    }
                 }
 
 
