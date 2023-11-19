@@ -11,7 +11,7 @@ def getdata():
     s.read()
     s.send([255,3,254])
     while(1):
-        if s.buffer_length > 10:
+        if s.buffer_length() > 10:
             break
     
     return s.read()
