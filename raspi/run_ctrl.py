@@ -49,9 +49,9 @@ class run_controller():
         """
         
         if speed > 0:
-            dir = 0
-        else:
             dir = 1
+        else:
+            dir = 0
         hb = int(abs(speed) / 254)
         lb = int(abs(speed) % 254)
         self.serial.send([255,1,dir, hb, lb, 254])
@@ -65,9 +65,9 @@ class run_controller():
         """
         
         if speed > 0:
-            dir = 0
-        else:
             dir = 1
+        else:
+            dir = 0
         hb = int(abs(speed) / 254)
         lb = int(abs(speed) % 254)
         self.serial.send([255,2,dir, hb, lb, 254])
@@ -82,9 +82,9 @@ class run_controller():
         """
         
         if speed > 0:
-            dir = 0
-        else:
             dir = 1
+        else:
+            dir = 0
         hb = int(abs(speed) / 254)
         lb = int(abs(speed) % 254)
         self.serial.send([255,1,dir, hb, lb, 254])
