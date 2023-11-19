@@ -3,7 +3,7 @@ import time
 import sys
 import threading
 import run_ctrl as controller
-
+import sock
 
 def getgain(s:ser.arduino_serial, output:bool = True):
     """
@@ -110,8 +110,115 @@ def setgain(s: ser.arduino_serial, LR:str, PID:str, value:float):
             break
     
 
+def receive_enc(bytes_arr):
+    """
+    bytes型の走行データ(エンコーダ値)をintに変換する関数
+    
+    引数 : 
+        bytes_arr : s.read()の値をそのまま渡す
+        
+    戻り値：
+        l : 左エンコーダの値
+        r : 右エンコーダの値
+    """
+    int_arr = []
+    
+    for b in bytes_arr:
+        int_arr.append(int.from_bytes(b, byteorder=sys.byteorder))
+                       
+    r = []
+    l = []
+    
+    for i in range(len(int_arr)):
+        if(int_arr[i] == 255):
+            if len(int_arr) < i + 10:
+                continue
+            
+            if(int_arr[i+1] == 14 and int_arr[i+10] == 254):
+                val = -2081157128
+                for ii in range(4):
+                    val += int_arr[i+2+ii] * pow(254,ii)
+                r.append(val)
+                
+                
+                val = -2081157128
+                for ii in range(4):
+                    val += int_arr[i+6+ii] * pow(254,ii)
+                l.append(val)
+    
+    return l, r
+
+
+def receive_enc_target(bytes_arr):
+    """
+    bytes型の走行データ(エンコーダ値の目標値)をintに変換する関数
+    
+    引数 : 
+        bytes_arr : s.read()の値をそのまま渡す
+        
+    戻り値：
+        l : 左エンコーダの目標値
+        r : 右エンコーダの目標値
+    """
+    int_arr = []
+    
+    for b in bytes_arr:
+        int_arr.append(int.from_bytes(b, byteorder=sys.byteorder))
+                       
+    r = []
+    l = []
+    
+    for i in range(len(int_arr)):
+        if(int_arr[i] == 255):
+            if len(int_arr) < i + 10:
+                continue
+            
+            if(int_arr[i+1] == 15 and int_arr[i+10] == 254):
+                val = -2081157128
+                for ii in range(4):
+                    val += int_arr[i+2+ii] * pow(254,ii)
+                r.append(val)
+                
+                
+                val = -2081157128
+                for ii in range(4):
+                    val += int_arr[i+6+ii] * pow(254,ii)
+                l.append(val)
+    
+    return l, r
+
+
+def record(s:ser.arduino_serial, speed:int, rectime:int):
+    """
+    エンコーダ値を監視しながらタイヤを動かす
+    
+    引数：
+        arduino_serialクラスオブジェクト
+        
+        speed : 速度[mm/s] -> int
+        
+        rectime : 計測する時間[s] -> int
+        
+    戻り値：
+        エンコーダ値のリスト
+    """
+    ctrl = controller.run_controller(s)
+    s.read()
+    s.send([255,6,2,0])
+    ctrl.send_straight(speed)
+    time.sleep(rectime)
+    ctrl.send_straight(0)
+    s.send([255,6,0,0])
+    bytes_data = s.read()
+    
+    l_enc , r_enc = receive_enc(bytes_data)
+    l_enc_target , r_enc_target = receive_enc_target(bytes_data)
+    
+    return [l_enc, l_enc_target, r_enc, r_enc_target]
+
 
 if __name__ == "__main__":
+    serv = sock.sock_client("172.25.10.50",55555)
     s = ser.arduino_serial()
     ctrl = controller.run_controller(s)
     
