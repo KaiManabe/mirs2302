@@ -4,6 +4,7 @@ import sys
 import threading
 import run_ctrl as controller
 import sock
+import config
 
 def getgain(s:ser.arduino_serial, output:bool = True):
     """
@@ -248,9 +249,21 @@ def record(s:ser.arduino_serial, speed:int, rectime:int):
     
     return [l_enc, l_enc_target, r_enc, r_enc_target]
 
+#record()関数の戻り値をそのまま与えること.
+def sendresult(result):
+    #学内LANにサーバを公開
+    serv = sock.sock_server(config.RASPI_IP_NCT,55555)
+    while(1):
+        if serv.isconnected() > 0:
+            break
+    
+    for arr in result:
+        serv.send([255])
+        serv.send(arr)
+        serv.send([254])
+    
 
 if __name__ == "__main__":
-    #serv = sock.sock_client("172.25.10.50",55555)
     s = ser.arduino_serial()
     ctrl = controller.run_controller(s)
     

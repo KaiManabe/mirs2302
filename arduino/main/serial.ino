@@ -177,6 +177,7 @@ void change_gain(int lr, int pid, int hb, int lb){
 void change_param(int param, int hb, int lb){
     if(param == 0){
         dt = hb;
+        gain_eep_write();
     }
 }
 
