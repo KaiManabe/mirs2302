@@ -48,7 +48,7 @@ def p():
     received_data = []
     while(1):
         received_data = getdata()
-        if len(received_data > 10):
+        if len(received_data) > 10:
             break
         time.sleep(0.5)
     plotter(convertdata(received_data))
