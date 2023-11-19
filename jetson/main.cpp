@@ -403,7 +403,10 @@ int main(int argc, const char * argv[]) {
                 long dist = (long)distance_in_meters;
 
                 /*測距データの提供を命令されていたら送信*/
-                if(send_data == 1){
+                if(send_data > 0){
+                    if(send_data == 2){
+                        send_data = 0;
+                    }
                     unsigned char send_num[10];     
                     send_num[0] = static_cast<unsigned char>(255);
                     send_num[1] = static_cast<unsigned char>(11);
@@ -478,6 +481,12 @@ int main(int argc, const char * argv[]) {
                     break;
                 
                 case 3:
+                    //ソケット通信で測距データを1周分提供
+                    printf("[INFO][ultra_simple] : 測距データを1度限り送信します\n");
+                    send_data = 2;
+                    break;
+                
+                case 9:
                     //プログラムの強制終了
                     send_data = -1;
                     break;
