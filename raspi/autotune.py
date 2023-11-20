@@ -33,8 +33,11 @@ def loss(data):
     l_loss, r_loss = 0
     
     for i in range(imax):
-        l_loss += (data[0][i] - data[1][i])
-        r_loss += (data[2][i] - data[3][i])
+        if data[1][i] != 0:
+            l_loss += (data[0][i] - data[1][i])
+        
+        if data[3][i] != 0:
+            r_loss += (data[2][i] - data[3][i])
     
     return l_loss, r_loss
 
