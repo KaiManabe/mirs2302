@@ -13,7 +13,9 @@ current_gain = [[0.1, 0.0, 0.0], [0.1, 0.0, 0.0], [0.0, 0.0, 0.0], 25]
 STEP = [0.1, 0.01, 0.01]
 SPEED = 500
 RECTIME = 5
-LR = pow(10, -5)
+LR_P = pow(10, -4)
+LR_I = pow(10, -5) * 2
+LR_D = pow(10, -5)
 
 
 
@@ -121,9 +123,9 @@ def autotune(s):
         print(f"[INFO][autotune] : grad_p = {grads[2]}")
         print(f"[INFO][autotune] : grad_d = {grads[3]}\n")
         
-        p -= LR * grads[1]
-        i -= LR * grads[2]
-        d -= LR * grads[3]
+        p -= LR_P * grads[1]
+        i -= LR_I * grads[2]
+        d -= LR_D * grads[3]
         
 
 
