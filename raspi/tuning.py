@@ -279,7 +279,7 @@ def record(s:ser.arduino_serial, speed:int, rectime:int):
 def analyze(gain):
     setgain(s, "R", "P", gain)
     setgain(s, "L", "P", gain)
-    result = record(s, 500, 20)
+    result = record(s, 1000, 20)
     data = tuning_client.moving_average(convert_data(result),5)
     amp = tuning_client.getamplitude(data)
     per = tuning_client.getperiod(data)
