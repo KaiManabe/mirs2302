@@ -13,7 +13,7 @@ current_gain = [[0.1, 0.0, 0.0], [0.1, 0.0, 0.0], [0.0, 0.0, 0.0], 25]
 STEP = [0.1, 0.01, 0.01]
 SPEED = 500
 RECTIME = 5
-LR = 0.001
+LR = pow(10, -5)
 
 
 
@@ -59,7 +59,7 @@ def setgain_arr(s, gain_arr):
             tuning.setgain(s, "R", pid[i], gain_arr[1][i])
 
 
-def grad(s, p, i, d, epsilon = 0.005):
+def grad(s, p, i, d, epsilonp = 0.005, epsiloni = 0.0005, epsilond = 0.0001):
     tuning.setgain(s, "L", "P", p)
     tuning.setgain(s, "R", "P", p)
     tuning.setgain(s, "L", "I", i)
@@ -72,8 +72,8 @@ def grad(s, p, i, d, epsilon = 0.005):
 
     
     
-    tuning.setgain(s, "L", "P", p + epsilon)
-    tuning.setgain(s, "R", "P", p + epsilon)
+    tuning.setgain(s, "L", "P", p + epsilonp)
+    tuning.setgain(s, "R", "P", p + epsilonp)
     result = tuning.convert_data(tuning.record(s, SPEED, RECTIME))
     loss_l , loss_r = loss(result)
     loss_value_d = abs(loss_l) + abs(loss_r)
@@ -82,8 +82,8 @@ def grad(s, p, i, d, epsilon = 0.005):
     
     tuning.setgain(s, "L", "P", p)
     tuning.setgain(s, "R", "P", p)
-    tuning.setgain(s, "L", "I", i + epsilon)
-    tuning.setgain(s, "R", "I", i + epsilon)
+    tuning.setgain(s, "L", "I", i + epsiloni)
+    tuning.setgain(s, "R", "I", i + epsiloni)
     result = tuning.convert_data(tuning.record(s, SPEED, RECTIME))
     loss_l , loss_r = loss(result)
     loss_value_d = abs(loss_l) + abs(loss_r)
@@ -92,8 +92,8 @@ def grad(s, p, i, d, epsilon = 0.005):
     
     tuning.setgain(s, "L", "I", i)
     tuning.setgain(s, "R", "I", i)
-    tuning.setgain(s, "L", "D", d + epsilon)
-    tuning.setgain(s, "R", "D", d + epsilon)
+    tuning.setgain(s, "L", "D", d + epsilond)
+    tuning.setgain(s, "R", "D", d + epsilond)
     result = tuning.convert_data(tuning.record(s, SPEED, RECTIME))
     loss_l , loss_r = loss(result)
     loss_value_d = abs(loss_l) + abs(loss_r)
