@@ -146,16 +146,16 @@ def setparam(s:ser.arduino_serial, dt:int):
             break
 
 
-def receive_enc(bytes_arr):
+def receive_spd(bytes_arr):
     """
-    bytes型の走行データ(エンコーダ値)をintに変換する関数
+    bytes型の走行データ(spd値)をintに変換する関数
     
     引数 : 
         bytes_arr : s.read()の値をそのまま渡す
         
     戻り値：
-        l : 左エンコーダの値
-        r : 右エンコーダの値
+        l : 左スピード値
+        r : 右スピード値
     """
     int_arr = []
     
@@ -173,31 +173,33 @@ def receive_enc(bytes_arr):
             if len(int_arr) <= i + 10:
                 continue
             
-            if(int_arr[i+1] == 14 and int_arr[i+10] == 254):
-                val = -2081157128
-                for ii in range(4):
+            if(int_arr[i+1] == 14 and int_arr[i+8] == 254):
+                val = -8193532
+                for ii in range(3):
                     val += int_arr[i+2+ii] * pow(254,ii)
+                val /= 1000
                 l.append(val * -1)
                 
                 
-                val = -2081157128
-                for ii in range(4):
-                    val += int_arr[i+6+ii] * pow(254,ii)
+                val = -8193532
+                for ii in range(3):
+                    val += int_arr[i+5+ii] * pow(254,ii)
+                val /= 1000
                 r.append(val * -1)
     
     return l, r
 
 
-def receive_enc_target(bytes_arr):
+def receive_enc(bytes_arr):
     """
-    bytes型の走行データ(エンコーダ値の目標値)をintに変換する関数
+    bytes型の走行データ(エンコーダ値)をintに変換する関数
     
     引数 : 
         bytes_arr : s.read()の値をそのまま渡す
         
     戻り値：
-        l : 左エンコーダの目標値
-        r : 右エンコーダの目標値
+        l : 左エンコーダ値
+        r : 右エンコーダ値
     """
     int_arr = []
     
@@ -237,12 +239,12 @@ def convert_data(bytes_data):
         bytes_data : 生の測定データ
         
     戻り値：
-        [左エンコーダ・左エンコーダ目標値・右エンコーダ・右エンコーダ目標値]
+        [左スピード・左エンコーダ・右スピード・右エンコーダ]
     """
     l_enc , r_enc = receive_enc(bytes_data)
-    l_enc_target , r_enc_target = receive_enc_target(bytes_data)
+    l_spd , r_spd = receive_spd(bytes_data)
     
-    return [l_enc, l_enc_target, r_enc, r_enc_target]
+    return [l_spd, l_enc, r_spd, r_enc]
 
 
 def record(s:ser.arduino_serial, speed:int, rectime:int):

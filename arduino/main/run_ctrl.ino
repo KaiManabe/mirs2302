@@ -3,9 +3,10 @@
 
 //グローバル変数の宣言
 long l_enc = long(0), r_enc = long(0);
-long l_err_prev = long(0), r_err_prev = long(0);
-long l_err_sum = long(0), r_err_sum = long(0);
-long l_enc_target = long(0), r_enc_target = long(0);
+long l_enc_prev = long(0), r_enc_prev = long(0);
+float l_spd = (float)0 , r_spd = (float)0;
+float l_err_prev = long(0), r_err_prev = long(0);
+float l_err_sum = long(0), r_err_sum = long(0);
 
 //ゲインを動的に変更できるように、配列にしてある
 float all_gain[3][3] = {GAIN_L, GAIN_R, GAIN_LR};
@@ -68,7 +69,7 @@ void gain_eep_write(){
 */
 float pulse_to_mm(long p){
     float mm;
-    mm = ((float)p / ((float)ENC_PPR * (float)GEAR_RATIO) * (float)TIRE_GEAR_TOOTH / (float)MOTOR_GEAR_TOOTH) * (float)(TIRE_DIAM * PI);
+    mm = ((float)p * (float)TIRE_DIAM * PI * (float)MOTOR_GEAR_TOOTH) / ((float)TIRE_GEAR_TOOTH * (float)ENC_PPR * (float)GEAR_RATIO);
     return mm;
 }
 
@@ -84,8 +85,8 @@ mmをロータリーエンコーダのパルスに変換する関数
     エンコーダ値 -> long
 */
 long mm_to_pulse(long mm){
-    float p;
-    p = long((mm / (float)(TIRE_DIAM * PI)) * ((float)ENC_PPR * (float)GEAR_RATIO * (float)TIRE_GEAR_TOOTH / (float)MOTOR_GEAR_TOOTH));
+    long p;
+    p = (long)(((float)mm * (float)TIRE_GEAR_TOOTH * (float)ENC_PPR * (float)GEAR_RATIO) / ((float)TIRE_DIAM * (float)PI * (float)MOTOR_GEAR_TOOTH));
     return p;
 }
 
@@ -134,10 +135,9 @@ void pwm_write(int l, int r){
     なし
 */
 void pid_init_l(){
-    l_err_prev = 0L;
-    l_err_sum = 0L;
-
-    l_enc_target = l_enc;
+    l_err_prev = (float)0;
+    l_err_sum = (float)0;
+    l_enc_prev = (long)0;
 }
 
 
@@ -152,10 +152,9 @@ void pid_init_l(){
     なし
 */
 void pid_init_r(){
-    r_err_prev = 0L;
-    r_err_sum = 0L;
-
-    r_enc_target = r_enc;
+    r_err_prev = (float)0;
+    r_err_sum = (float)0;
+    r_enc_prev = (long)0;
 }
 
 
@@ -186,6 +185,23 @@ void pid(){
     if(pid_serial_mode > 0){
         Serial.write(255);
         Serial.write(14);
+        long send_value_l = (long)(l_spd * (float)1000) + (long)8193532;
+        long send_value_r = (long)(r_spd * (float)1000) + (long)8193532;
+        int send_byte = 0;
+        for(int i = 0; i < 3; i++){
+            send_byte = (int)((send_value_l % (long)pow(254,i+1)) / (long)pow(254,i));
+            Serial.write(send_byte);
+        }
+        for(int i = 0; i < 3; i++){
+            send_byte = (int)((send_value_r % (long)pow(254,i+1)) / (long)pow(254,i));
+            Serial.write(send_byte);
+        }
+        Serial.write(254);
+    }
+
+    if(pid_serial_mode == 2){
+        Serial.write(255);
+        Serial.write(15);
         long send_value_l = l_enc + (long)2081157128;
         long send_value_r = r_enc + (long)2081157128;
         int send_byte = 0;
@@ -200,49 +216,24 @@ void pid(){
         Serial.write(254);
     }
 
-    if(pid_serial_mode == 2){
-        Serial.write(255);
-        Serial.write(15);
-        long send_value_l = l_enc_target + (long)2081157128;
-        long send_value_r = r_enc_target + (long)2081157128;
-        int send_byte = 0;
-        for(int i = 0; i < 4; i++){
-            send_byte = (int)((send_value_l % (long)pow(254,i+1)) / (long)pow(254,i));
-            Serial.write(send_byte);
-        }
-        for(int i = 0; i < 4; i++){
-            send_byte = (int)((send_value_r % (long)pow(254,i+1)) / (long)pow(254,i));
-            Serial.write(send_byte);
-        }
-        Serial.write(254);
-    }
+    l_spd = (float)pulse_to_mm(l_enc - l_enc_prev) / (float)dt * (float)1000.0;
+    r_spd = (float)pulse_to_mm(r_enc - r_enc_prev) / (float)dt * (float)1000.0;
 
 
-    //目標量の計算
-    if(l_spd_target > 0L){
-        l_enc_target += long(abs((float)mm_to_pulse(l_spd_target) * (float)(dt) / (float)(1000.0)));
-    }else{
-        l_enc_target -= long(abs((float)mm_to_pulse(l_spd_target) * (float)(dt) / (float)(1000.0)));
-    }
-
-    if(r_spd_target > 0L){
-        r_enc_target += long(abs((float)mm_to_pulse(r_spd_target) * (float)(dt) / (float)(1000.0)));
-    }else{
-        r_enc_target -= long(abs((float)mm_to_pulse(r_spd_target) * (float)(dt) / (float)(1000.0)));
-    }
-    /*
-    Serial.print(r_enc_target);
-    Serial.print(",");
-    Serial.println(r_enc);
-    */
     //pidする
-    long l_err = l_enc - l_enc_target;
-    long r_err = r_enc - r_enc_target;
+    float l_err = l_spd - (float)l_spd_target;
+    float r_err = r_spd - (float)r_spd_target;
     l_err_sum += l_err;
     r_err_sum += r_err;
+/*
+    Serial.print(l_err);
+    Serial.print(",");
+    Serial.print(pulse_to_mm(l_enc - l_enc_prev));
+    Serial.print(",");
+    Serial.println(l_spd);*/
 
-    float l_pid = (float)l_err * all_gain[0][0] + (float)(l_err - l_err_prev) * all_gain[0][1] + (float)(l_err_sum) * all_gain[0][2]; 
-    float r_pid = (float)r_err * all_gain[1][0] + (float)(r_err - r_err_prev) * all_gain[1][1] + (float)(r_err_sum) * all_gain[1][2]; 
+    float l_pid = (l_err * all_gain[0][0]) + ((l_err - l_err_prev) * all_gain[0][1]) + ((l_err_sum) * all_gain[0][2]); 
+    float r_pid = (r_err * all_gain[1][0]) + ((r_err - r_err_prev) * all_gain[1][1]) + ((r_err_sum) * all_gain[1][2]); 
 
 
     /*目標速度が0に設定されているならばモータに出力を加えないようにする*/
@@ -261,7 +252,9 @@ void pid(){
 
     cmillis = millis();
     l_err_prev = l_err;
+    l_enc_prev = l_enc;
     r_err_prev = r_err;
+    r_enc_prev = r_enc;
 }
 
 
