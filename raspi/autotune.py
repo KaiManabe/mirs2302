@@ -14,14 +14,12 @@ SPEED = 500
 RECTIME = 10
 
 
-def loss(data, target_speed):
+def loss(data):
     """
     損失を求める関数
     
     引数：
-        data : 左のデータ、右のデータを含む2次元配列 -> list
-    
-        target_speed : ↑と同様の真値 -> list
+        data : 左のデータ、左の指令値、右のデータ、右の値を含む2次元配列 -> list
     
     戻り値：
         l, r 誤差の積分 -> tuple
@@ -63,7 +61,8 @@ def execute(s, gain_arr):
     
     time.sleep(1)
     
-    result = tuning.record(s, SPEED, RECTIME)
+    result = tuning.convert_data(tuning.record(s, SPEED, RECTIME))
+    
     loss_l , loss_r = loss(result)
     
     print("\n[INFO][autotune.execute()] : loss_l -> ", loss_l)
@@ -71,3 +70,6 @@ def execute(s, gain_arr):
     
     return loss_l, loss_r
     
+
+if __name__ == "__main__":
+    s = ser.arduino_serial()
