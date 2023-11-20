@@ -137,7 +137,7 @@ void pwm_write(int l, int r){
 void pid_init_l(){
     l_err_prev = (float)0;
     l_err_sum = (float)0;
-    l_enc_prev = (long)0;
+    l_enc_prev = l_enc;
 }
 
 
@@ -154,7 +154,7 @@ void pid_init_l(){
 void pid_init_r(){
     r_err_prev = (float)0;
     r_err_sum = (float)0;
-    r_enc_prev = (long)0;
+    r_enc_prev = r_enc;
 }
 
 
