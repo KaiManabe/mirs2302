@@ -48,7 +48,7 @@ def getgain(s:ser.arduino_serial, output:bool = True):
     for i in range(3):
         for ii in range(3):
             value = arr[i * 6 + ii * 2] * 254 + arr[i * 6 + ii * 2 + 1]
-            value /= 10000.0
+            value /= config.GAIN_ACCURACY
             
             if(output):
                 print(str(value).ljust(9,"0"), end = "  ,  ")
@@ -84,8 +84,8 @@ def setgain(s: ser.arduino_serial, LR:str, PID:str, value:float):
     
     current_param = getgain(s, output = False)
     
-    hb = int(value * 10000 / 254)
-    lb = int(value * 10000) - (hb * 254)
+    hb = int(value * config.GAIN_ACCURACY / 254)
+    lb = int(value * config.GAIN_ACCURACY) - (hb * 254)
     
     if LR == "l" or LR == "L":
         lr = 0
@@ -291,6 +291,8 @@ def analyze(gain):
     print("\nperiod")
     print("L  :  min : ", np.min(per[0]), " , max : ", np.max(per[0]), " , mean : ", np.mean(per[0]), "std : ", np.std(per[0]))
     print("R  :  min : ", np.min(per[1]), " , max : ", np.max(per[1]), " , mean : ", np.mean(per[1]), "std : ", np.std(per[1]))
+    
+    return result
     
 
 #record()関数の戻り値をそのまま与えること.

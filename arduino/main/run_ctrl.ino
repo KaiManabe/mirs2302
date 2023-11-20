@@ -32,7 +32,7 @@ void gain_eep_replace(){
             int hb = EEPROM.read(address);
             int lb = EEPROM.read(address + 1);
 
-            float new_value = (float)((hb * 254) + lb) / (float)10000.0;
+            float new_value = (float)((hb * 254) + lb) / (float)GAIN_ACCURACY;
             all_gain[i][ii] = new_value;
         }
     }
@@ -44,8 +44,8 @@ void gain_eep_replace(){
 void gain_eep_write(){
     for(int i = 0; i < 3; i++){
         for(int ii = 0; ii < 3; ii++){
-            int hb = (int)(all_gain[i][ii] * 10000.0 / 254.0);
-            int lb = (int)(all_gain[i][ii] * 10000.0) - (hb * 254);
+            int hb = (int)(all_gain[i][ii] * (float)GAIN_ACCURACY / 254.0);
+            int lb = (int)(all_gain[i][ii] * (float)GAIN_ACCURACY) - (hb * 254);
             int address = (i * 6) + (ii * 2) + EEP_ORIGIN;
             EEPROM.update(address, hb);
             EEPROM.update(address+1, lb);

@@ -155,7 +155,7 @@ void set_r_spd(int dir, int hb, int lb){
 */
 void change_gain(int lr, int pid, int hb, int lb){
     float new_value = ((float)hb * (float)254.0) + (float)lb;
-    new_value /= (float)10000.0;
+    new_value /= (float)GAIN_ACCURACY;
     all_gain[lr][pid] = new_value;
     gain_eep_write();
 }
@@ -198,8 +198,8 @@ void send_gain_param(){
 
     for(int i = 0; i < 3; i++){
         for(int ii = 0; ii < 3; ii++){
-            int hb = (int)(all_gain[i][ii] * 10000.0 / 254.0);
-            int lb = (int)(all_gain[i][ii] * 10000.0) - (hb * 254);
+            int hb = (int)(all_gain[i][ii] * (float)GAIN_ACCURACY / 254.0);
+            int lb = (int)(all_gain[i][ii] * (float)GAIN_ACCURACY) - (hb * 254);
             Serial.write(hb);
             Serial.write(lb);
         }

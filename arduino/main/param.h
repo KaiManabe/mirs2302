@@ -2,6 +2,8 @@
 #define SEND_ENC 50
 
 
+#define GAIN_ACCURACY  2500.0
+
 //defineされている場合に、エンコーダ値に加えて目標値を送信する
 #define SEND_ENC_TARGET
 
