@@ -177,14 +177,14 @@ def receive_spd(bytes_arr):
                 for ii in range(3):
                     val += int_arr[i+2+ii] * pow(254,ii)
                 val /= 1000
-                l.append(val)
+                l.append(val * -1)
                 
                 
                 val = -8193532
                 for ii in range(3):
                     val += int_arr[i+5+ii] * pow(254,ii)
                 val /= 1000
-                r.append(val)
+                r.append(val * -1)
     
     return l, r
 
@@ -221,13 +221,13 @@ def receive_spd_target(bytes_arr):
                 val = -32258
                 val += (254 * int_arr[i+2])
                 val += (int_arr[i+3])
-                l.append(val)
+                l.append(val * -1)
                 
                 
                 val = -32258
                 val += (254 * int_arr[i+4])
                 val += (int_arr[i+5])
-                r.append(val)
+                r.append(val * -1)
     
     return l, r
 

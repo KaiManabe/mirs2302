@@ -203,12 +203,12 @@ void pid(){
         int hb, lb;
         Serial.write(255);
         Serial.write(15);
-        hb = (int)(l_spd_target / (long)254);
-        lb = (int)(l_spd_target % (long)254);
+        hb = (int)((l_spd_target + (long)32258) / (long)254);
+        lb = (int)((l_spd_target + (long)32258) % (long)254);
         Serial.write(hb);
         Serial.write(lb);
-        hb = (int)(r_spd_target / (long)254);
-        lb = (int)(r_spd_target % (long)254);
+        hb = (int)((r_spd_target + (long)32258) / (long)254);
+        lb = (int)((r_spd_target + (long)32258) % (long)254);
         Serial.write(hb);
         Serial.write(lb);
         Serial.write(254);
