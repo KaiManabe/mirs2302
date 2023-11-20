@@ -13,7 +13,7 @@ current_gain = [[0.1, 0.0, 0.0], [0.1, 0.0, 0.0], [0.0, 0.0, 0.0], 25]
 STEP = [0.1, 0.01, 0.01]
 SPEED = 500
 RECTIME = 5
-LR = pow(10, -5) * 2
+LR = pow(10, -5)
 
 
 
@@ -59,7 +59,7 @@ def setgain_arr(s, gain_arr):
             tuning.setgain(s, "R", pid[i], gain_arr[1][i])
 
 
-def grad(s, p, i, d, epsilonp = 0.05, epsiloni = 0.0005, epsilond = 0.0001):
+def grad(s, p, i, d, epsilonp = 0.05, epsiloni = 0.00035, epsilond = 0.0002):
     tuning.setgain(s, "L", "P", p)
     tuning.setgain(s, "R", "P", p)
     tuning.setgain(s, "L", "I", i)
