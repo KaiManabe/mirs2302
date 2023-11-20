@@ -106,7 +106,7 @@ def setgain(s: ser.arduino_serial, LR:str, PID:str, value:float):
         time.sleep(0.25)
         retries += 1
         if getgain(s, output = False) != current_param:
-            print("[INFO][setgain()] : ゲインの変更に成功しました")
+            print("[INFO][setgain()] : ゲインの変更は必要ありません")
             break
         if retries > 5:
             print("[ERROR][setgain()] : ゲインの変更に失敗しました")

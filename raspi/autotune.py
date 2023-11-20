@@ -13,6 +13,8 @@ current_gain = [[0.1, 0.0, 0.0], [0.1, 0.0, 0.0], [0.0, 0.0, 0.0], 25]
 STEP = [0.1, 0.01, 0.01]
 SPEED = 500
 RECTIME = 5
+LR = 0.001
+
 
 
 def loss(data):
@@ -57,24 +59,72 @@ def setgain_arr(s, gain_arr):
             tuning.setgain(s, "R", pid[i], gain_arr[1][i])
 
 
+def grad(s, p, i, d, epsilon = 0.005):
+    tuning.setgain(s, "L", "P", p)
+    tuning.setgain(s, "R", "P", p)
+    tuning.setgain(s, "L", "I", i)
+    tuning.setgain(s, "R", "I", i)
+    tuning.setgain(s, "L", "D", d)
+    tuning.setgain(s, "R", "D", d)
+    result = tuning.convert_data(tuning.record(s, SPEED, RECTIME))
+    loss_l , loss_r = loss(result)
+    loss_value = abs(loss_l) + abs(loss_r)
+
+    
+    
+    tuning.setgain(s, "L", "P", p + epsilon)
+    tuning.setgain(s, "R", "P", p + epsilon)
+    result = tuning.convert_data(tuning.record(s, SPEED, RECTIME))
+    loss_l , loss_r = loss(result)
+    loss_value_d = abs(loss_l) + abs(loss_r)
+    grad_p = loss_value_d - loss_value
+    
+    
+    tuning.setgain(s, "L", "P", p)
+    tuning.setgain(s, "R", "P", p)
+    tuning.setgain(s, "L", "I", i + epsilon)
+    tuning.setgain(s, "R", "I", i + epsilon)
+    result = tuning.convert_data(tuning.record(s, SPEED, RECTIME))
+    loss_l , loss_r = loss(result)
+    loss_value_d = abs(loss_l) + abs(loss_r)
+    grad_i = loss_value_d - loss_value
+    
+    
+    tuning.setgain(s, "L", "I", i)
+    tuning.setgain(s, "R", "I", i)
+    tuning.setgain(s, "L", "D", d + epsilon)
+    tuning.setgain(s, "R", "D", d + epsilon)
+    result = tuning.convert_data(tuning.record(s, SPEED, RECTIME))
+    loss_l , loss_r = loss(result)
+    loss_value_d = abs(loss_l) + abs(loss_r)
+    grad_d = loss_value_d - loss_value
+    
+    return [loss_value, grad_p, grad_i, grad_d]
+    
 
 def autotune(s):
-    res = np.zeros([0,5])
-    gain = current_gain
-    for p in range(1,6):
-        gain[0][0] = STEP[0] * p
-        gain[1][0] = STEP[0] * p
-        for i in range(1,6):
-            gain[0][1] = STEP[1] * i
-            gain[1][1] = STEP[1] * i
-            for d in range(1,6):
-                gain[0][2] = STEP[2] * d
-                gain[1][2] = STEP[2] * d
-                loss_l, loss_r = execute(s,gain)
-                app = np.array([gain[0][0], gain[0][1], gain[0][2], loss_l, loss_r])
-                res = np.append(res, app.reshape(1,5))
-    return res
-                
+    LOG_PATH = "/home/pi/git/autotune.log"
+    first_gain = [0.1, 0.005, 0.005]
+    
+    p = first_gain[0]
+    i = first_gain[1]
+    d = first_gain[2]
+    
+    while(1):
+        grads = grad(s, p, i, d)
+        with open(LOG_PATH, "a") as f:
+            print(p, ",", i, ",", d, ",", grads[0], ",", grads[1], ",", grads[2], ",", grads[3], file = f)
+        
+        print(f"\n[INFO][autotune] : {p},{i},{d}における")
+        print(f"[INFO][autotune] : 損失 = {grads[0]}")
+        print(f"[INFO][autotune] : grad_p = {grads[1]}")
+        print(f"[INFO][autotune] : grad_p = {grads[2]}")
+        print(f"[INFO][autotune] : grad_d = {grads[3]}\n")
+        
+        p -= LR * grads[1]
+        i -= LR * grads[2]
+        d -= LR * grads[3]
+        
 
 
 def execute(s, gain_arr):

@@ -157,7 +157,10 @@ void change_gain(int lr, int pid, int hb, int lb){
     float new_value = ((float)hb * (float)254.0) + (float)lb;
     new_value /= (float)GAIN_ACCURACY;
     all_gain[lr][pid] = new_value;
-    gain_eep_write();
+
+    #ifdef ENABLE_EEP
+        gain_eep_write();
+    #endif
 }
 
 
@@ -177,7 +180,9 @@ void change_gain(int lr, int pid, int hb, int lb){
 void change_param(int param, int hb, int lb){
     if(param == 0){
         dt = hb;
-        gain_eep_write();
+        #ifdef ENABLE_EEP
+            gain_eep_write();
+        #endif
     }
 }
 

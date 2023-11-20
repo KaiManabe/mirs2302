@@ -43,8 +43,9 @@ void setup(){
     //シリアル通信開始
     Serial.begin(115200);
     
-    
-    gain_eep_replace();
+    #ifdef ENABLE_EEP
+        gain_eep_replace();
+    #endif
 }
 
 void loop(){
