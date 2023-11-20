@@ -200,19 +200,17 @@ void pid(){
     }
 
     if(pid_serial_mode == 2){
+        int hb, lb;
         Serial.write(255);
         Serial.write(15);
-        long send_value_l = l_enc + (long)2081157128;
-        long send_value_r = r_enc + (long)2081157128;
-        int send_byte = 0;
-        for(int i = 0; i < 4; i++){
-            send_byte = (int)((send_value_l % (long)pow(254,i+1)) / (long)pow(254,i));
-            Serial.write(send_byte);
-        }
-        for(int i = 0; i < 4; i++){
-            send_byte = (int)((send_value_r % (long)pow(254,i+1)) / (long)pow(254,i));
-            Serial.write(send_byte);
-        }
+        hb = (int)(l_spd_target / (long)254);
+        lb = (int)(l_spd_target % (long)254);
+        Serial.write(hb);
+        Serial.write(lb);
+        hb = (int)(r_spd_target / (long)254);
+        lb = (int)(r_spd_target % (long)254);
+        Serial.write(hb);
+        Serial.write(lb);
         Serial.write(254);
     }
 

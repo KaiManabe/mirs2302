@@ -82,7 +82,7 @@ void check_serial(){
 シリアル通信でエンコーダ値を送信するモードを設定する
 
 引数:
-    int mode : 0なら何も送信しない  1ならspd値を送信    2ならspd, enc値も送信
+    int mode : 0なら何も送信しない  1ならspd値を送信    2ならspd, spd_target値も送信
 
 戻り値:
     なし

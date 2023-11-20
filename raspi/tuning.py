@@ -5,7 +5,6 @@ import threading
 import run_ctrl as controller
 import sock
 import config
-import tuning_client
 import numpy as np
 
 
@@ -170,7 +169,7 @@ def receive_spd(bytes_arr):
     
     for i in range(len(int_arr)):
         if(int_arr[i] == 255):
-            if len(int_arr) <= i + 10:
+            if len(int_arr) <= i + 8:
                 continue
             
             if(int_arr[i+1] == 14 and int_arr[i+8] == 254):
@@ -178,28 +177,29 @@ def receive_spd(bytes_arr):
                 for ii in range(3):
                     val += int_arr[i+2+ii] * pow(254,ii)
                 val /= 1000
-                l.append(val * -1)
+                l.append(val)
                 
                 
                 val = -8193532
                 for ii in range(3):
                     val += int_arr[i+5+ii] * pow(254,ii)
                 val /= 1000
-                r.append(val * -1)
+                r.append(val)
     
     return l, r
 
 
-def receive_enc(bytes_arr):
+
+def receive_spd_target(bytes_arr):
     """
-    bytes型の走行データ(エンコーダ値)をintに変換する関数
+    bytes型の走行データ(spd値)をintに変換する関数
     
     引数 : 
         bytes_arr : s.read()の値をそのまま渡す
         
     戻り値：
-        l : 左エンコーダ値
-        r : 右エンコーダ値
+        l : 左スピード値
+        r : 右スピード値
     """
     int_arr = []
     
@@ -208,28 +208,30 @@ def receive_enc(bytes_arr):
             int_arr.append(int.from_bytes(b, byteorder=sys.byteorder))
         else:
             int_arr.append(b)
-                       
+    
     r = []
     l = []
     
     for i in range(len(int_arr)):
         if(int_arr[i] == 255):
-            if len(int_arr) <= i + 10:
+            if len(int_arr) <= i + 6:
                 continue
             
-            if(int_arr[i+1] == 15 and int_arr[i+10] == 254):
-                val = -2081157128
-                for ii in range(4):
-                    val += int_arr[i+2+ii] * pow(254,ii)
-                l.append(val * -1)
+            if(int_arr[i+1] == 15 and int_arr[i+6] == 254):
+                val = -32258
+                val += (254 * int_arr[i+2])
+                val += (int_arr[i+3])
+                l.append(val)
                 
                 
-                val = -2081157128
-                for ii in range(4):
-                    val += int_arr[i+6+ii] * pow(254,ii)
-                r.append(val * -1)
+                val = -32258
+                val += (254 * int_arr[i+4])
+                val += (int_arr[i+5])
+                r.append(val)
     
     return l, r
+
+
 
 def convert_data(bytes_data):
     """
@@ -239,12 +241,13 @@ def convert_data(bytes_data):
         bytes_data : 生の測定データ
         
     戻り値：
-        [左スピード・左エンコーダ・右スピード・右エンコーダ]
+        [左スピード・右スピード]
     """
-    l_enc , r_enc = receive_enc(bytes_data)
     l_spd , r_spd = receive_spd(bytes_data)
+    l_spd_target , r_spd_target = receive_spd_target(bytes_data)
     
-    return [l_spd, l_enc, r_spd, r_enc]
+    return [l_spd, l_spd_target, r_spd, r_spd_target]
+
 
 
 def record(s:ser.arduino_serial, speed:int, rectime:int):
@@ -276,25 +279,6 @@ def record(s:ser.arduino_serial, speed:int, rectime:int):
 
 
 
-#ゲインを与えて20秒走らせて振幅と周期の情報を取得
-#I,Dゲインは0であることが前提
-def analyze(gain):
-    setgain(s, "R", "P", gain)
-    setgain(s, "L", "P", gain)
-    result = record(s, 1000, 20)
-    data = tuning_client.moving_average(convert_data(result),5)
-    amp = tuning_client.getamplitude(data)
-    per = tuning_client.getperiod(data)
-    
-    print("amplitude")
-    print("L  :  min : ", np.min(amp[0]), " , max : ", np.max(amp[0]), " , mean : ", np.mean(amp[0]), "std : ", np.std(amp[0]))
-    print("R  :  min : ", np.min(amp[1]), " , max : ", np.max(amp[1]), " , mean : ", np.mean(amp[1]), "std : ", np.std(amp[1]))
-    
-    print("\nperiod")
-    print("L  :  min : ", np.min(per[0]), " , max : ", np.max(per[0]), " , mean : ", np.mean(per[0]), "std : ", np.std(per[0]))
-    print("R  :  min : ", np.min(per[1]), " , max : ", np.max(per[1]), " , mean : ", np.mean(per[1]), "std : ", np.std(per[1]))
-    
-    return result
     
 
 #record()関数の戻り値をそのまま与えること.
