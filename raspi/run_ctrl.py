@@ -1,7 +1,7 @@
 import csv
 import time
 import serial_com as ser
-
+import sys
 
 class sequence_file():
     """
@@ -87,8 +87,13 @@ class run_controller():
             dir = 0
         hb = int(abs(speed) / 254)
         lb = int(abs(speed) % 254)
-        self.serial.send([255,1,dir, hb, lb, 254])
-        self.serial.send([255,2,dir, hb, lb, 254])
+        if sys.argv[0] == "autotune.py":
+            self.serial.send([255,1,1, hb, lb, 254])
+            self.serial.send([255,2,0, hb, lb, 254])
+        else:
+            self.serial.send([255,1,dir, hb, lb, 254])
+            self.serial.send([255,2,dir, hb, lb, 254])
+            
 
 
 if __name__ == "__main__":
