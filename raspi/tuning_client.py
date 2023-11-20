@@ -12,7 +12,7 @@ def receive():
     a = c.read()
     b = tuning.convert_data(a)
     bma = moving_average(b,5)
-    plotter(bma, dontshow=False)
+    plotter(bma, dontshow=True)
 
 
 
