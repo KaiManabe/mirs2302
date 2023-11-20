@@ -30,7 +30,8 @@ def loss(data):
                 len(data[2]),
                 len(data[3])])
     
-    l_loss, r_loss = 0
+    l_loss = 0
+    r_loss = 0
     
     for i in range(imax):
         if data[1][i] != 0:

@@ -145,7 +145,7 @@ def setparam(s:ser.arduino_serial, dt:int):
             break
 
 
-def receive_spd(bytes_arr):
+def convert_data(bytes_arr):
     """
     bytes型の走行データ(spd値)をintに変換する関数
     
@@ -154,7 +154,9 @@ def receive_spd(bytes_arr):
         
     戻り値：
         l : 左スピード値
+        l : 左スピード値(指令値)
         r : 右スピード値
+        r : 右スピード値(指令値)
     """
     int_arr = []
     
@@ -167,12 +169,15 @@ def receive_spd(bytes_arr):
     r = []
     l = []
     
+    lt = []
+    rt = []
+    
     for i in range(len(int_arr)):
         if(int_arr[i] == 255):
             if len(int_arr) <= i + 8:
                 continue
             
-            if(int_arr[i+1] == 14 and int_arr[i+8] == 254):
+            if(int_arr[i+1] == 14 and int_arr[i+12] == 254):
                 val = -8193532
                 for ii in range(3):
                     val += int_arr[i+2+ii] * pow(254,ii)
@@ -185,68 +190,19 @@ def receive_spd(bytes_arr):
                     val += int_arr[i+5+ii] * pow(254,ii)
                 val /= 1000
                 r.append(val * -1)
-    
-    return l, r
-
-
-
-def receive_spd_target(bytes_arr):
-    """
-    bytes型の走行データ(spd値)をintに変換する関数
-    
-    引数 : 
-        bytes_arr : s.read()の値をそのまま渡す
-        
-    戻り値：
-        l : 左スピード値
-        r : 右スピード値
-    """
-    int_arr = []
-    
-    for b in bytes_arr:
-        if type(b) != int:
-            int_arr.append(int.from_bytes(b, byteorder=sys.byteorder))
-        else:
-            int_arr.append(b)
-    
-    r = []
-    l = []
-    
-    for i in range(len(int_arr)):
-        if(int_arr[i] == 255):
-            if len(int_arr) <= i + 6:
-                continue
-            
-            if(int_arr[i+1] == 15 and int_arr[i+6] == 254):
+                
                 val = -32258
-                val += (254 * int_arr[i+2])
-                val += (int_arr[i+3])
-                l.append(val * -1)
+                val += (254 * int_arr[i+8])
+                val += (int_arr[i+9])
+                lt.append(val * -1)
                 
                 
                 val = -32258
-                val += (254 * int_arr[i+4])
-                val += (int_arr[i+5])
-                r.append(val * -1)
-    
-    return l, r
+                val += (254 * int_arr[i+10])
+                val += (int_arr[i+11])
+                rt.append(val * -1)
+    return [l, lt, r, rt]
 
-
-
-def convert_data(bytes_data):
-    """
-    生の測定データをint配列に変換する
-    
-    引数：
-        bytes_data : 生の測定データ
-        
-    戻り値：
-        [左スピード・右スピード]
-    """
-    l_spd , r_spd = receive_spd(bytes_data)
-    l_spd_target , r_spd_target = receive_spd_target(bytes_data)
-    
-    return [l_spd, l_spd_target, r_spd, r_spd_target]
 
 
 

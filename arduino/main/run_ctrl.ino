@@ -183,6 +183,7 @@ void pid(){
 
     
     if(pid_serial_mode > 0){
+        int hb, lb;
         Serial.write(255);
         Serial.write(14);
         long send_value_l = (long)(l_spd * (float)1000) + (long)8193532;
@@ -196,13 +197,7 @@ void pid(){
             send_byte = (int)((send_value_r % (long)pow(254,i+1)) / (long)pow(254,i));
             Serial.write(send_byte);
         }
-        Serial.write(254);
-    }
 
-    if(pid_serial_mode == 2){
-        int hb, lb;
-        Serial.write(255);
-        Serial.write(15);
         hb = (int)((l_spd_target + (long)32258) / (long)254);
         lb = (int)((l_spd_target + (long)32258) % (long)254);
         Serial.write(hb);
@@ -211,8 +206,10 @@ void pid(){
         lb = (int)((r_spd_target + (long)32258) % (long)254);
         Serial.write(hb);
         Serial.write(lb);
+
         Serial.write(254);
     }
+
 
     l_spd = (float)pulse_to_mm(l_enc - l_enc_prev) / (float)dt * (float)1000.0;
     r_spd = (float)pulse_to_mm(r_enc - r_enc_prev) / (float)dt * (float)1000.0;
