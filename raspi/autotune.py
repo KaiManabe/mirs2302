@@ -10,8 +10,9 @@ import numpy as np
 
 
 current_gain = [[0.1, 0.0, 0.0], [0.1, 0.0, 0.0], [0.0, 0.0, 0.0], 25]
+STEP = [0.1, 0.01, 0.01]
 SPEED = 500
-RECTIME = 10
+RECTIME = 5
 
 
 def loss(data):
@@ -55,6 +56,25 @@ def setgain_arr(s, gain_arr):
         if current[1][i] != gain_arr[1][i]:
             tuning.setgain(s, "R", pid[i], gain_arr[1][i])
 
+
+
+def autotune(s):
+    res = np.zeros([0,5])
+    gain = current_gain
+    for p in range(1,6):
+        gain[0][0] = STEP[0] * p
+        gain[1][0] = STEP[0] * p
+        for i in range(1,6):
+            gain[0][1] = STEP[1] * i
+            gain[1][1] = STEP[1] * i
+            for d in range(1,6):
+                gain[0][2] = STEP[2] * d
+                gain[1][2] = STEP[2] * d
+                loss_l, loss_r = execute(s,gain)
+                app = np.array([gain[0][0], gain[0][1], gain[0][2], loss_l, loss_r])
+                res = np.append(res, app.reshape(1,5))
+    return res
+                
 
 
 def execute(s, gain_arr):
