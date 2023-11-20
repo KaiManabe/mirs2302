@@ -272,6 +272,8 @@ def record(s:ser.arduino_serial, speed:int, rectime:int):
     
     return bytes_data
 
+
+
 #ゲインを与えて20秒走らせて振幅と周期の情報を取得
 #I,Dゲインは0であることが前提
 def analyze(gain):
