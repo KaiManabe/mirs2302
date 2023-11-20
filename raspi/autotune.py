@@ -13,7 +13,7 @@ current_gain = [[0.1, 0.0, 0.0], [0.1, 0.0, 0.0], [0.0, 0.0, 0.0], 25]
 STEP = [0.1, 0.01, 0.01]
 SPEED = 500
 RECTIME = 5
-LR = pow(10, -5)
+LR = pow(10, -4)
 
 
 
@@ -59,7 +59,7 @@ def setgain_arr(s, gain_arr):
             tuning.setgain(s, "R", pid[i], gain_arr[1][i])
 
 
-def grad(s, p, i, d, epsilonp = 0.005, epsiloni = 0.0005, epsilond = 0.0001):
+def grad(s, p, i, d, epsilonp = 0.05, epsiloni = 0.0005, epsilond = 0.0001):
     tuning.setgain(s, "L", "P", p)
     tuning.setgain(s, "R", "P", p)
     tuning.setgain(s, "L", "I", i)
@@ -104,7 +104,7 @@ def grad(s, p, i, d, epsilonp = 0.005, epsiloni = 0.0005, epsilond = 0.0001):
 
 def autotune(s):
     LOG_PATH = "/home/pi/git/autotune.log"
-    first_gain = [0.1, 0.005, 0.005]
+    first_gain = [0.1, 0.01, 0.03]
     
     p = first_gain[0]
     i = first_gain[1]
