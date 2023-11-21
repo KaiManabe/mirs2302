@@ -13,9 +13,9 @@ current_gain = [[0.1, 0.0, 0.0], [0.1, 0.0, 0.0], [0.0, 0.0, 0.0], 25]
 STEP = [0.1, 0.01, 0.01]
 SPEED = 500
 RECTIME = 5
-LR_P = pow(10, -5)
-LR_I = pow(10, -6)
-LR_D = pow(10, -6)
+LR_P = pow(10, -7)
+LR_I = pow(10, -7)
+LR_D = pow(10, -7)
 
 stop_sign = False
 
@@ -45,7 +45,7 @@ def loss(data):
         if data[3][i] != 0:
             r_loss += (data[2][i] - data[3][i])
     
-    return l_loss, r_loss
+    return l_loss**2 , r_loss**2
 
 
 
@@ -71,7 +71,7 @@ def input_receiver():
             stop_sign = False
             
 
-def grad(s, p, i, d, epsilonp = 0.1, epsiloni = 0.015, epsilond = 0.01):
+def grad(s, p, i, d, epsilonp = 0.05, epsiloni = 0.01, epsilond = 0.01):
     global stop_sign
     
     while(stop_sign):
@@ -128,7 +128,7 @@ def grad(s, p, i, d, epsilonp = 0.1, epsiloni = 0.015, epsilond = 0.01):
 def autotune(s):
     
     LOG_PATH = "/home/pi/git/autotune.log"
-    first_gain = [0.083137, 0.009246, 0.06418]
+    first_gain = [0.1, 0.01, 0.01]
     
     p = first_gain[0]
     i = first_gain[1]
@@ -146,7 +146,7 @@ def autotune(s):
         with open(LOG_PATH, "a") as f:
             print(p, ",", i, ",", d, ",", grads[0], ",", grads[1], ",", grads[2], ",", grads[3], file = f)
         
-        print(f"\n[INFO][autotune] : {p:.3f},{i:.3f},{d:.3f}における")
+        print(f"\n[INFO][autotune] : {p:.5f},{i:.5f},{d:.5f}における")
         print(f"[INFO][autotune] : 損失 = {grads[0]:10.5f}")
         print(f"[INFO][autotune] : grad_p = {grads[1]:10.5f}")
         print(f"[INFO][autotune] : grad_p = {grads[2]:10.5f}")
