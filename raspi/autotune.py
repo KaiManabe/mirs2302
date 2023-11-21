@@ -13,9 +13,9 @@ current_gain = [[0.1, 0.0, 0.0], [0.1, 0.0, 0.0], [0.0, 0.0, 0.0], 25]
 STEP = [0.1, 0.01, 0.01]
 SPEED = 500
 RECTIME = 5
-LR_P = pow(10, -7)
-LR_I = pow(10, -7)
-LR_D = pow(10, -7)
+LR_P = pow(10, -5)
+LR_I = pow(10, -5)
+LR_D = pow(10, -5)
 
 stop_sign = False
 
