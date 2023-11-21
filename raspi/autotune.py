@@ -134,6 +134,12 @@ def autotune(s):
     i = first_gain[1]
     d = first_gain[2]
     
+    
+    t = threading.Thread(target = input_receiver)
+    t.setDaemon(True)
+    t.start()
+        
+    
     while(1):
         
         grads = grad(s, p, i, d)
