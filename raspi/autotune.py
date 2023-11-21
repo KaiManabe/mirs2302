@@ -128,7 +128,7 @@ def grad(s, p, i, d, epsilonp = 0.1, epsiloni = 0.015, epsilond = 0.01):
 def autotune(s):
     
     LOG_PATH = "/home/pi/git/autotune.log"
-    first_gain = [0.1, 0.01, 0.03]
+    first_gain = [0.083137, 0.009246, 0.06418]
     
     p = first_gain[0]
     i = first_gain[1]
