@@ -71,7 +71,7 @@ def input_receiver():
             stop_sign = False
             
 
-def grad(s, p, i, d, epsilonp = 0.05, epsiloni = 0.01, epsilond = 0.01):
+def grad(s, p, i, d, epsilonp = 0.15, epsiloni = 0.03, epsilond = 0.015):
     global stop_sign
     
     while(stop_sign):
