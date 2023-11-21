@@ -224,8 +224,17 @@ def record(s:ser.arduino_serial, speed:int, rectime:int):
     ctrl = controller.run_controller(s)
     s.read()
     s.send([255,6,2,254])
-    ctrl.send_straight(speed)
+    
+    for i in range(10):
+        ctrl.send_straight(int(speed * i / 10))
+        time.sleep(0.1)
+    
     time.sleep(rectime)
+    
+    for i in range(10):
+        ctrl.send_straight(int(speed * (9 - i) / 10))
+        time.sleep(0.1)
+    
     ctrl.send_straight(0)
     time.sleep(0.25)
     s.send([255,6,0,254])

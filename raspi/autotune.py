@@ -45,7 +45,7 @@ def loss(data):
         if data[3][i] != 0:
             r_loss += (data[2][i] - data[3][i])
     
-    return l_loss**2 , r_loss**2
+    return l_loss**2 * pow(10, -5) , r_loss**2 * pow(10, -5)
 
 
 
