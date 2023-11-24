@@ -60,6 +60,13 @@ def p():
     nparr = convertdata(received_data)
     plotter(nparr)
 
+
+def logger():
+    for i in range(100)
+    a = convertdata(getdata())
+    np.save("/home/mirs2302/git/lidar_log/", a)
+
+
 if __name__ == "__main__":
     print("[INFO][lidar.py] : jetsonのデーモンプロセスをキルしています...")
     sp.run(["sh", "/home/mirs2302/git/mirs2302/jetson/terminate_screen.sh"])
@@ -77,5 +84,6 @@ if __name__ == "__main__":
             break
     
     time.sleep(1)
-    
-    print(convertdata(getdata()))
+    for i in range(10):
+        time.sleep(0.1)
+        print(len(convertdata(getdata())))

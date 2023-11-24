@@ -72,7 +72,7 @@ class sock_server():
         except:
             print("[ERROR][sock.sock_server] : ポート", port, "にてサーバーをリッスンできませんでした")
             return
-        self.server.listen(0)
+        self.server.listen(4960)
         print("[INFO][sock.sock_server] : ポート", port, "にてサーバーをリッスンしました")
         
         self.server_started = True
