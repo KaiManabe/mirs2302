@@ -1,8 +1,14 @@
-function debug() {
-    result = performJudgment('aiueo');
+function debug(value) {
+    result = performJudgment(value);
     document.getElementById("result").innerHTML = result;
 }
 
+/*
+データを送信し結果を返す関数
+
+引数：送りたいデータ(文字列-半角英数)
+戻り値：結果
+*/
 function performJudgment(inputData) {
     // 入力データを取得（getElementById()：任意のHTMLタグで指定したIDにマッチするドキュメント要素を取得するメソッド）
     // htmlがjsに渡すのではなく、jsがhtmlを読み込んでいる
@@ -23,6 +29,8 @@ function performJudgment(inputData) {
             // PHPから受け取った判定結果を表示
             // id="result"の要素に返ってきた値を書き込む
             // document.getElementById("result").innerHTML = xhr.responseText;
+
+            // 戻り値を結果にしようとしてるけどうまくいかない
             result = xhr.responseText;
             return result;
         }
@@ -31,3 +39,10 @@ function performJudgment(inputData) {
     // エンコードされたデータを送信
     xhr.send(data);
 }
+
+
+/*変えたいところ
+・非同期処理ではなく同期処理にする（違いを調べる）
+・拡張性を持たせるために引数を送りたいデータ、戻り値を結果にしたい
+・関数名の変更（長すぎる）
+*/
