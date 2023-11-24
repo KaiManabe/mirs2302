@@ -312,7 +312,7 @@ void r_enc_change(){
 
 /*
 回転させる関数
-引数：回転速度(int),角度(int)
+引数：回転速度(long),角度(long)
 戻り値：無し
 */
 void rotate(long omega, long theta){
@@ -327,8 +327,8 @@ void rotate(long omega, long theta){
         dir_l = 1;
         dir_r = -1;
     }
-    target_enc_l += (long)(dir_l)*mm_to_pulse((long)((float)TIRE_PITCH * PI * (float)theta / 360.0));
-    target_enc_r += (long)(dir_r)*mm_to_pulse((long)((float)TIRE_PITCH * PI * (float)theta / 360.0));
+    target_enc_l += (long)(dir_l)*mm_to_pulse((long)((float)TIRE_PITCH * PI * (float)abs(theta) / 360.0));
+    target_enc_r += (long)(dir_r)*mm_to_pulse((long)((float)TIRE_PITCH * PI * (float)abs(theta) / 360.0));
 
     if(l_spd_target == 0L){
         pid_init_l();
@@ -337,8 +337,8 @@ void rotate(long omega, long theta){
         pid_init_r();
     }
 
-    l_spd_target = (long)(dir_l)*mm_to_pulse((long)((float)TIRE_PITCH * PI * (float)omega / 360.0));
-    r_spd_target = (long)(dir_r)*mm_to_pulse((long)((float)TIRE_PITCH * PI * (float)omega / 360.0));
+    l_spd_target = (long)(dir_l)*mm_to_pulse((long)((float)TIRE_PITCH * PI * (float)abs(omega) / 360.0));
+    r_spd_target = (long)(dir_r)*mm_to_pulse((long)((float)TIRE_PITCH * PI * (float)abs(omega) / 360.0));
 
     while(1){
         if(dir_l == 1){
