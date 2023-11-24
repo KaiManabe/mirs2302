@@ -2,23 +2,20 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delivery Information</title>
+    <title>判定プログラム</title>
 </head>
 <body>
-    <h1>配達情報</h1>
-    <form id="deliveryForm" action="./receive.php" method="post">
-        <label for="deliveryTime">配達時間:</label>
-        <input type="text" id="deliveryTime" name="deliveryTime" required>
-        <br>
-        <label for="deliveryLocation">配達場所:</label>
-        <input type="text" id="deliveryLocation" name="deliveryLocation" required>
-        <br>
-        <button type="submit">Submit</button>
-    </form>
-    <form id="getForm" action="./receive.php" method="get">
-        <button type="submit">Submit</button>
-    </form>
+    <h1>判定プログラム</h1>
+    
+    <label for="inputData">入力データ:</label>
+    <input type="text" id="inputData">
+    
+    <button onclick="performJudgment()">判定する</button>
+    
+    <div id="result"></div>
+
+    <script src="script.js"></script>
 </body>
 </html>
