@@ -93,6 +93,7 @@ class run_controller():
         else:
             self.serial.send([255,1,dir, hb, lb, 254])
             self.serial.send([255,2,dir, hb, lb, 254])
+        print([255,2,dir, hb, lb, 254])
     
     def send_rotate(self, theta, omega):
         """
@@ -112,7 +113,7 @@ class run_controller():
         
         ohb = int(abs(omega) / 254)
         olb = int(abs(omega) % 254)
-        
+        print([255,7,dir, thb, tlb, ohb, olb, 254])
         self.serial.send([255,7,dir, thb, tlb, ohb, olb, 254])
             
 

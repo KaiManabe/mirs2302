@@ -93,12 +93,13 @@ void check_serial(){
     なし
 */
 void send_rotate(int dir, int theta_hb, int theta_lb, int omega_hb, int omega_lb){
-    long theta = ((long)theta_hb * (long)256) + (long)theta_lb;
-    long omega = ((long)omega_hb * (long)256) + (long)omega_lb;
+    long theta = (long)((long)theta_hb * 254L) + (long)theta_lb;
+    long omega = (long)((long)omega_hb * 254L) + (long)omega_lb;
     if(dir == 1){
         theta = theta * (long)(-1);
     }
-    rotate(omega, theta);
+    
+    rotate(60L, 360L);
 }
 
 
