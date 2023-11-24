@@ -1,6 +1,6 @@
 function debug() {
-    result = performJudgment('aiueo')
-    document.getElementById("result").innerHTML = result
+    result = performJudgment('aiueo');
+    document.getElementById("result").innerHTML = result;
 }
 
 function performJudgment(inputData) {
