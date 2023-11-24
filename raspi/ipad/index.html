@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="IE=edge">
@@ -7,15 +7,15 @@
     <title>Delivery Information</title>
 </head>
 <body>
-    <h1>Delivery Information</h1>
-    <form id="deliveryForm">
-        <label for="deliveryTime">Delivery Time:</label>
+    <h1>配達情報</h1>
+    <form id="deliveryForm" action="./receive.php" method="post">
+        <label for="deliveryTime">配達時間:</label>
         <input type="text" id="deliveryTime" name="deliveryTime" required>
         <br>
-        <label for="deliveryLocation">Delivery Location:</label>
+        <label for="deliveryLocation">配達場所:</label>
         <input type="text" id="deliveryLocation" name="deliveryLocation" required>
         <br>
-        <button type="button" onclick="sendData()">Submit</button>
+        <button type="submit">Submit</button>
     </form>
 </body>
 </html>
