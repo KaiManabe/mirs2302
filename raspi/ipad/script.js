@@ -1,3 +1,8 @@
+function debug() {
+    result = performJudgment(aiueo)
+    document.getElementById("result").innerHTML = result
+}
+
 function performJudgment(inputData) {
     // 入力データを取得（getElementById()：任意のHTMLタグで指定したIDにマッチするドキュメント要素を取得するメソッド）
     // htmlがjsに渡すのではなく、jsがhtmlを読み込んでいる
@@ -17,7 +22,8 @@ function performJudgment(inputData) {
         if (xhr.readyState == 4 && xhr.status == 200) {
             // PHPから受け取った判定結果を表示
             // id="result"の要素に返ってきた値を書き込む
-            document.getElementById("result").innerHTML = xhr.responseText;
+            // document.getElementById("result").innerHTML = xhr.responseText;
+            return xhr.responseText;
         }
     };
 
