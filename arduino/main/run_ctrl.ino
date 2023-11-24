@@ -309,3 +309,45 @@ void r_enc_change(){
     a_prev = a;
     b_prev = b;
 }
+
+/*
+回転させる関数
+引数：回転速度(int),角度(int)
+戻り値：無し
+*/
+void rotate(int omega, int theta){
+    long target_enc_l = l_enc;
+    long target_enc_r = r_enc;
+    int dir_l, dir_r;
+
+    if(omega*theta >= 0){
+        dir_l = -1;
+        dir_r = 1;
+    }else{
+        dir_l = 1;
+        dir_r = -1;
+    }
+    target_enc_l += (long)(dir_l)*mm_to_pulse((long)((float)IRE_PITCH * PI * (float)theta / 360.0));
+    target_enc_r += (long)(dir_r)*mm_to_pulse((long)((float)IRE_PITCH * PI * (float)theta / 360.0));
+
+    if(l_spd_target == 0L){
+        pid_init_l();
+    }
+    if(r_spd_target == 0L){
+        pid_init_r();
+    }
+
+    l_spd_target = (long)(dir_l)*mm_to_pulse((long)((float)IRE_PITCH * PI * (float)omega / 360.0));
+    r_spd_target = (long)(dir_l)*mm_to_pulse((long)((float)IRE_PITCH * PI * (float)omega / 360.0));
+
+    while(1){
+        if(enc_l > taget_enc_l){
+            l_spd_target = 0L;
+        }
+        if(enc_r > taget_enc_r){
+            r_spd_target = 0L;
+        }
+        pid();
+        check_serial();
+    }
+}
