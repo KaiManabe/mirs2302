@@ -1,5 +1,5 @@
 function debug() {
-    result = performJudgment(aiueo)
+    result = performJudgment('aiueo')
     document.getElementById("result").innerHTML = result
 }
 
