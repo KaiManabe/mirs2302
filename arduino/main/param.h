@@ -20,9 +20,9 @@
 #define GEAR_RATIO 13.733564    //ギア比
 #define TIRE_GEAR_TOOTH 20  //タイヤについてるギアの歯数
 #define MOTOR_GEAR_TOOTH 10     //モータについてるギアの歯数
-#define TIRE_DIAM 555   //タイヤの直径
+#define TIRE_DIAM 177   //タイヤの直径
 
-#define TIRE_PITCH 320  //タイヤの間隔
+#define TIRE_PITCH 555  //タイヤの間隔
 
 #define PI 3.141592653589
 
