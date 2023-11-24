@@ -23,7 +23,8 @@ function performJudgment(inputData) {
             // PHPから受け取った判定結果を表示
             // id="result"の要素に返ってきた値を書き込む
             // document.getElementById("result").innerHTML = xhr.responseText;
-            return xhr.responseText;
+            result = xhr.responseText;
+            return result;
         }
     };
 
