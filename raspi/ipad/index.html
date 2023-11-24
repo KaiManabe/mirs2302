@@ -9,13 +9,17 @@
 <body>
     <h1>判定プログラム</h1>
     
+    <!-- クライアントがデータを入力 -->
     <label for="inputData">入力データ:</label>
     <input type="text" id="inputData">
     
+    <!-- ボタンが押されるとjsの関数を実行 -->
     <button onclick="performJudgment()">判定する</button>
     
+    <!-- 結果を表示(.jsの方でid="result"の要素に返ってきた値を書き込むようにしてある) -->
     <div id="result"></div>
 
+    <!-- jsのソースファイル -->
     <script src="script.js"></script>
 </body>
 </html>
