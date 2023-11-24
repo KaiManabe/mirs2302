@@ -68,8 +68,8 @@ def logger():
         rawdata = convertdata(getdata())
         a[0,:len(rawdata)] = rawdata
         out[i] = a
-        fname = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-        np.save("/home/mirs2302/git/lidar_log/"+fname, out)
+    fname = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    np.save("/home/mirs2302/git/lidar_log/"+fname, out)
 
 
 if __name__ == "__main__":
