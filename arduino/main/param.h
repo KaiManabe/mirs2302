@@ -10,8 +10,8 @@
 #define SEND_ENC_TARGET
 
 
-#define GAIN_L {1.0, 0.0, 0.0}
-#define GAIN_R {1.0, 0.0, 0.0}
+#define GAIN_L {0.1, 0.01, 0.01}
+#define GAIN_R {0.1, 0.01, 0.01}
 #define GAIN_LR {0.1, 0.01, 0.1}
 #define DELTA_T 20
 
