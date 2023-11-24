@@ -93,6 +93,27 @@ class run_controller():
         else:
             self.serial.send([255,1,dir, hb, lb, 254])
             self.serial.send([255,2,dir, hb, lb, 254])
+    
+    def send_rotate(self, theta, omega):
+        """
+        機体を回転させる
+        
+        引数：
+            theta -> int : 回転角[degree]
+            omega -> int : 回転速度[degree/s]
+        """
+        
+        if theta * omega > 0:
+            dir = 1
+        else:
+            dir = 0
+        thb = int(abs(theta) / 254)
+        tlb = int(abs(theta) % 254)
+        
+        ohb = int(abs(omega) / 254)
+        olb = int(abs(omega) / 254)
+        
+        self.serial.send([255,7,dir, thb, tlb, ohb, olb, 254])
             
 
 

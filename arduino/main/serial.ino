@@ -57,6 +57,7 @@ void check_serial(){
             break;
         
         case 7:
+            send_rotate(inc_bytes[1], inc_bytes[2], inc_bytes[3], inc_bytes[4], inc_bytes[5])
             break;
         
         case 8:
@@ -77,6 +78,32 @@ void check_serial(){
 
 
 }
+
+
+
+
+
+/*
+まわる
+
+引数:
+    int mode : 0なら何も送信しない  1ならspd値を送信 
+
+戻り値:
+    なし
+*/
+void send_rotate(int dir, int theta_hb, int theta_lb, int omega_hb, int omega_lb){
+    int theta = theta_hb * 256 + theta_lb;
+    int omega = omega_hb * 256 + omega_lb;
+    if(dir == 1){
+        theta *= -1;
+    }
+    rotate(omega, theta);
+}
+
+
+
+
 
 /*
 シリアル通信でエンコーダ値を送信するモードを設定する

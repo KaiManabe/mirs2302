@@ -66,7 +66,7 @@ def logger():
     for i in range(10):
         a = np.zeros([4096,3])
         rawdata = convertdata(getdata())
-        a[0,:len(rawdata)] = rawdata
+        a[:len(rawdata)] = rawdata
         out[i] = a
     fname = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     np.save("/home/mirs2302/git/lidar_log/"+fname, out)

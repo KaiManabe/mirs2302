@@ -49,10 +49,7 @@ void setup(){
 }
 
 void loop(){
-    rotate(90,180);
-    while(1){
-        check_serial();
-        pid();
-    }
+    check_serial();
+    pid();
     
 }
