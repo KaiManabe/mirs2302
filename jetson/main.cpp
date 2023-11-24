@@ -179,13 +179,6 @@ int main(int argc, const char * argv[]) {
     }
 
 
-    /*
-    ソケットをノンブロッキングモードに設定
-    これをすることでrecv関数とsend関数が非同期処理になるので注意
-    */
-    int flags = fcntl(sock, F_GETFL, 0);
-    fcntl(sock, F_SETFL, flags | O_NONBLOCK);
-
 
     /*サーバ情報を宣言する？よくわからない*/
     struct sockaddr_in server;
@@ -193,6 +186,8 @@ int main(int argc, const char * argv[]) {
     server.sin_addr.s_addr = inet_addr(ADDRESS);    //アドレスを変更するならばここも変える
     server.sin_port        = htons(PORT_NUMBER);    //ポートも同様
 
+
+    
 
     /*サーバに接続する*/
     if ((connect(sock, (struct sockaddr*)&server, sizeof(server))) < 0)
@@ -208,6 +203,15 @@ int main(int argc, const char * argv[]) {
     }
     sleep(0.25);    //確立を待ってあげる　いらないかも
     printf("[INFO][ultra_simple] : サーバとの接続を確立しました\n");
+
+
+    /*
+    ソケットをノンブロッキングモードに設定
+    これをすることでrecv関数とsend関数が非同期処理になるので注意
+    */
+    int flags = fcntl(sock, F_GETFL, 0);
+    fcntl(sock, F_SETFL, flags | O_NONBLOCK);
+
 
 
     /*******************************************************
