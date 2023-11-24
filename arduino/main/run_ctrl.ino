@@ -327,8 +327,8 @@ void rotate(int omega, int theta){
         dir_l = 1;
         dir_r = -1;
     }
-    target_enc_l += (long)(dir_l)*mm_to_pulse((long)((float)IRE_PITCH * PI * (float)theta / 360.0));
-    target_enc_r += (long)(dir_r)*mm_to_pulse((long)((float)IRE_PITCH * PI * (float)theta / 360.0));
+    target_enc_l += (long)(dir_l)*mm_to_pulse((long)((float)TIRE_PITCH * PI * (float)theta / 360.0));
+    target_enc_r += (long)(dir_r)*mm_to_pulse((long)((float)TIRE_PITCH * PI * (float)theta / 360.0));
 
     if(l_spd_target == 0L){
         pid_init_l();
@@ -341,10 +341,10 @@ void rotate(int omega, int theta){
     r_spd_target = (long)(dir_l)*mm_to_pulse((long)((float)IRE_PITCH * PI * (float)omega / 360.0));
 
     while(1){
-        if(enc_l > taget_enc_l){
+        if(l_enc > target_enc_l){
             l_spd_target = 0L;
         }
-        if(enc_r > taget_enc_r){
+        if(r_enc > target_enc_r){
             r_spd_target = 0L;
         }
         pid();
