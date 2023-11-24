@@ -340,8 +340,6 @@ void rotate(int omega, int theta){
     l_spd_target = (long)(dir_l)*mm_to_pulse((long)((float)TIRE_PITCH * PI * (float)omega / 360.0));
     r_spd_target = (long)(dir_r)*mm_to_pulse((long)((float)TIRE_PITCH * PI * (float)omega / 360.0));
 
-    Serial.println(l_spd_target);
-
     while(1){
         if(dir_l == 1){
             if(l_enc > target_enc_l && r_enc < target_enc_r){
