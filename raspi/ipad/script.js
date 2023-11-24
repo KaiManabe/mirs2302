@@ -10,7 +10,7 @@ function performJudgment(inputData) {
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // 第一引数：ヘッダ名　第二引数：ヘッダの値
 
     // 判定するデータを送信
-    var data = "inputData=" + encodeURIComponent(inputData); // encodeURIComponent()：与えられた文字列を表す URI 構成要素としてエンコードされた新しい文字列を返す
+    var data = "inputData=" + inputData; // encodeURIComponent()：与えられた文字列を表す URI 構成要素としてエンコードされた新しい文字列を返す
 
     // レスポンスが帰ってきた際の処理
     xhr.onreadystatechange = function () {
