@@ -57,7 +57,7 @@ void check_serial(){
             break;
         
         case 7:
-            send_rotate(inc_bytes[1], inc_bytes[2], inc_bytes[3], inc_bytes[4], inc_bytes[5])
+            send_rotate(inc_bytes[1], inc_bytes[2], inc_bytes[3], inc_bytes[4], inc_bytes[5]);
             break;
         
         case 8:
@@ -93,10 +93,10 @@ void check_serial(){
     なし
 */
 void send_rotate(int dir, int theta_hb, int theta_lb, int omega_hb, int omega_lb){
-    int theta = theta_hb * 256 + theta_lb;
-    int omega = omega_hb * 256 + omega_lb;
+    long theta = ((long)theta_hb * (long)256) + (long)theta_lb;
+    long omega = ((long)omega_hb * (long)256) + (long)omega_lb;
     if(dir == 1){
-        theta *= -1;
+        theta = theta * (long)(-1);
     }
     rotate(omega, theta);
 }

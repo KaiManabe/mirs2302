@@ -315,12 +315,12 @@ void r_enc_change(){
 引数：回転速度(int),角度(int)
 戻り値：無し
 */
-void rotate(int omega, int theta){
+void rotate(long omega, long theta){
     long target_enc_l = l_enc;
     long target_enc_r = r_enc;
     int dir_l, dir_r;
 
-    if(omega*theta >= 0){
+    if(omega * theta > 0L){
         dir_l = -1;
         dir_r = 1;
     }else{

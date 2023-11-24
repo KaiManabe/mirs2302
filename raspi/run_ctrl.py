@@ -111,7 +111,7 @@ class run_controller():
         tlb = int(abs(theta) % 254)
         
         ohb = int(abs(omega) / 254)
-        olb = int(abs(omega) / 254)
+        olb = int(abs(omega) % 254)
         
         self.serial.send([255,7,dir, thb, tlb, ohb, olb, 254])
             

@@ -2,7 +2,7 @@
 #define SEND_ENC 50
 
 
-//#define ENABLE_EEP
+#define ENABLE_EEP
 
 #define GAIN_ACCURACY  10000.0
 
