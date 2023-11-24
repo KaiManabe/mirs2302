@@ -188,6 +188,8 @@ int main(int argc, const char * argv[]) {
 
 
     
+    printf("[INFO][ultra_simple] : アドレス%s ポート%dに接続を試みています...\n", ADDRESS, PORT_NUMBER);
+
 
     /*サーバに接続する*/
     if ((connect(sock, (struct sockaddr*)&server, sizeof(server))) < 0)
