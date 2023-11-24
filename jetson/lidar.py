@@ -62,9 +62,10 @@ def p():
 
 
 def logger():
-    for i in range(100)
-    a = convertdata(getdata())
-    np.save("/home/mirs2302/git/lidar_log/", a)
+    a = np.zeros([4096,3])
+    for i in range(100):
+        a = convertdata(getdata())
+        np.save("/home/mirs2302/git/lidar_log/", a)
 
 
 if __name__ == "__main__":
@@ -84,6 +85,5 @@ if __name__ == "__main__":
             break
     
     time.sleep(1)
-    for i in range(10):
-        time.sleep(0.1)
-        print(len(convertdata(getdata())))
+    
+    a = convertdata(getdata())
