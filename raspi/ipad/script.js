@@ -12,7 +12,7 @@ function debug(value) {
 function performJudgment(inputData) {
     // 入力データを取得（getElementById()：任意のHTMLタグで指定したIDにマッチするドキュメント要素を取得するメソッド）
     // htmlがjsに渡すのではなく、jsがhtmlを読み込んでいる
-    //var inputData = document.getElementById("inputData").value; // document.：文字コードがUTF-8のHTMLのソースコード
+    // var inputData = document.getElementById("inputData").value; // document.：文字コードがUTF-8のHTMLのソースコード
 
     // XMLHttpRequestオブジェクトを使用してPHPにHTTPリクエストを送信
     var xhr = new XMLHttpRequest();
@@ -28,11 +28,11 @@ function performJudgment(inputData) {
         if (xhr.readyState == 4 && xhr.status == 200) {
             // PHPから受け取った判定結果を表示
             // id="result"の要素に返ってきた値を書き込む
-            // document.getElementById("result").innerHTML = xhr.responseText;
+            document.getElementById("result").innerHTML = xhr.responseText;
 
             // 戻り値を結果にしようとしてるけどうまくいかない
-            result = xhr.responseText;
-            return result;
+            // result = xhr.responseText;
+            // return result;
         }
     };
 
