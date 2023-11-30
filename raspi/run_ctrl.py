@@ -1,6 +1,9 @@
 import csv
 import time
 import serial_com as ser
+import keyboard
+import threading
+import re
 import sys
 
 class sequence_file():
@@ -115,6 +118,74 @@ class run_controller():
         olb = int(abs(omega) % 254)
         print([255,7,dir, thb, tlb, ohb, olb, 254])
         self.serial.send([255,7,dir, thb, tlb, ohb, olb, 254])
+    
+    
+    def keyboard_controller(self):
+        """
+        wasdで機体を動かす
+        sshからのキー入力を受け付けないため、usdに挿したキーボードで操作する
+        実行中にspd400　とか入れると速度が変わる　デフォルトは200
+        実行中にstopと入力するとメソッドが終了する
+        
+        デバッグ用と以外では使わないこと
+        """
+        self.spd = 200
+        self.stop = False
+        spd_l_prev = 0
+        spd_r_prev = 0
+        
+        t = threading.Thread(target = input_monitor, args = (self, ))
+        t.setDaemon(True)
+        t.start()
+        
+        while(not(self.stop)):
+            spd_l, spd_r = calcspeed(self.spd)
+            if spd_r != spd_r_prev or spd_l != spd_l_prev or True:
+                print(f"\r{spd_l:4}, {spd_r:4}", end = "               ")
+                self.set_l_speed(spd_l)
+                self.set_r_speed(spd_r)
+                spd_l_prev = spd_l
+                spd_r_prev = spd_r
+        print("\n")
+        
+        
+
+def input_monitor(ctrl:run_controller):
+    while(1):
+        string = input()
+        if "spd" in string:
+            num = re.sub("\\D", "", string)
+            print(f"\nset speed to {num}\n")
+            ctrl.spd = int(num)
+        
+        
+        if "stop" in string:
+            ctrl.stop = True
+            break
+
+
+
+def calcspeed(spd):
+    spd_l = 0
+    spd_r = 0
+    if keyboard.is_pressed("w"):
+        spd_l += spd
+        spd_r += spd
+        
+    if keyboard.is_pressed("s"):
+        spd_l -= spd
+        spd_r -= spd
+        
+    if keyboard.is_pressed("a"):
+        spd_r += spd * 0.5
+        spd_l += -spd * 0.5
+    
+    if keyboard.is_pressed("d"):
+        spd_r += -spd * 0.5
+        spd_l += spd * 0.5
+    
+    return spd_l, spd_r
+
             
 
 
@@ -136,3 +207,7 @@ if __name__ == "__main__":
     data_to_write = [["rotate", 90, 90],["straight", 20, 0.5], ["straight", 5, -0.3]]
     seq.write(data_to_write)
     """
+
+    import serial_com as ser
+    s = ser.arduino_serial()
+    c = run_controller(s)
