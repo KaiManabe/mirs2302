@@ -4,3 +4,4 @@ raspi/__pycache__/ser.cpython-311.pyc
 raspi/__pycache__/serial_com.cpython-311.pyc
 raspi/__pycache__/tuning.cpython-311.pyc
 .DS_Store
+raspi/lidar.py

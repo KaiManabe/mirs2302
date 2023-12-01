@@ -5,11 +5,21 @@ import subprocess as sp
 import sys
 import time
 import numpy as np
+import threading
 
 
 
 
 class lidar():
+    """
+    コンストラクタ
+    
+    引数：
+        なし
+        
+    戻り値：
+        なし
+    """
     def __init__(self):
         print("[INFO][lidar.py] : jetsonのデーモンプロセスをキルしています...")
         sp.run(["ssh",
@@ -36,15 +46,45 @@ class lidar():
             if (self.server.isconnected() > 0):
                 break
         
-        self.buf = []
+        self.buf = np.zeros([0,3])
         time.sleep(0.5)
+        t = threading.Thread(target = monitor, args = (self,))
+        t.setDaemon(True)
+        t.start()
     
     
-    def getdata(self):
-        return self.buf
+    def getdata(self, angle = None):
+        """
+        LiDARの測距データを取得する関数
+        angleに0および360付近の値を指定するとバグるので修正が必要
+        
+        引数：
+            angle -> float : 指定すると指定した角度での距離を返す・指定がない場合はバッファをそのまま返す
+            
+        戻り値：
+            なし
+        """
+        if angle == None:
+            return self.buf
+        
+        for i in range(1,len(self.buf) - 2):
+            dist = -1
+            if self.buf[-1 * i, 0] > angle and self.buf[-1 * (i + 1) , 0] < angle:
+                if self.buf[-1 * (i + 1) , 1] == 0:
+                    continue
+                else:
+                    dist = self.buf[-1 * (i + 1) , 1]
+                    break
+        
+        return dist
+    
+
     
     
     def close(self):
+        """
+        jetsonとの通信を切断する
+        """
         self.server.send([255,9,254])
         time.sleep(0.25)
         self.server.server.close()
@@ -56,19 +96,17 @@ class lidar():
 
 
 def monitor(l:lidar):
+    print("[INFO][lidar.py] : 測距データのバッファリングを開始しました")
     while(1):
-        l.server.read()
         l.server.send([255,3,254])
         while(1):
-            if l.server.buffer_length() > 100:
+            if l.server.buffer_length() > 2000:
                 break
-            time.sleep(0.1)
         
         received_data = l.server.read()
-        l.buf = convertdata(received_data)
-        
-        time.sleep(0.1)
-   
+        l.buf = np.append(l.buf, convertdata(received_data), axis = 0)
+        if len(l.buf) > config.LIDAR_CLASS_BUFFER_MAX_LENGTH:
+            l.buf = l.buf[-1 * config.LIDAR_CLASS_BUFFER_MAX_LENGTH:]
 
 def convertdata(received_data):
     out = np.zeros([int(len(received_data) / 10), 3])
@@ -84,7 +122,6 @@ def convertdata(received_data):
                 out[idx,2] = received_data[i+8]
                 
                 idx += 1
-    
     return out[:idx]
            
 
