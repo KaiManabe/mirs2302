@@ -7,15 +7,68 @@ import time
 import numpy as np
 
 
-def getdata():
-    s.read()
-    s.send([255,3,254])
-    while(1):
-        if s.buffer_length() > 10:
-            break
-        time.sleep(0.1)
+
+
+class lidar():
+    def __init__(self):
+        print("[INFO][lidar.py] : jetsonのデーモンプロセスをキルしています...")
+        sp.run(["ssh",
+                "-i",
+                "/home/pi/.ssh/id_rsa_jetson",
+                ("mirs2302@" + config.JETSON_IP),
+                "sh",
+                "/home/mirs2302/git/mirs2302/jetson/terminate_screen.sh"])
+        time.sleep(1)
+        self.server = sock.sock_server(config.RASPI_IP, config.SOCKET_PORT)
+        while(1):
+            if(self.server.server_started == True):
+                break
+        
+        print("[INFO][lidar.py] : jetsonとのソケット通信を確立しています...")
+        sp.run(["ssh",
+                "-i",
+                "/home/pi/.ssh/id_rsa_jetson",
+                ("mirs2302@" + config.JETSON_IP),
+                "sh",
+                "/home/mirs2302/git/mirs2302/jetson/start_lidar.sh"])
+        
+        while(1):
+            if (self.server.isconnected() > 0):
+                break
+        
+        self.buf = []
+        time.sleep(0.5)
     
-    return s.read()
+    
+    def getdata(self):
+        return self.buf
+    
+    
+    def close(self):
+        self.server.send([255,9,254])
+        time.sleep(0.25)
+        self.server.server.close()
+        print("[INFO][lidar.py] : jetsonとの通信を終了しました")
+    
+    
+    
+
+
+
+def monitor(l:lidar):
+    while(1):
+        l.server.read()
+        l.server.send([255,3,254])
+        while(1):
+            if l.server.buffer_length() > 100:
+                break
+            time.sleep(0.1)
+        
+        received_data = l.server.read()
+        l.buf = convertdata(received_data)
+        
+        time.sleep(0.1)
+   
 
 def convertdata(received_data):
     out = np.zeros([int(len(received_data) / 10), 3])
@@ -33,59 +86,8 @@ def convertdata(received_data):
                 idx += 1
     
     return out[:idx]
-                
-def disconnect():
-    s.send([255,9,254])
-    time.sleep(0.25)
-    s.server.close()
+           
 
-
-def plotter(nparr):
-    xy = np.zeros([len(nparr), 2])
-    for i in range(len(nparr)):
-        xy[i,0] = -1 * nparr[i,1] * np.cos(nparr[i,0] / 180.0 * np.pi)
-        xy[i,1] = nparr[i,1] * np.sin(nparr[i,0] / 180.0 * np.pi)
-    
-    plt.scatter(xy[:,0], xy[:,1])
-    plt.scatter([0],[0], c = "red", marker = "x")
-    plt.show()
-
-def p():
-    received_data = []
-    while(1):
-        received_data = getdata()
-        if len(received_data) > 10:
-            break
-        time.sleep(0.5)
-    nparr = convertdata(received_data)
-    plotter(nparr)
 
 if __name__ == "__main__":
-    print("[INFO][lidar.py] : jetsonのデーモンプロセスをキルしています...")
-    sp.run(["ssh",
-            "-i",
-            "/home/pi/.ssh/id_rsa_jetson",
-            "mirs2302@192.168.1.3",
-            "sh",
-            "/home/mirs2302/git/mirs2302/jetson/terminate_screen.sh"])
-    time.sleep(1)
-    s = sock.sock_server(config.RASPI_IP, config.SOCKET_PORT)
-    while(1):
-        if(s.server_started == True):
-            break
-    
-    print("[INFO][lidar.py] : jetsonとのソケット通信を確立しています...")
-    sp.run(["ssh",
-            "-i",
-            "/home/pi/.ssh/id_rsa_jetson",
-            "mirs2302@192.168.1.3",
-            "sh",
-            "/home/mirs2302/git/mirs2302/jetson/start_lidar.sh"])
-    
-    while(1):
-        if (s.isconnected() > 0):
-            break
-    
-    time.sleep(1)
-    
-    p()
+    l = lidar()

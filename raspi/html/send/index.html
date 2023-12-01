@@ -9,10 +9,11 @@
 <body>
 	<h1 class = "site_title">荷物をおくる</h1>
 
+    <!-- 正規表現参照：https://qiita.com/ka215/items/795a179041c705bef03b -->
     <form action="" method="post">
         <div class="form-area">
             <label>あなたのメールアドレス</label>
-            <input type="email" name="client_address" pattern="[0-9][a-z][A-Z]" value="@numazu.ct-ac.jp" required>
+            <input type="email" name="client_address" pattern="^[a-zA-Z]{1}[0-9a-zA-Z]+[\w\.-]+@numazu¥.ct¥-ac¥.jp$" value="@numazu.ct-ac.jp" required>
         </div>
         
         <div class="form-area">

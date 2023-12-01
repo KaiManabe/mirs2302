@@ -73,9 +73,9 @@ static inline void delay(sl_word_size_t ms){
 
 
 /*サーバのアドレスとポートは適宜変更　もしくはプログラム内外で取得すること*/
-#define PORT_NUMBER 56789
-//#define ADDRESS "192.168.1.2"
-#define ADDRESS "127.0.0.1"
+#define PORT_NUMBER 55555
+#define ADDRESS "192.168.1.2"
+//#define ADDRESS "127.0.0.1"
 
 /*******************************************************
 **********************ここまで追記***********************
