@@ -66,9 +66,8 @@ class lidar():
         """
         if angle == None:
             return self.buf
-        
+        dist = -1
         for i in range(1,len(self.buf) - 2):
-            dist = -1
             if self.buf[-1 * i, 0] > angle and self.buf[-1 * (i + 1) , 0] < angle:
                 if self.buf[-1 * (i + 1) , 1] == 0:
                     continue
