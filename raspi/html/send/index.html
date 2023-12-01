@@ -9,25 +9,40 @@
 <body>
 	<h1 class = "site_title">荷物をおくる</h1>
 
-    <form class="center" action="" method="post">
+    <form action="" method="post">
         <div class="form-area">
             <label>あなたのメールアドレス</label>
-            <input type="text" name="client_address">
+            <input type="email" name="client_address" pattern="[0-9][a-z][A-Z]" value="@numazu.ct-ac.jp" required>
         </div>
         
         <div class="form-area">
-            <label>メールアドレス</label>
-            <input type="email" name="yourmail">
+            <label>送り主のメールアドレス</label>
+            <input type="email" name="target_address" value="@numazu.ct-ac.jp" required>
         </div>
 
         <div class="form-area">
-            <label>お電話番号</label>
-            <input type="number" name="phonenumber">
+            <label>送って欲しいもの - カテゴリ</label>
+            <select name="item_type" id="item_type" required></select>
         </div>
 
         <div class="form-area">
-            <label for="comment">コメント</label>
-            <textarea id="comment" name="comment" id="comment"></textarea>
+            <label>送って欲しいもの - 名称</label>
+            <input type="text" name="item_name" required>
+        </div>
+
+        <div class="form-area">
+            <label>受け取り場所</label>
+            <select name="picking_place" id="picking_place" required></select>
+        </div>
+
+        <div class="form-area">
+            <label>受け取り時間</label>
+            <input type="time" name="picking_time" id="picking_time" required>
+        </div>
+
+        <div class="form-area">
+            <label>受取時のPINコード</label>
+            <input type="password" name="picking_pincode" maxlength="8" required>
         </div>
 
         <input type="submit" value="送信">
