@@ -1,9 +1,16 @@
+* {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	height:100vh;
+  }
+  
 .view{
 	visibility : visible;
 }
 
 .hide{
-	display:none;
+	display : none;
 }
 
 .banner_title{
