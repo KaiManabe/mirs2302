@@ -1,0 +1,2 @@
+RewriteEngine on
+RewriteRule / /main [L,R=301] 
