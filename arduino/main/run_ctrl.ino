@@ -15,7 +15,8 @@ float all_gain[3][3] = {GAIN_L, GAIN_R, GAIN_LR};
 pid中にシリアル通信でenc値を送るかどうか
 0ならなにもしない
 1ならencのみ送信
-2ならencとenc_targetを送信
+2ならspdとspd_targetを送信
+3ならencとencの微分を送信
 */
 int pid_serial_mode = 0;
 
@@ -182,7 +183,7 @@ void pid(){
     
 
     
-    if(pid_serial_mode > 0){
+    if(pid_serial_mode == 1 || pid_serial_mode == 2){
         int hb, lb;
         Serial.write(255);
         Serial.write(14);

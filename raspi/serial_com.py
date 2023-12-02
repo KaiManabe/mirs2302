@@ -9,6 +9,8 @@ import threading
 import time
 import sys
 import config
+import numpy as np
+import datetime
 
 #使用されうるポートを列挙しておく
 #ここにあるポートに順番に接続を試みる
@@ -16,29 +18,11 @@ PORTS =  ["/dev/ttyACM0", "/dev/ttyACM1", "/dev/ttyACM2", "COM1", "COM2", "COM3"
 
 
 
-buffer = []
 
-def receive_buffer(serial_port):
-    """
-    シリアルポートのバッファを受け続ける
 
-    Args:
-        serial_port (serial.serial object): arduinoと通信するserialオブジェクト
-    """
-    global buffer
-    while(1):
-        time.sleep(0.05)
-        while(serial_port.in_waiting > 0):
-            buffer.append(serial_port.read())
-            
-            #バッファの長さが制限を超えたらバッファの頭を削る
-            if len(buffer) > config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER and config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER != -1:
-                buffer = buffer[(-1 * config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER):]
-    
 
 
 class arduino_serial():
-    global buffer
     def __init__(self):
         """
         コンストラクタ
@@ -56,7 +40,7 @@ class arduino_serial():
                 continue
             
             """以下、接続に成功した場合の処理"""
-            time.sleep(3)#接続後すぐに処理が走らないようキープする
+            time.sleep(1.5)#接続後すぐに処理が走らないようキープする
             initialize_result = True
             print("[INFO][serial_com.arduino_serial] : ポート", p, "のArduinoと接続を確立しました")
             break
@@ -66,60 +50,140 @@ class arduino_serial():
             print("[ERROR][serial_com.arduino_serial] : arduinoとの接続に失敗しました")
             sys.exit(1)
         
+        
+        #n番目のバッファが最後にいつ更新されたか覚えておく
+        self.last_update = [datetime.datetime.now()] * config.NUMBER_OF_DATA_TYPE_ON_SERIAL
+        
+        #バッファ　大きさはconfig.pyで宣言しておく
+        self.buffer = np.full([config.NUMBER_OF_DATA_TYPE_ON_SERIAL,config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER] , -1 , dtype = np.uint8)
+        
         #バッファを監視するスレッドを走らせる(これ以降常時実行)
-        buf_monitor_thread = threading.Thread(target = receive_buffer, args = (self.serial_port,))
+        buf_monitor_thread = threading.Thread(target = receive_buffer, args = (self,))
         buf_monitor_thread.setDaemon(True)
         buf_monitor_thread.start()
         print("[INFO][serial_com.arduino_serial] : シリアルバッファの監視を開始しました")
-        
-    def length(self):
-        """
-        バッファの長さを返す関数
-        
-        引数：
-            なし
-        
-        戻り値：
-            バッファの長さ
-        """
-        global buffer
-        return len(buffer)
+
     
-    def read(self):
+    def read(self, idx):
         """
         バッファを返す関数
         
-        引数・戻り値なし
+        引数：
+            idx -> クリアする番号
+        
+        戻り値：
+            バッファ
         """
-        global buffer
-        buf = buffer.copy()
-        buffer = []
-        return buf
+        
+        ret = []
+        
+        for i in range(len(self.buffer[0])):
+            if self.buffer[idx,i] != -1:
+                ret.append(self.buffer[idx,i])
+        
+        return ret
+        
     
-    def send(self,send_data):
+    def clear_buffer(self, idx):
+        """
+        バッファをクリアする関数
+        
+        引数：
+            idx -> クリアする番号
+        
+        戻り値なし
+        """
+        self.buffer[idx] = np.full([config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER] , -1 , dtype = np.uint8)
+    
+    
+    def send(self,idx, data):
         """"
         シリアルポートにデータを送る関数
         
         引数：
+            idx -> 送るデータの番号
             send_data -> list(int) : 送るデータ
         戻り値：
             正常に送信したデータの長さ
         """
         
         """データのチェック"""
-        if type(send_data) != list:
+        if type(data) != list:
             print("[ERROR][serial_com.arduino_serial] : send()メソッドの引数はint型のリストである必要があります")
             return -1
         
-        for d in send_data:
-            if type(d) != int or d > 255:
-                print("[ERROR][serial_com.arduino_serial] : send()メソッドの引数に256以上の値が存在します")
+        for d in data:
+            if type(d) != int or d >= 254:
+                print("[ERROR][serial_com.arduino_serial] : send()メソッドの引数に254以上の値が存在します")
                 return -1
         
+        data.insert(0,255)
+        data.insert(1,idx)
+        data.append(254)
         
-        return self.serial_port.write(bytes(send_data))
+        return self.serial_port.write(bytes(data))
+    
+    
+    def send_and_read_response(self,idx, data, response_idx):
+        """"
+        シリアルポートにデータを送って、返答があれば返す関数
+        
+        引数：
+            idx -> 送るデータの番号
+            send_data -> list(int) : 送るデータ
+            response_idx -> 受け取るデータの番号
+        戻り値：
+            レスポンスの配列
+        """
+        
+        """データのチェック"""
+        if type(data) != list:
+            print("[ERROR][serial_com.arduino_serial] : send()メソッドの引数はint型のリストである必要があります")
+            return -1
+        
+        for d in data:
+            if type(d) != int or d >= 254:
+                print("[ERROR][serial_com.arduino_serial] : send()メソッドの引数に254以上の値が存在します")
+                return -1
+        
+        data.insert(0,255)
+        data.insert(1,idx)
+        data.append(254)
+        
+        self.clear_buffer(response_idx)
+        send_time = datetime.datetime.now()
+        self.serial_port.write(bytes(data))
+        
+        while(1):
+            if self.last_update[response_idx] > send_time:
+                return self.read(response_idx)
+            
+                
+        
+    
     
 
+
+def receive_buffer(s:arduino_serial):
+    """
+    シリアルポートのバッファを受け続ける
+
+    Args:
+        s (arduino_serial object): arduinoと通信するserialオブジェクト
+    """
+        
+    while(1):
+        if s.serial_port.in_waiting > 0:
+            if int.from_bytes(s.serial_port.read(), byteorder=sys.byteorder) == 255:
+                data_idx = int.from_bytes(s.serial_port.read(), byteorder=sys.byteorder)
+                while(1):
+                    tmp = int.from_bytes(s.serial_port.read(), byteorder=sys.byteorder)
+                    if tmp == 254:
+                        s.last_update[data_idx] = datetime.datetime.now()
+                        break
+                    s.buffer[data_idx, :-1] = s.buffer[data_idx, 1:]
+                    s.buffer[data_idx,-1] = tmp
+    
 
 if __name__ == "__main__":
     """モジュールではなく、コマンドラインから呼ばれた場合に以下の処理を実行"""

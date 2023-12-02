@@ -8,6 +8,8 @@ import config
 import numpy as np
 
 
+
+
 def getgain(s:ser.arduino_serial, output:bool = True):
     """
     ゲインを取得する関数
@@ -23,30 +25,15 @@ def getgain(s:ser.arduino_serial, output:bool = True):
         失敗した場合 -1
     """
     pid = [[0,0,0],[0,0,0],[0,0,0],0]
-    while(1):
-        s.read()
-        s.send([255,4,254])
-        time.sleep(0.1)
-        response = s.read()
-        resp_int = []
-        for resp in response:
-            resp_int.append(int.from_bytes(resp, byteorder=sys.byteorder))
-        
-        if len(resp_int) >= 18:
-            break
     
-    if resp_int[0] != 255 or resp_int[1] != 13 or resp_int[-1] != 254:
-        print("異常なデータを受け取りました")
-        return -1
-    else:
-        arr = resp_int[2:-1]
+    response = s.send_and_read_response(4,[],13)
     
     if(output):
         print("    P               I               D")
     
     for i in range(3):
         for ii in range(3):
-            value = arr[i * 6 + ii * 2] * 254 + arr[i * 6 + ii * 2 + 1]
+            value = response[i * 6 + ii * 2] * 254 + response[i * 6 + ii * 2 + 1]
             value /= config.GAIN_ACCURACY
             
             if(output):
@@ -58,9 +45,9 @@ def getgain(s:ser.arduino_serial, output:bool = True):
             print("")
         
     if(output):
-        print("\ndt : ", arr[-1])
+        print("\ndt : ", response[-1])
     
-    pid[-1] = arr[-1]
+    pid[-1] = response[-1]
     return pid
     
 
@@ -102,7 +89,7 @@ def setgain(s: ser.arduino_serial, LR:str, PID:str, value:float):
     
     retries = 0
     while(1):
-        s.send([255, 8 ,lr , pid, hb, lb])
+        s.send(8, [lr , pid, hb, lb])
         time.sleep(0.25)
         retries += 1
         if getgain(s, output = False) != current_param:
@@ -135,7 +122,7 @@ def setparam(s:ser.arduino_serial, dt:int):
     
     retries = 0
     while(1):
-        s.send([255, 9 ,0 , dt, 254])
+        s.send(8, [0, dt])
         time.sleep(0.25)
         retries += 1
         if getgain(s, output = False) != current_param:
@@ -206,7 +193,7 @@ def convert_data(bytes_arr):
 
 
 
-
+#まともにうごかない
 def record(s:ser.arduino_serial, speed:int, rectime:int):
     """
     エンコーダ値を監視しながらタイヤを動かす
