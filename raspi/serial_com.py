@@ -55,7 +55,10 @@ class arduino_serial():
         self.last_update = [datetime.datetime.now()] * config.NUMBER_OF_DATA_TYPE_ON_SERIAL
         
         #バッファ　大きさはconfig.pyで宣言しておく
-        self.buffer = np.full([config.NUMBER_OF_DATA_TYPE_ON_SERIAL,config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER] , -1 , dtype = np.uint8)
+        #self.buffer = np.full([config.NUMBER_OF_DATA_TYPE_ON_SERIAL,config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER] , -1 , dtype = np.uint8)
+        self.buffer = []
+        for i in range(config.NUMBER_OF_DATA_TYPE_ON_SERIAL):
+            self.buffer.append([])
         
         #バッファを監視するスレッドを走らせる(これ以降常時実行)
         buf_monitor_thread = threading.Thread(target = receive_buffer, args = (self,))
@@ -75,13 +78,7 @@ class arduino_serial():
             バッファ
         """
         
-        ret = []
-        
-        for i in range(len(self.buffer[0])):
-            if self.buffer[idx,i] != 255:
-                ret.append(self.buffer[idx,i])
-        
-        return ret
+        return self.buffer[idx]
         
     
     def clear_buffer(self, idx):
@@ -93,7 +90,7 @@ class arduino_serial():
         
         戻り値なし
         """
-        self.buffer[idx] = np.full([config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER] , 255 , dtype = np.uint8)
+        self.buffer[idx] = []
     
     
     def send(self,idx, data):
@@ -176,13 +173,18 @@ def receive_buffer(s:arduino_serial):
         if s.serial_port.in_waiting > 0:
             if int.from_bytes(s.serial_port.read(), byteorder=sys.byteorder) == 255:
                 data_idx = int.from_bytes(s.serial_port.read(), byteorder=sys.byteorder)
+                s.buffer[data_idx].append([])
                 while(1):
                     tmp = int.from_bytes(s.serial_port.read(), byteorder=sys.byteorder)
                     if tmp == 254:
                         s.last_update[data_idx] = datetime.datetime.now()
                         break
-                    s.buffer[data_idx, :-1] = s.buffer[data_idx, 1:]
-                    s.buffer[data_idx,-1] = tmp
+                    
+                    s.buffer[data_idx][-1].append(tmp)
+                
+                if len(s.buffer[data_idx]) >= config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER:
+                    s.buffer[data_idx] = s.buffer[data_idx][(-1 * config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER):]
+                    
     
 
 if __name__ == "__main__":

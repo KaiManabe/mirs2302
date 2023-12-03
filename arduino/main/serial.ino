@@ -344,23 +344,28 @@ void send_odom(){
     Serial.write(255);
     Serial.write(15);
     int send_byte = 0;
+
+    long send_value = l_enc + (long)2081157128;
     for(int i = 0; i < 4; i++){
-            send_byte = (int)((l_enc % (long)pow(254,i+1)) / (long)pow(254,i));
+            send_byte = (int)((send_value % (long)pow(254,i+1)) / (long)pow(254,i));
             Serial.write(send_byte);
     }
 
+    long send_value = r_enc + (long)2081157128;
     for(int i = 0; i < 4; i++){
-            send_byte = (int)((r_enc % (long)pow(254,i+1)) / (long)pow(254,i));
+            send_byte = (int)((send_value % (long)pow(254,i+1)) / (long)pow(254,i));
             Serial.write(send_byte);
     }
 
+    long send_value = (long)d_l_enc + (long)32258;
     for(int i = 0; i < 2; i++){
-            send_byte = (int)((d_l_enc % (long)pow(254,i+1)) / (long)pow(254,i));
+            send_byte = (int)((send_value % (long)pow(254,i+1)) / (long)pow(254,i));
             Serial.write(send_byte);
     }
 
+    long send_value = (long)d_r_enc + (long)32258;
     for(int i = 0; i < 2; i++){
-            send_byte = (int)((d_r_enc % (long)pow(254,i+1)) / (long)pow(254,i));
+            send_byte = (int)((send_value % (long)pow(254,i+1)) / (long)pow(254,i));
             Serial.write(send_byte);
     }
     Serial.write(254);
