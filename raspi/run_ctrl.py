@@ -117,7 +117,7 @@ class run_controller():
         self.serial.send(7, [dir, thb, tlb, ohb, olb])
     
     
-    def keyboard_controller(self):
+    def keyboard_controller(self, output = True):
         """
         wasdで機体を動かす
         sshからのキー入力を受け付けないため、usdに挿したキーボードで操作する
@@ -138,7 +138,8 @@ class run_controller():
         while(not(self.stop)):
             spd_l, spd_r = calcspeed(self.spd)
             if spd_r != spd_r_prev or spd_l != spd_l_prev or True:
-                print(f"\r{spd_l:4}, {spd_r:4}", end = "               ")
+                if output:
+                    print(f"\r{spd_l:4}, {spd_r:4}", end = "               ")
                 self.set_l_speed(spd_l)
                 self.set_r_speed(spd_r)
                 spd_l_prev = spd_l
