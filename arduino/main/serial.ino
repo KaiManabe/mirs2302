@@ -320,11 +320,11 @@ void send_batt(){
 
 
 
-long l_enc_prev_local = l_enc;
-long r_enc_prev_local = r_enc;
+
 void send_odom(){
     static long last_called = 0L;
-
+    static long l_enc_prev_local = l_enc;
+    static long r_enc_prev_local = r_enc;
     if (pid_serial_mode != 3){
         return;
     }
