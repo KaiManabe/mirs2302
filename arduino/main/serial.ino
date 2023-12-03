@@ -322,6 +322,12 @@ void send_batt(){
 
 
 void send_odom(){
+    static long last_called = millis();
+    static long l_enc_prev = l_enc;
+    static long r_enc_prev = r_enc;
+
+
+    
     if (pid_serial_mode != 3){
         return;
     }
@@ -330,18 +336,14 @@ void send_odom(){
     }
 
 
-    static long last_called = millis();
-    static long l_enc_prev = l_enc;
-    static long r_enc_prev = r_enc;
-
     //エンコーダ値の微分
     int d_l_enc = (int)(l_enc - l_enc_prev);
     int d_r_enc = (int)(r_enc - r_enc_prev);
 
 
-    Serial.Write(255);
-    Serial.Write(15);
-
+    Serial.write(255);
+    Serial.write(15);
+    int send_byte = 0;
     for(int i = 0; i < 4; i++){
             send_byte = (int)((l_enc % (long)pow(254,i+1)) / (long)pow(254,i));
             Serial.write(send_byte);
@@ -361,7 +363,7 @@ void send_odom(){
             send_byte = (int)((d_r_enc % (long)pow(254,i+1)) / (long)pow(254,i));
             Serial.write(send_byte);
     }
-    Serial.Write(254);
+    Serial.write(254);
 
     l_enc_prev = l_enc;
     r_enc_prev = r_enc;

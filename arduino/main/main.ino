@@ -51,5 +51,5 @@ void setup(){
 void loop(){
     check_serial();
     pid();
-    
+    send_odom();
 }
