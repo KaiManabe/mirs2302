@@ -351,19 +351,19 @@ void send_odom(){
             Serial.write(send_byte);
     }
 
-    long send_value = r_enc + (long)2081157128;
+    send_value = r_enc + (long)2081157128;
     for(int i = 0; i < 4; i++){
             send_byte = (int)((send_value % (long)pow(254,i+1)) / (long)pow(254,i));
             Serial.write(send_byte);
     }
 
-    long send_value = (long)d_l_enc + (long)32258;
+    send_value = (long)d_l_enc + (long)32258;
     for(int i = 0; i < 2; i++){
             send_byte = (int)((send_value % (long)pow(254,i+1)) / (long)pow(254,i));
             Serial.write(send_byte);
     }
 
-    long send_value = (long)d_r_enc + (long)32258;
+    send_value = (long)d_r_enc + (long)32258;
     for(int i = 0; i < 2; i++){
             send_byte = (int)((send_value % (long)pow(254,i+1)) / (long)pow(254,i));
             Serial.write(send_byte);
