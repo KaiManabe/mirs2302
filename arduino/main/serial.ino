@@ -337,9 +337,11 @@ void send_odom(){
 
 
     //エンコーダ値の微分
-    int d_l_enc = (int)(l_enc - l_enc_prev);
-    int d_r_enc = (int)(r_enc - r_enc_prev);
+    long d_l_enc = l_enc - l_enc_prev;
+    long d_r_enc = r_enc - r_enc_prev;
 
+    l_enc_prev = l_enc;
+    r_enc_prev = r_enc;
 
     Serial.write(255);
     Serial.write(15);
@@ -370,6 +372,4 @@ void send_odom(){
     }
     Serial.write(254);
 
-    l_enc_prev = l_enc;
-    r_enc_prev = r_enc;
 }
