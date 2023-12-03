@@ -320,14 +320,11 @@ void send_batt(){
 
 
 
-
+long l_enc_prev_local = l_enc;
+long r_enc_prev_local = r_enc;
 void send_odom(){
-    static long last_called = millis();
-    static long l_enc_prev = l_enc;
-    static long r_enc_prev = r_enc;
+    static long last_called = 0L;
 
-
-    
     if (pid_serial_mode != 3){
         return;
     }
@@ -335,13 +332,14 @@ void send_odom(){
         return;
     }
 
+    last_called = millis();
 
     //エンコーダ値の微分
-    long d_l_enc = l_enc - l_enc_prev;
-    long d_r_enc = r_enc - r_enc_prev;
+    long d_l_enc = l_enc - l_enc_prev_local;
+    long d_r_enc = r_enc - r_enc_prev_local;
 
-    l_enc_prev = l_enc;
-    r_enc_prev = r_enc;
+    l_enc_prev_local = l_enc;
+    r_enc_prev_local = r_enc;
 
     Serial.write(255);
     Serial.write(15);
