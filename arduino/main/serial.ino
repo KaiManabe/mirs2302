@@ -336,41 +336,38 @@ void send_odom(){
     }
 
 
-    long l_enc_current = l_enc;
-    long r_enc_current = r_enc;
-
     //エンコーダ値の微分
-    long d_l_enc = l_enc_current - l_enc_prev;
-    long d_r_enc = r_enc_current - r_enc_prev;
+    long d_l_enc = l_enc - l_enc_prev;
+    long d_r_enc = r_enc - r_enc_prev;
 
-    l_enc_prev = l_enc_current;
-    r_enc_prev = r_enc_current;
+    l_enc_prev = l_enc;
+    r_enc_prev = r_enc;
 
     Serial.write(255);
     Serial.write(15);
     int send_byte = 0;
 
-    unsigned long send_value = (unsigned long)(l_enc_current + (long)2081157128);
-    for(int i = 0; i < 4; i++){
-            send_byte = (int)((send_value % (unsigned long)pow(254,i+1)) / (unsigned long)pow(254,i));
+    long send_value = l_enc + (long)8193532;
+    for(int i = 0; i < 3; i++){
+            send_byte = (int)((send_value % (long)pow(254,i+1)) / (long)pow(254,i));
             Serial.write(send_byte);
     }
 
-    send_value = (unsigned long)(r_enc_current + (long)2081157128);
-    for(int i = 0; i < 4; i++){
-            send_byte = (int)((send_value % (unsigned long)pow(254,i+1)) / (unsigned long)pow(254,i));
+    send_value = r_enc + (long)8193532;
+    for(int i = 0; i < 3; i++){
+            send_byte = (int)((send_value % (long)pow(254,i+1)) / (long)pow(254,i));
             Serial.write(send_byte);
     }
 
-    send_value = (unsigned long)((long)d_l_enc + (long)32258);
+    send_value = (long)d_l_enc + (long)32258;
     for(int i = 0; i < 2; i++){
-            send_byte = (int)((send_value % (unsigned long)pow(254,i+1)) / (unsigned long)pow(254,i));
+            send_byte = (int)((send_value % (long)pow(254,i+1)) / (long)pow(254,i));
             Serial.write(send_byte);
     }
 
-    send_value = (unsigned long)((long)d_r_enc + (long)32258);
+    send_value = (long)d_r_enc + (long)32258;
     for(int i = 0; i < 2; i++){
-            send_byte = (int)((send_value % (unsigned long)pow(254,i+1)) / (unsigned long)pow(254,i));
+            send_byte = (int)((send_value % (long)pow(254,i+1)) / (long)pow(254,i));
             Serial.write(send_byte);
     }
     Serial.write(254);
