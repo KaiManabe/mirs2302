@@ -331,7 +331,7 @@ void send_odom(){
     if (pid_serial_mode != 3){
         return;
     }
-    if (last_called + (long)ODOM_DT < millis()){
+    if (last_called + (long)ODOM_DT > millis()){
         return;
     }
 

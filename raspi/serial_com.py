@@ -78,7 +78,7 @@ class arduino_serial():
         ret = []
         
         for i in range(len(self.buffer[0])):
-            if self.buffer[idx,i] != -1:
+            if self.buffer[idx,i] != 255:
                 ret.append(self.buffer[idx,i])
         
         return ret
@@ -93,7 +93,7 @@ class arduino_serial():
         
         戻り値なし
         """
-        self.buffer[idx] = np.full([config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER] , -1 , dtype = np.uint8)
+        self.buffer[idx] = np.full([config.MAX_DATA_LENGTH_OF_SERIAL_BUFFER] , 255 , dtype = np.uint8)
     
     
     def send(self,idx, data):
