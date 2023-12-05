@@ -35,10 +35,6 @@ class enc():
         t.start()
         
         
-        t2 = threading.Thread(target = verocity_monitor, args = (self,))
-        t2.setDaemon(True)
-        t2.start()
-    
     def reset(self):
         self.pulse_L = 0
         self.pulse_L_prev = 0
@@ -48,13 +44,6 @@ class enc():
         self.pulse_R_d = 0
 
 
-def verocity_monitor(e:enc):
-    while(1):
-        if time.time() >= e.ctime + (e.dt / 1000):
-            e.pulse_L_d = e.pulse_L - e.pulse_L_prev
-            e.pulse_R_d = e.pulse_R - e.pulse_R_prev
-            e.pulse_L_prev = e.pulse_L
-            e.pulse_R_prev = e.pulse_R
     
 def monitor(e:enc):
     while(1):
@@ -122,5 +111,17 @@ def monitor(e:enc):
             else:
                 e.pulse_R -= 1
         
+        if time.time() >= e.ctime + (e.dt / 1000):
+            e.pulse_L_d = e.pulse_L - e.pulse_L_prev
+            e.pulse_R_d = e.pulse_R - e.pulse_R_prev
+            e.pulse_L_prev = e.pulse_L
+            e.pulse_R_prev = e.pulse_R
+            e.ctime = time.time()
     
 
+if __name__ == "__main__":
+    e = enc(dt = 100)
+    e.start_monitor()
+    
+    while(1):
+        print(f"\r L : {e.pulse_L} ,  R : {e.pulse_R} ,  dL : {e.pulse_L_d} ,  dL : {e.pulse_R_d} ", end = "     ")
