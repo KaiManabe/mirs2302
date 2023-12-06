@@ -9,7 +9,7 @@
 <body>
 	<h1 class = "site_title">荷物をおくる</h1>
 
-    <!-- 正規表現参照：https://qiita.com/ka215/items/795a179041c705bef03b 出来てるか不明 -->
+    <!-- 正規表現参照：https://qiita.com/ka215/items/795a179041c705bef03b -->
     <form class="center" action="" method="post">
         <table>
             <tr>
@@ -17,52 +17,56 @@
                     <label>あなたのメールアドレス</label>
                 </th>
                 <td>
-                    <input type="email" name="client_address" pattern="^[a-zA-Z]{1}[0-9a-zA-Z]+[\w\.-]+@numazu\.ct-ac\.jp$" value="@numazu.ct-ac.jp" required>
+                    <input type="text" name="client_address" id="client_address" pattern="^[a-zA-Z]{1}[0-9a-zA-Z]+[\w\.-]$" oninput="setValues()" required>
+                    <select name="address_type" id="client_address_type" class="address_type" onchange="setValues()" required>
+                        <option value="@numazu.kosen-ac.jp">@numazu.kosen-ac.jp</option>
+                        <option value="@numazu-ct.ac.jp">@numazu-ct.ac.jp</option>
+                    </select>
                 </td>
             </tr>
-
             <tr>
                 <th>
                     <label>送り先のメールアドレス</label>
                 </th>
                 <td>
-                    <input type="email" name="target_address" pattern="^[a-zA-Z]{1}[0-9a-zA-Z]+[\w\.-]+@numazu\.ct-ac\.jp$" value="@numazu.ct-ac.jp" required>
+                    <input type="text" name="target_address" id="target_address" pattern="^[a-zA-Z]{1}[0-9a-zA-Z]+[\w\.-]$" oninput="setValues()" required>
+                    <select name="address_type" id="target_address_type" class="address_type" onchange="setValues()" required>
+                        <option value="@numazu.kosen-ac.jp">@numazu.kosen-ac.jp</option>
+                        <option value="@numazu-ct.ac.jp">@numazu-ct.ac.jp</option>
+                    </select>
                 </td>
             </tr>
-
             <tr>
                 <th>
                     <label>送りたいもの - カテゴリ</label>
                 </th>
                 <td>
-                    <select name="item_type" id="item_type" required>
+                    <select name="item_type" id="item_type" onchange="setValues()" required>
                         <option value="小物">小物</option>
                         <option value="書類">書類</option>
                         <option value="食品">食品</option>
                     </select>
                 </td>
             </tr>
-
             <tr>
                 <th>
                     <label>送りたいもの - 名称</label>
                 </th>
                 <td>
-                    <input type="text" name="item_name" required>
+                    <input type="text" name="item_name" id="item_name" oninput="setValues()" required>
                 </td>
             </tr>
-
             <tr>
                 <th>
                     <label>集荷場所</label>
                 </th>
                 <td>
-                    <select name="picking_place" id="picking_place" required>
+                    <select name="picking_place" id="picking_place" onchange="setValues()" required>
                         <option value="管理棟">管理棟</option>
                         <option value="共通棟">共通棟</option>
                         <option value="D科棟">D科棟</option>
                         <option value="E科棟">E科棟</option>
-        
+    
                         <!-- 外をやらない場合は以下を削除 -->
                         <option value="M科棟">M科棟</option>
                         <option value="C科棟">C科棟</option>
@@ -72,37 +76,38 @@
                     </select>
                 </td>
             </tr>
-                
             <tr>
                 <th>
                     <label>集荷時間</label>
                 </th>
                 <td>
-                    <input type="time" name="picking_time" id="picking_time" required>
+                    <input type="time" name="picking_time" id="picking_time" oninput="setValues()" required>
                 </td>
             </tr>
-
             <tr>
                 <th>
                     <label>集荷時のPINコード</label>
                 </th>
                 <td>
-                    <input type="password" name="picking_pincode" maxlength="8" required>
+                    <input type="password" name="picking_pincode" id="picking_pincode" maxlength="8" oninput="setValues()" required>
                 </td>
             </tr>
-
             <tr>
                 <th>
                     <label>備考</label>
                 </th>
                 <td>
-                    <input type="text" name="note">
+                    <input type="text" name="note" oninput="setValues()" id="note">
                 </td>
             </tr>
         </table>
-
-        <input type="submit" value="送信">
+        <!-- addHTML()はデバッグ用 -->
+        <input type="submit" value="送信" onclick="addHTML()">
     </form>
 
+    <!-- デバッグ用 -->
+    <div id="result"></div>
+
+    <script src="send.js"></script>
 </body>
 </html>
