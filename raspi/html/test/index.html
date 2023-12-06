@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTMLファイル変更の例</title>
+
+    <!-- 追加：スタイルシート -->
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 複数のiframe要素 -->
+<iframe id="iframe1" class="hidden" width="600" height="400" src="content1.html"></iframe>
+<iframe id="iframe2" class="hidden" width="600" height="400" src="content2.html"></iframe>
+<!-- 追加：必要に応じてiframeを追加 -->
+
+<!-- 入力フォーム -->
+<input type="text" id="inputText" placeholder="文字列を入力">
+
+<!-- ボタンをクリックしてiframeの表示を切り替えるスクリプト -->
+<button onclick="toggleContent('iframe1')">iframe1を表示する</button>
+<button onclick="toggleContent('iframe2')">iframe2を表示する</button>
+<!-- 追加：必要に応じてボタンを追加 -->
+
+<script>
+    // ボタンがクリックされたときに呼び出される関数
+    function toggleContent(iframeId) {
+        // すべてのiframeを非表示にする
+        var iframes = document.querySelectorAll('iframe');
+        iframes.forEach(function(iframe) {
+            iframe.classList.add("hidden");
+        });
+
+        // 指定されたiframeの表示・非表示を切り替える
+        var iframe = document.getElementById(iframeId);
+        iframe.classList.toggle("hidden");
+    }
+</script>
+
+</body>
+</html>

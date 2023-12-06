@@ -1,10 +1,23 @@
 * {
 	margin: 0;
 	padding: 0;
-	overflow: hidden;
+	overflow: hidden; /* ページ全体でスクロールバーを非表示にする */
 	height:100vh;
   }
-  
+
+.iframe-container {
+	display: flex;
+	overflow-x: auto; /* iframeが画面外にはみ出た場合に横スクロールを有効にする */
+	white-space: nowrap; /* 子要素を折り返さないようにする */
+}
+
+.iframe {
+	width: 100vw; /* 画面幅いっぱいに広がるようにする */
+	height: 100vh; /* 画面高さいっぱいに広がるようにする */
+	max-height: 80vh; /* 最大高さを指定 */
+	margin-right: 10px; /* iframe間に余白を設ける */
+}
+
 .view{
 	visibility : visible;
 }
