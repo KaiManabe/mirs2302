@@ -4,3 +4,14 @@
 .hide{
 	display : none;
 }
+
+button{
+	width : 300px;
+	padding : 30px;
+}
+
+.pincode{
+	position : absolute
+	top  0px;
+	left : 0px;
+}
