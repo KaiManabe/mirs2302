@@ -16,10 +16,11 @@ void init_pin(){
     pinMode(R_ENC_B,INPUT);
 
     //エンコーダのプルアップ抵抗を有効
-    digitalWrite(L_ENC_B,1);
-    digitalWrite(L_ENC_A,1);
-    digitalWrite(R_ENC_A,1);
-    digitalWrite(R_ENC_B,1);
+    //2023-12-05 : エンコーダ用基板を作った　無効に変更した
+    digitalWrite(L_ENC_B,0);
+    digitalWrite(L_ENC_A,0);
+    digitalWrite(R_ENC_A,0);
+    digitalWrite(R_ENC_B,0);
 
     //モタドラの出力ピン宣言
     pinMode(L_MOT_DIR, OUTPUT);
