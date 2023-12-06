@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HTMLファイル変更の例</title>
+    <title>ページ切り替えの例</title>
 
     <!-- 追加：スタイルシート -->
     <style>
@@ -14,32 +14,57 @@
 </head>
 <body>
 
-<!-- 複数のiframe要素 -->
-<iframe id="iframe1" class="hidden" width="600" height="400" src="content1.html"></iframe>
-<iframe id="iframe2" class="hidden" width="600" height="400" src="content2.html"></iframe>
-<!-- 追加：必要に応じてiframeを追加 -->
-
 <!-- 入力フォーム -->
 <input type="text" id="inputText" placeholder="文字列を入力">
 
-<!-- ボタンをクリックしてiframeの表示を切り替えるスクリプト -->
-<button onclick="toggleContent('iframe1')">iframe1を表示する</button>
-<button onclick="toggleContent('iframe2')">iframe2を表示する</button>
-<!-- 追加：必要に応じてボタンを追加 -->
+<!-- 切り替え用のボタン -->
+<button onclick="switchPage('new_content1.html')">ページ1を表示する</button>
+<button onclick="switchPage('new_content2.html')">ページ2を表示する</button>
+
+<!-- iframe要素 -->
+<iframe id="contentFrame" class="hidden" width="600" height="400" src="new_content1.html"></iframe>
 
 <script>
-    // ボタンがクリックされたときに呼び出される関数
-    function toggleContent(iframeId) {
-        // すべてのiframeを非表示にする
-        var iframes = document.querySelectorAll('iframe');
-        iframes.forEach(function(iframe) {
-            iframe.classList.add("hidden");
-        });
+    // 初期状態で表示されるページのURL
+    var currentPage = 'new_content1.html';
 
-        // 指定されたiframeの表示・非表示を切り替える
-        var iframe = document.getElementById(iframeId);
-        iframe.classList.toggle("hidden");
+    // ページを切り替える関数
+    function switchPage(pageUrl) {
+        // 入力された文字列を取得
+        var inputText = document.getElementById("inputText").value;
+
+        // iframeのsrc属性を変更
+        var contentFrame = document.getElementById("contentFrame");
+        contentFrame.src = pageUrl;
+
+        // 表示・非表示を切り替える
+        contentFrame.classList.toggle("hidden");
+
+        // 切り替えた後にsrc属性を変更
+        if (!contentFrame.classList.contains("hidden")) {
+            contentFrame.src = pageUrl + '?inputText=' + encodeURIComponent(inputText);
+        }
+
+        // 現在のページを更新
+        currentPage = pageUrl;
     }
+
+    // ページ読み込み時に前回の入力を復元
+    window.onload = function() {
+        var inputText = document.getElementById("inputText");
+
+        // 現在のページのURLからクエリパラメータを取得
+        var params = new URLSearchParams(window.location.search);
+        if (params.has('inputText')) {
+            inputText.value = decodeURIComponent(params.get('inputText'));
+        }
+    };
+
+    // ページがアンロードされるときにクエリパラメータを更新
+    window.onbeforeunload = function() {
+        var inputText = document.getElementById("inputText");
+        window.location.href = currentPage + '?inputText=' + encodeURIComponent(inputText.value);
+    };
 </script>
 
 </body>
