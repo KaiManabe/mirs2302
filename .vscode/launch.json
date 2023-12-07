@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/manacas/Documents/git/mirs2302/jetson",
-      "program": "c:/Users/manacas/Documents/git/mirs2302/jetson/build/Debug/outDebug",
+      "cwd": "c:/Users/manacas/Documents/git/mirs2302/jetson/odom_publisher/src",
+      "program": "c:/Users/manacas/Documents/git/mirs2302/jetson/odom_publisher/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

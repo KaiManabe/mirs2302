@@ -146,8 +146,17 @@ include_directories(
 ########################################################
 ########################################################
 
+#Cのライブラリをつくる
+add_library(c_lib STATIC src/c_lib.c)
+
+
 include_directories(include ${catkin_INCLUDE_DIRS})
 add_executable(tf_odom_pub src/tf_odom_pub.cpp)
+
+#Cのライブラリリンクする
+target_link_libraries(tf_odom_pub c_lib)
+
+
 target_link_libraries(tf_odom_pub ${catkin_LIBRARIES})
 
 

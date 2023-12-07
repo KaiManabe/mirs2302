@@ -6,7 +6,10 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <nav_msgs/Odometry.h>
- 
+
+extern "C" {
+  long sq(int num);
+}
 
 
 int main(int argc, char** argv){
@@ -97,7 +100,7 @@ int main(int argc, char** argv){
     odom_trans2.header.frame_id = "odom";
     odom_trans2.child_frame_id = "debug_l";
 
-    odom_trans2.transform.translation.x = x + 1.0;
+    odom_trans2.transform.translation.x = sq(1);
     odom_trans2.transform.translation.y = y - 1.0;
     odom_trans2.transform.translation.z = 0.0;
     odom_trans2.transform.rotation = odom_quat;
