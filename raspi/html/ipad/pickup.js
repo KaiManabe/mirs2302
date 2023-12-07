@@ -8,3 +8,8 @@ function lock(pin){
 function open(){
 
 }
+
+//正しく認証された後、積み込みの指示を表示する関数
+function picking(){
+    replace("hide" , "view");
+}
