@@ -1,15 +1,24 @@
 <!DOCTYPE html>
 <head>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="pickup.css">
+
     <title>pickup</title>
 </head>
 <body>
     <h1>xxさん宛ての荷物</h1>
-    <h3>設定したPINコード</h3>
-    <input type="password" id="pin" />
-    <button type=”button” onclick="open()">認証する</button>
+    <form method="GET">
+        <div>
+            <label for="pincode">設定したPINコード</label>
+            <input name="pincode" id="pincode"/>
+        </div>
+    </form>
+    <br>
+    <button onclick="check()">認証する</button>
 
-
-
-
+    <div class="hide">
+        <h1>品物：xxをo収納部に積み込んでください</h1>
+        <button onclick="key()">積み込んだ</button>
+    </div>
+    
+    <script type = "text/javascript" src="pickup.js"></script>
 </body>

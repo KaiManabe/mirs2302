@@ -1,0 +1,4 @@
+<launch>
+  <!-- <node name="rviz" pkg="rviz" type="rviz" required="true" /> -->
+  <node name="tf_odom_pub"    pkg="cpptest" type="tf_odom_pub" output="screen"/>
+</launch>
