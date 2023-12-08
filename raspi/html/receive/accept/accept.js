@@ -11,13 +11,11 @@ function chbox(obj){
 }
 
 function view(){
-    let element1 = document.getElementById(yes)
-    console.log(element1.checked);
-    let element2 = document.getElementById(no)
-    console.log(element2.checked);
-    if(element1=="true"){
-	    form.classList.replace("hide" , "view");
-    }else if(element2=="true"){
-        form.classList.replace("view" , "hide");
-    }
+    var target = document.getElementById('target')
+	target.classList.replace('hide' , 'view');
+}
+function notview(){
+    var target = document.getElementById('target')
+	target.classList.replace('view' , 'hide');
+    
 }
