@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" type="text/css" href="receive.css">
+    <title>receive</title>
+</head>
+<body>
+    <h1>xxさんからの荷物</h1>
+    <form method="GET">
+        <div>
+            <label for="pincode">設定したPINコード</label>
+            <input name="pincode" id="pincode"/>
+        </div>
+    </form>
+    <br>
+    <button onclick="check()">認証する</button>
+
+    <div class="hide">
+        <h1>品物：xxをo収納部から取り出してください</h1>
+        <button onclick="key()">取り出した</button>
+    </div>
+
+    <script type = "text/javascript" src="pickup.js"></script>    
+</body>
