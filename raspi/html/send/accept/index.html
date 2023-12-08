@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>mailcheck</title>
+</head>
+<body>
+    <h1>aaさんからbbをcc時に集荷するよう依頼が来ています</h1>
+    <input onclick="chbox(this);view()" type="checkbox" name="mailcheck" id="yes" value="yes"/>
+    <label for="yes" >受け入れる</label>
+    <input onclick="chbox(this);notview()" type="checkbox" name="mailcheck" id="no" value="no"/>
+    <label for="yes" >拒否する</label>
+
+    <div id="target" class="hide">
+        <form>
+            <th>
+                <label for="receive_place">受け取る場所</label>
+            </th>
+            <td>
+                <select name="receive_place" id="receive_place">
+                    <option value="共通棟">共通棟</option>
+                    <option value="D科棟">D科棟</option>
+                    <option value="E科棟">E科棟</option>
+        
+                    <!-- 外をやらない場合は削除 -->
+                    <option value="M科棟">M科棟</option>
+                    <option value="C科棟">C科棟</option>
+                    <option value="専攻科棟">専攻科棟</option>
+                    <option value="講義棟">講義棟</option>
+                    <option value="尚友会館">尚友会館</option>
+                </select><br>
+            </td>
+            <th>
+                <label for="receive_time">受け取る時間</label>
+            </th>
+            <td>
+                <input type="time" name="receive_time" id="receive_time"/><br>
+
+            </td>
+            <th>
+                <label for="receive_pincode">受け取る際のPINコード</label>
+            </th>
+            <td>
+                <input type="password" name="receive_pincode" id="receive_pincode"/><br>
+            </td>
+            <input type="submit"/>
+        </form>
+    </div>
+
+    <script type="text/javascript" src="accept.js"></script>
+</body>
