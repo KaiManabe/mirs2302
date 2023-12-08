@@ -7,18 +7,17 @@
     <title>荷物をおくる</title>
 </head>
 <body>
-	<h1 class = "site_title">荷物をおくる</h1>
+	<h1 class = "subtitle">荷物をおくる</h1>
 
-    <!-- 正規表現参照：https://qiita.com/ka215/items/795a179041c705bef03b -->
-    <form class="center" action="" method="post">
+    <form class="center" action="" method="POST">
         <table>
             <tr>
                 <th>
-                    <label>あなたのメールアドレス</label>
+                    <label for="client_address">あなたのメールアドレス</label>
                 </th>
                 <td>
-                    <input type="text" name="client_address" id="client_address" pattern="^[a-zA-Z]{1}[0-9a-zA-Z]+[\w\.-]$" oninput="setValues()" required>
-                    <select name="address_type" id="client_address_type" class="address_type" onchange="setValues()" required>
+                    <input type="text" name="client_address" id="client_address" pattern="^[a-zA-Z][a-zA-Z0-9_.+-]$" required>
+                    <select name="address_type" id="client_address_type" class="address_type" required>
                         <option value="@numazu.kosen-ac.jp">@numazu.kosen-ac.jp</option>
                         <option value="@numazu-ct.ac.jp">@numazu-ct.ac.jp</option>
                     </select>
@@ -26,11 +25,11 @@
             </tr>
             <tr>
                 <th>
-                    <label>送り先のメールアドレス</label>
+                    <label for="target_address">送り先のメールアドレス</label>
                 </th>
                 <td>
-                    <input type="text" name="target_address" id="target_address" pattern="^[a-zA-Z]{1}[0-9a-zA-Z]+[\w\.-]$" oninput="setValues()" required>
-                    <select name="address_type" id="target_address_type" class="address_type" onchange="setValues()" required>
+                    <input type="text" name="target_address" id="target_address" pattern="^[a-zA-Z][a-zA-Z0-9_.+-]$" required>
+                    <select name="address_type" id="target_address_type" class="address_type" required>
                         <option value="@numazu.kosen-ac.jp">@numazu.kosen-ac.jp</option>
                         <option value="@numazu-ct.ac.jp">@numazu-ct.ac.jp</option>
                     </select>
@@ -38,10 +37,10 @@
             </tr>
             <tr>
                 <th>
-                    <label>送りたいもの - カテゴリ</label>
+                    <label for="item_type">送りたいもの - カテゴリ</label>
                 </th>
                 <td>
-                    <select name="item_type" id="item_type" onchange="setValues()" required>
+                    <select name="item_type" id="item_type" required>
                         <option value="小物">小物</option>
                         <option value="書類">書類</option>
                         <option value="食品">食品</option>
@@ -50,18 +49,18 @@
             </tr>
             <tr>
                 <th>
-                    <label>送りたいもの - 名称</label>
+                    <label for="item_name">送りたいもの - 名称</label>
                 </th>
                 <td>
-                    <input type="text" name="item_name" id="item_name" oninput="setValues()" required>
+                    <input type="text" name="item_name" id="item_name" required>
                 </td>
             </tr>
             <tr>
                 <th>
-                    <label>集荷場所</label>
+                    <label for="picking_place">集荷場所</label>
                 </th>
                 <td>
-                    <select name="picking_place" id="picking_place" onchange="setValues()" required>
+                    <select name="picking_place" id="picking_place" required>
                         <option value="管理棟">管理棟</option>
                         <option value="共通棟">共通棟</option>
                         <option value="D科棟">D科棟</option>
@@ -78,36 +77,39 @@
             </tr>
             <tr>
                 <th>
-                    <label>集荷時間</label>
+                    <label for="picking_time">集荷時間</label>
                 </th>
                 <td>
-                    <input type="time" name="picking_time" id="picking_time" oninput="setValues()" required>
+                    <input type="time" name="picking_time" id="picking_time" required>
                 </td>
             </tr>
             <tr>
                 <th>
-                    <label>集荷時のPINコード</label>
+                    <label for="picking_pincode">集荷時のPINコード</label>
                 </th>
                 <td>
-                    <input type="password" name="picking_pincode" id="picking_pincode" maxlength="8" oninput="setValues()" required>
+                    <input type="password" name="picking_pincode" id="picking_pincode" pattern="[0-9]{4,8}" maxlength="8" title="4~8桁の半角数字を入力してください" required>
                 </td>
             </tr>
             <tr>
                 <th>
-                    <label>備考</label>
+                    <label for="note">備考</label>
                 </th>
                 <td>
-                    <input type="text" name="note" oninput="setValues()" id="note">
+                    <input type="text" name="note" id="note">
                 </td>
             </tr>
         </table>
-        <!-- addHTML()はデバッグ用 -->
-        <input type="submit" value="送信" onclick="addHTML()">
+        <input type="submit" value="送信" onclick="execution()">
     </form>
 
     <!-- デバッグ用 -->
     <div id="result"></div>
 
-    <script src="send.js"></script>
+    <script src="get_available_selection.js"></script>
 </body>
 </html>
+
+<!-- やりたいこと
+・各入力欄のエラーメッセージを追加したい(title属性など)
+-->

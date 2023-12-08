@@ -13,6 +13,6 @@ function select_view_html(iframe_id){
     }
 
     // 選択されたidのclass名"hide"を"view"に書き換え
-    selected = document.querySelector(iframe_id);
+    selected = document.querySelector(`#${iframe_id}`);
 	selected.classList.replace("hide" , "view");
 }
