@@ -1,0 +1,14 @@
+.view{
+	visibility : visible;
+}
+.hide{
+	visibility : hidden;
+}
+
+label{
+    font-size : 20px;
+}
+
+form{
+    line-height : 50px;
+}
