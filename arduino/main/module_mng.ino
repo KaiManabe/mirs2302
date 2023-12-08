@@ -25,3 +25,20 @@ void servo_open(){
 }
 
 */
+
+//鍵開閉
+void key(){
+  for(int i=0; i<10; i++){
+    digitalWrite(SERVO,HIGH);
+    delayMicroseconds(2400);//マイクロ秒
+    digitalWrite(SERVO,LOW);
+    delay(20);
+  }
+  delay(3000);
+  for(int i=0; i<10; i++){
+    digitalWrite(SERVO,HIGH);
+    delayMicroseconds(1300);//マイクロ秒
+    digitalWrite(SERVO,LOW);
+    delay(20);
+  }
+}
