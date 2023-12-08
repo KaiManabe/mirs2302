@@ -16,7 +16,8 @@
                     <label for="client_address">あなたのメールアドレス</label>
                 </th>
                 <td>
-                    <input type="text" name="client_address" id="client_address" pattern="^[a-zA-Z][a-zA-Z0-9_.+-]$" required>
+                    <!-- pattern="^[a-zA-Z][a-zA-Z0-9_.-]*$" -->
+                    <input type="text" name="client_address" id="client_address" required>
                     <select name="address_type" id="client_address_type" class="address_type" required>
                         <option value="@numazu.kosen-ac.jp">@numazu.kosen-ac.jp</option>
                         <option value="@numazu-ct.ac.jp">@numazu-ct.ac.jp</option>
@@ -28,7 +29,7 @@
                     <label for="target_address">送り先のメールアドレス</label>
                 </th>
                 <td>
-                    <input type="text" name="target_address" id="target_address" pattern="^[a-zA-Z][a-zA-Z0-9_.+-]$" required>
+                    <input type="text" name="target_address" id="target_address" required>
                     <select name="address_type" id="target_address_type" class="address_type" required>
                         <option value="@numazu.kosen-ac.jp">@numazu.kosen-ac.jp</option>
                         <option value="@numazu-ct.ac.jp">@numazu-ct.ac.jp</option>
