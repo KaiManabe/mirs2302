@@ -50,6 +50,15 @@
 	align-items: center;
 }
 
+.contact:active{
+	display : block;
+	text-decoration : underline;
+}
+
+.contact:inactive{
+	display :block;
+}
+
 .menu li{
 	height : 70px;
 	line-height: 70px;
