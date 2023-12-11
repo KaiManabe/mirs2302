@@ -26,7 +26,14 @@ void servo_open(){
 
 */
 
-//鍵開閉
+/*
+モジュールの鍵用サーボの開閉を行う
+解錠→3秒待機→施錠
+
+引数：なし
+
+戻り値：なし
+*/
 void key(){
   for(int i=0; i<10; i++){
     digitalWrite(SERVO,HIGH);
