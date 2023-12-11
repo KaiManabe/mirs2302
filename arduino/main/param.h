@@ -68,7 +68,7 @@ defineされている場合には、ゲインを保存する。
 #define V_RATIO 0.5 
 
 //サーボpwm値出力ピン
-#define SERVO 5
+#define SERVO 10
 
 //型ごとの最大値
 #define UINTMAX 65535

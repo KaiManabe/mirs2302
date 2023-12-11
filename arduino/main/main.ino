@@ -29,7 +29,7 @@ void init_pin(){
     pinMode(R_MOT_PWM, OUTPUT);
 
     //サーボモータの出力ピン宣言
-    //pinMode(SERVO, OUTPUT);
+    pinMode(SERVO, OUTPUT);
     //servo.attach(SERVO, 500, 2500);
 }
 
@@ -52,5 +52,5 @@ void setup(){
 void loop(){
     check_serial();
     pid();
-    send_odom();
+    //send_odom();
 }

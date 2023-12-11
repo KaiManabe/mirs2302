@@ -35,17 +35,17 @@ void servo_open(){
 戻り値：なし
 */
 void key(){
-  for(int i=0; i<10; i++){
+  for(int i=0; i<100; i++){
     digitalWrite(SERVO,HIGH);
-    delayMicroseconds(2400);//マイクロ秒
+    delay(3);
     digitalWrite(SERVO,LOW);
-    delay(20);
+    delay(3);
   }
-  delay(3000);
-  for(int i=0; i<10; i++){
+  delay(1000);
+  for(int i=0; i<250; i++){
     digitalWrite(SERVO,HIGH);
-    delayMicroseconds(1300);//マイクロ秒
+    delay(1);
     digitalWrite(SERVO,LOW);
-    delay(20);
+    delay(2);
   }
 }
