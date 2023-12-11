@@ -6,8 +6,8 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(13,GPIO.OUT)
 s = ser.arduino_serial()
 
-def open(): 
+def unlock(): 
     GPIO.output(13, 1)
     s.send(10,[0])   
-    time.sleep(1)
+    time.sleep(3)
     GPIO.output(13, 0)
