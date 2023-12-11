@@ -37,15 +37,15 @@ void servo_open(){
 void key(){
   for(int i=0; i<10; i++){
     digitalWrite(SERVO,HIGH);
-    delayMicroseconds(2400);//マイクロ秒
+    delay(2);
     digitalWrite(SERVO,LOW);
-    delay(20);
+    delay(2);
   }
-  delay(3000);
+  delay(1000);
   for(int i=0; i<10; i++){
     digitalWrite(SERVO,HIGH);
-    delayMicroseconds(1300);//マイクロ秒
+    delay(1);
     digitalWrite(SERVO,LOW);
-    delay(20);
+    delay(1);
   }
 }
