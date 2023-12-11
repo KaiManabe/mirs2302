@@ -69,7 +69,7 @@ void check_serial(){
             break;
         
         case 10:
-            //servo_open();
+            key();
             break;
 
         default:
