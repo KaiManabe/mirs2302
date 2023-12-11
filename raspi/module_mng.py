@@ -2,6 +2,7 @@ import serial_com as ser
 import RPi.GPIO as GPIO
 import time
 
+# Arduinoでモジュールの種類を識別して、ラベル名を適宜変えたい！！！！！！！
 doorPinNum = {
             'paper_under': {
                 'servo':13, 'switch':16
@@ -76,7 +77,7 @@ class module_controller():
             
     def battery_surv(self):
         """
-        バッテリー電圧を監視する
+        バッテリー電圧を監視する　作成途中
         
         引数：
             なし
@@ -84,6 +85,32 @@ class module_controller():
             バッテリー電圧[V]
         """
         self.serial.send(5, [0])
+
+    def identify_module(self):
+        """
+        モジュールを識別をする　作成途中
+        
+        引数：
+            なし
+        戻り値
+            ああああああああああ
+        """
+        err_rate=20 # 許容誤差範囲[%]
+        
+        acc_res_range = [240 * (100 - err_rate) / 100, 240 * (100 + err_rate) / 100] # 小物抵抗値範囲
+        doc_res_range = [1000 * (100 - err_rate) / 100, 1000 * (100 + err_rate) / 100] # 資料抵抗値範囲
+        ins_res_range = [2000 * (100 - err_rate) / 100, 2000 * (100 + err_rate) / 100] # 保冷・保温抵抗値範囲
+        
+        self.serial.send(3, [0]) # モジュール問い合わせ
+        
+        # 帰ってきたやつをfor [1段目, 2段目, ３段目] in resistance:で回す？
+        if acc_res_range[0] <= resistance <= acc_res_range[1]:
+            return "accessories"
+        elif doc_res_range[0] <= resistance <= doc_res_range[1]:
+            return "document"
+        elif ins_res_range[0] <= resistance <= ins_res_range[1]:
+            return "insulation"
+
             
             
 if __name__ == '__main__':
