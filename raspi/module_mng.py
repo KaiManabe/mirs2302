@@ -50,10 +50,11 @@ class module_controller():
         GPIO.setup(doorPinNum[door_name]['servo'], GPIO.OUT)
         
         GPIO.output(doorPinNum[door_name]['servo'], 1)
-        self.serial.send(10, [])
-        time.sleep(4) # Arduino側のサーボを開けてから閉じるまでの時間が3sなので、1s余裕を持たせておく
+        time.sleep(0.5) # なぜか0.5秒待たないと動かない
+        self.serial.send(10, [0])
+        time.sleep(4) # Arduino側のサーボを開けてから閉じるまでの時間が3sなので、0.5s余裕を持たせておく
         GPIO.output(doorPinNum[door_name]['servo'], 0)
-            
+    
     def microSW_surv(self, door_name):
         """
         扉の開閉を監視する
@@ -82,10 +83,15 @@ class module_controller():
         戻り値：
             バッテリー電圧[V]
         """
-        self.serial.send(5, [])
+        self.serial.send(5, [0])
             
             
 if __name__ == '__main__':
     s = ser.arduino_serial()
     m = module_controller(s)
     m.door_open('paper_under')
+    m.door_open('paper_upper')
+    m.door_open('accessories_right')
+    m.door_open('accessories_left')
+    m.door_open('hot')
+    m.door_open('cold')
