@@ -70,6 +70,13 @@ defineされている場合には、ゲインを保存する。
 //サーボpwm値出力ピン
 #define SERVO 10
 
+//ペルチェ素子リレー出力ピン
+#define PELTIER 1
+
+//サーミスタ値読み取りピン
+#define THERMISTOR1 A0
+#define THERMISTOR2 A1
+
 //型ごとの最大値
 #define UINTMAX 65535
 #define LONGMAX 2147483647

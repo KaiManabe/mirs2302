@@ -49,3 +49,47 @@ void key(){
     delay(2);
   }
 }
+
+/*
+サーミスタの読み取りとペルチェ素子制御
+
+引数：なし
+
+戻り値：なし
+*/
+void module_temp(){
+  double target_temp1 = ;
+  double target_temp2 = ;
+  float temp1 = analogRead(THERMISTOR1);
+  float temp2 = analogRead(THERMISTOR2);
+  //保冷用モジュール
+  if(temp1 <= target_temp1){
+    digitalWrite(PELTIER,HIGH);
+  }else{
+    digitalWrite(PELTIER,LOW);
+  }
+
+  //保温用モジュール
+  if(temp2 >= target_temp2){
+    digitalWrite(PELTIER,HIGH);
+  }else{
+    digitalWrite(PELTIER,LOW);
+  }
+}
+
+/*
+ペルチェ素子の制御（ペルチェ単体試験のみ）
+
+引数：
+      ペルチェon：1
+      ペルチェoff:0
+
+戻り値：なし
+*/
+void peltier(int p){
+  if(p == 1){
+    digitalWrite(PELTIER,HIGH);
+  }else if(p == 0){
+    digitalWrite(PELTIER,LOW);
+  }  
+}

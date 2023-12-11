@@ -28,6 +28,13 @@ void init_pin(){
     pinMode(L_MOT_PWM, OUTPUT);
     pinMode(R_MOT_PWM, OUTPUT);
 
+    //ペルチェ素子リレー出力ピン宣言
+    pinMode(PELTIER, OUTPUT);
+
+    //サーミスタ値読み取りピン宣言
+    pinMode(THERMISTOR1, INPUT);
+    pinMode(THERMISTOR2, INPUT);
+
     //サーボモータの出力ピン宣言
     pinMode(SERVO, OUTPUT);
     //servo.attach(SERVO, 500, 2500);
