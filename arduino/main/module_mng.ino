@@ -85,7 +85,7 @@ void module_temp(){
       ペルチェoff:0
 
 戻り値：なし
-*/
+
 void peltier(int p){
   if(p == 1){
     digitalWrite(PELTIER,HIGH);
@@ -93,3 +93,4 @@ void peltier(int p){
     digitalWrite(PELTIER,LOW);
   }  
 }
+*/

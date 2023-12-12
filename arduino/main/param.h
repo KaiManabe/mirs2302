@@ -71,7 +71,7 @@ defineされている場合には、ゲインを保存する。
 #define SERVO 10
 
 //ペルチェ素子リレー出力ピン
-#define PELTIER 1
+#define PELTIER 13
 
 //サーミスタ値読み取りピン
 #define THERMISTOR1 A0
