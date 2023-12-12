@@ -77,14 +77,17 @@ class module_controller():
             
     def battery_surv(self):
         """
-        バッテリー電圧を監視する　作成途中
+        バッテリー電圧を監視する
         
         引数：
             なし
         戻り値：
             バッテリー電圧[V]
         """
-        self.serial.send(5, [])
+        response = self.serial.send_and_read_response(5,[],11)
+        batt_vol = response[0][0]/10
+        
+        return batt_vol
 
     def identify_module(self):
         """
@@ -114,18 +117,19 @@ class module_controller():
             response[4]*254+response[5] # 3段目
             ]
         
-        result = {}
+        # 判定結果を配列にする
+        module_name = {}
         for i, res in enumerate(resistance_list):
             if acc_res_range[0] <= res <= acc_res_range[1]:
-                result[f"module{i + 1}"] = "accessories"
+                module_name[f"module{i + 1}"] = "accessories"
             elif doc_res_range[0] <= res <= doc_res_range[1]:
-                result[f"module{i + 1}"] = "document"
+                module_name[f"module{i + 1}"] = "document"
             elif ins_res_range[0] <= res <= ins_res_range[1]:
-                result[f"module{i + 1}"] = "insulation"
+                module_name[f"module{i + 1}"] = "insulation"
             else:
-                result[f"module{i + 1}"] = -1
+                module_name[f"module{i + 1}"] = -1
                 
-        return result
+        return module_name
 
             
             
