@@ -165,13 +165,12 @@ class module_controller():
         戻り値：
             機体全体の高さ[mm]
         """
-        # ↓メカに聞いて数値直さなきゃ！！！！！！！！！
         # 各モジュールの高さ[mm]
         module_height_list = {
             "base": 230,
             "accessories": 120,
-            "document": 100,
-            "insulation": 100,
+            "document": 160,
+            "insulation": 200,
             "unconnected": 0
         }
         total_height = module_height_list["base"]
