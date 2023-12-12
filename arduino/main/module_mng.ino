@@ -89,7 +89,9 @@ void module_temp(){
 void peltier(int p){
   if(p == 1){
     digitalWrite(PELTIER,HIGH);
+    Serial.plintln("on\n");
   }else if(p == 0){
     digitalWrite(PELTIER,LOW);
+    Serial.println("off\n");
   }  
 }

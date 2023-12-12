@@ -57,7 +57,10 @@ void setup(){
 }
 
 void loop(){
-    check_serial();
-    pid();
+    //check_serial();
+    //pid();
     //send_odom();
+    peltier(1);
+    delay(10000);
+    peltier(0);
 }
