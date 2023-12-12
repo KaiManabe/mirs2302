@@ -4,7 +4,7 @@ import time
 
 # Arduinoでモジュールの種類を識別して、ラベル名を適宜変えたい！！！！！！！
 # エレキの配線決まり次第直す エレキ詳細設計書参照
-doorPinNum = {
+door_pin_num = {
             'paper_under': {
                 'servo':13, 'switch':16
                 },
@@ -31,6 +31,9 @@ doorPinNum = {
             }
 
 class module_controller():
+    """
+    モジュールを制御するクラス
+    """
     def __init__(self, serial_port:ser.arduino_serial):
         """
         コンストラクタ
@@ -52,13 +55,13 @@ class module_controller():
         """
         
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(doorPinNum[door_name]['servo'], GPIO.OUT)
+        GPIO.setup(door_pin_num[door_name]['servo'], GPIO.OUT)
         
-        GPIO.output(doorPinNum[door_name]['servo'], 1)
+        GPIO.output(door_pin_num[door_name]['servo'], 1)
         time.sleep(0.5) # なぜか0.5秒待たないと動かない
         self.serial.send(10, [])
         time.sleep(4) # Arduino側のサーボを開けてから閉じるまでの時間が3sなので、0.5s余裕を持たせておく
-        GPIO.output(doorPinNum[door_name]['servo'], 0)
+        GPIO.output(door_pin_num[door_name]['servo'], 0)
     
     def microSW_surv(self, door_name):
         """
@@ -66,16 +69,22 @@ class module_controller():
         
         引数：
             監視したい扉の名前
+        戻り値：ああああああ
         """
+        # 扉が閉じている時、開いている時のPINの状態どっちだ？？
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(doorPinNum[door_name]['switch'], GPIO.IN)
+        GPIO.setup(door_pin_num[door_name]['switch'], GPIO.IN)
         
-        previous_state = GPIO.input(doorPinNum[door_name]['switch'])
+        previous_state = GPIO.input(door_pin_num[door_name]['switch'])
         
         while True:
-            current_state = GPIO.input(doorPinNum[door_name]['switch'])
+            current_state = GPIO.input(door_pin_num[door_name]['switch'])
+            # PINの状態が変わった時
             if current_state != previous_state:
-                print(f"{door_name}の状態が変化しました: {current_state}")
+                if current_state:
+                    print("扉が開きました")
+                else:
+                    print("扉が閉じました")
                 previous_state = current_state
             time.sleep(0.1)
             
