@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 import time
 
 # Arduinoでモジュールの種類を識別して、ラベル名を適宜変えたい！！！！！！！
+# エレキの配線決まり次第直す エレキ詳細設計書参照
 doorPinNum = {
             'paper_under': {
                 'servo':13, 'switch':16
@@ -36,8 +37,11 @@ class module_controller():
         
         引数：
             serial_port -> serial object : serial_com.pyのarduino_serialクラスのオブジェクトを渡す
+            
+        シリアル通信
         """
         self.serial = serial_port
+        self.module_name_list = self.identify_module()
         
     def door_open(self, door_name):
         """
@@ -98,7 +102,7 @@ class module_controller():
         戻り値
             各段のモジュール名 -> ["module1": "モジュール名", "module2": "モジュール名", "module3": "モジュール名"]
             
-            正しく読み取れていない場合 -> -1
+            接続されていない もしくは 正しく読み取れていない場合 -> -1
         """
         # 抵抗値の許容誤差範囲を定義
         err_rate=20 # 許容誤差範囲[%]
@@ -126,11 +130,35 @@ class module_controller():
                 module_name[f"module{i + 1}"] = "document"
             elif ins_res_range[0] <= res <= ins_res_range[1]:
                 module_name[f"module{i + 1}"] = "insulation"
-            else:
-                module_name[f"module{i + 1}"] = -1
+            else: # 未接続の場合の値を決めてArduinoから送るようにしたほうがいいか？？？？？？？
+                module_name[f"module{i + 1}"] = "unconnected"
                 
         return module_name
+    
+    def height_calculate(self):
+        """
+        機体の高さを算出する関数
+        
+        引数：
+            なし
+        戻り値：
+            機体全体の高さ[mm]
+        """
+        # ↓メカに聞いて数値直さなきゃ！！！！！！！！！
+        # 各モジュールの高さ[mm]
+        module_height_list = {
+            "base": 230,
+            "accessories": 120,
+            "document": 100,
+            "insulation": 100,
+            "unconnected": 0
+        }
+        total_height = module_height_list["base"]
 
+        for module_num, module_name in self.module_name_list.items():
+            total_height += module_height_list[module_name]
+            
+        return total_height
             
             
 # if __name__ == '__main__':
