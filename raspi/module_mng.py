@@ -1,5 +1,6 @@
 import serial_com as ser
 import RPi.GPIO as GPIO
+import threading
 import time
 
 # Arduinoでモジュールの種類を識別して、ラベル名を適宜変えたい！！！！！！！
@@ -34,74 +35,22 @@ class module_controller():
     """
     モジュールを制御するクラス
     """
-    def __init__(self, serial_port:ser.arduino_serial):
+    def __init__(self, serial_port: ser.arduino_serial):
         """
         コンストラクタ
         
         引数：
             serial_port -> serial object : serial_com.pyのarduino_serialクラスのオブジェクトを渡す
-            
-        シリアル通信
         """
         self.serial = serial_port
         self.module_name_list = self.identify_module()
+        self.door_current_state = {}
         
-    def door_open(self, door_name):
-        """
-        扉の鍵を解錠する
+        # 扉の状態を監視するスレッドを走らせる(これ以降常時実行)
+        door_surv_thread = threading.Thread(target = self.door_surv, args = (self,))
+        door_surv_thread.setDaemon(True)
+        door_surv_thread.start()
         
-        引数：
-            解錠したい扉の名前
-        """
-        
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(door_pin_num[door_name]['servo'], GPIO.OUT)
-        
-        GPIO.output(door_pin_num[door_name]['servo'], 1)
-        time.sleep(0.5) # なぜか0.5秒待たないと動かない
-        self.serial.send(10, [])
-        time.sleep(4) # Arduino側のサーボを開けてから閉じるまでの時間が3sなので、0.5s余裕を持たせておく
-        GPIO.output(door_pin_num[door_name]['servo'], 0)
-    
-    def microSW_surv(self, door_name):
-        """
-        扉の開閉を監視する
-        
-        引数：
-            監視したい扉の名前
-        戻り値：ああああああ
-        """
-        # 扉が閉じている時、開いている時のPINの状態どっちだ？？
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(door_pin_num[door_name]['switch'], GPIO.IN)
-        
-        previous_state = GPIO.input(door_pin_num[door_name]['switch'])
-        
-        while True:
-            current_state = GPIO.input(door_pin_num[door_name]['switch'])
-            # PINの状態が変わった時
-            if current_state != previous_state:
-                if current_state:
-                    print("扉が開きました")
-                else:
-                    print("扉が閉じました")
-                previous_state = current_state
-            time.sleep(0.1)
-            
-    def battery_surv(self):
-        """
-        バッテリー電圧を監視する
-        
-        引数：
-            なし
-        戻り値：
-            バッテリー電圧[V]
-        """
-        response = self.serial.send_and_read_response(5,[],11)
-        batt_vol = response[0][0]/10
-        
-        return batt_vol
-
     def identify_module(self):
         """
         モジュールを識別をする
@@ -109,9 +58,12 @@ class module_controller():
         引数：
             なし
         戻り値
-            各段のモジュール名 -> ["module1": "モジュール名", "module2": "モジュール名", "module3": "モジュール名"]
-            
-            接続されていない もしくは 正しく読み取れていない場合 -> -1
+            各段のモジュール名：
+            [
+            "module1": "モジュール名",
+            "module2": "モジュール名",
+            "module3": "モジュール名"
+            ]
         """
         # 抵抗値の許容誤差範囲を定義
         err_rate=20 # 許容誤差範囲[%]
@@ -143,6 +95,66 @@ class module_controller():
                 module_name[f"module{i + 1}"] = "unconnected"
                 
         return module_name
+    
+    def door_surv(self, door_name: str):
+        """
+        扉の開閉状態を監視する
+        
+        引数：
+            監視したい扉の名前
+            
+        ドアの開閉状態フラグ:
+            self.door_current_state[door_name: str]
+        """
+        # 扉が閉じている時、開いている時のPINの状態どっちだ？？
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(door_pin_num[door_name]['switch'], GPIO.IN)
+        
+        # 扉の状態フラグの初期化
+        self.door_current_state[door_name: str]: bool = GPIO.input(door_pin_num[door_name]['switch'])
+        previous_state = self.door_current_state[door_name: str]
+        
+        while True:
+            self.door_current_state[door_name: str]: bool = GPIO.input(door_pin_num[door_name]['switch'])
+            # PINの状態が変わった時
+            if self.door_current_state[door_name: str] != previous_state:
+                if self.door_current_state[door_name: str]:
+                    print(f"扉{door_name}が開きました")
+                else:
+                    print(f"扉{door_name}が閉じました")
+                previous_state = self.door_current_state[door_name: str]
+            time.sleep(0.1) # 0.1sごと監視
+            
+    def door_open(self, door_name: str):
+        """
+        扉の鍵を解錠する
+        
+        引数：
+            解錠したい扉の名前
+        """
+        
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(door_pin_num[door_name]['servo'], GPIO.OUT)
+        
+        GPIO.output(door_pin_num[door_name]['servo'], 1)
+        time.sleep(0.5) # なぜか待たないと動かない
+        self.serial.send(10, [])
+        time.sleep(4) # Arduino側のサーボを開けてから閉じるまでの時間が3sなので、0.5s余裕を持たせておく
+        GPIO.output(door_pin_num[door_name]['servo'], 0)
+            
+    def battery_surv(self):
+        """
+        バッテリー電圧を監視する
+        
+        引数：
+            なし
+        戻り値：
+            バッテリー電圧[V]
+        """
+        response = self.serial.send_and_read_response(5,[],11)
+        batt_vol = response[0][0]/10
+        
+        return batt_vol
     
     def height_calculate(self):
         """
