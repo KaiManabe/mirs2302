@@ -6,30 +6,30 @@ import time
 # Arduinoでモジュールの種類を識別して、ラベル名を適宜変えたい！！！！！！！
 # エレキの配線決まり次第直す エレキ詳細設計書参照
 door_pin_num = {
-            'paper_under': {
-                'servo':13, 'switch':16
-                },
-            
-            'paper_upper': {
-                'servo':15, 'switch':18
-                },
-            
-            'accessories_right': {
-                'servo':19, 'switch':22
-                },
-            
-            'accessories_left': {
-                'servo':21, 'switch':23
-                },
-            
-            'hot': {
-                'servo':29, 'switch':32
-                },
-            
-            'cold': {
-                'servo':31, 'switch':33
-                     }
-            }
+    'paper_under': {
+        'servo':13, 'switch':16
+    },
+    
+    'paper_upper': {
+        'servo':15, 'switch':18
+    },
+    
+    'accessories_right': {
+        'servo':19, 'switch':22
+    },
+    
+    'accessories_left': {
+        'servo':21, 'switch':23
+    },
+    
+    'hot': {
+        'servo':29, 'switch':32
+    },
+    
+    'cold': {
+        'servo':31, 'switch':33
+    }
+}
 
 class module_controller():
     """
@@ -43,9 +43,28 @@ class module_controller():
             serial_port -> serial object : serial_com.pyのarduino_serialクラスのオブジェクトを渡す
         """
         self.serial = serial_port
-        self.module_name_list = self.identify_module()
         self.door_current_state = {}
+        self.module_name_list = self.identify_module()
+        # 各モジュールの情報
+        self.module_info = {
+            "base": {
+                "height": 230
+            },
+            "accessories": {
+                "height": 120
+            },
+            "document": {
+                "height": 160
+            },
+            "insulation": {
+                "height": 200
+            },
+            "unconnected": {
+                "height": 0
+            }
+        }
         
+        # 渡す引数を決まり次第変える！！！！！！！！
         # 扉の状態を監視するスレッドを走らせる(これ以降常時実行)
         door_surv_thread = threading.Thread(target = self.door_surv, args = (self,))
         door_surv_thread.setDaemon(True)
@@ -165,18 +184,10 @@ class module_controller():
         戻り値：
             機体全体の高さ[mm]
         """
-        # 各モジュールの高さ[mm]
-        module_height_list = {
-            "base": 230,
-            "accessories": 120,
-            "document": 160,
-            "insulation": 200,
-            "unconnected": 0
-        }
-        total_height = module_height_list["base"]
+        total_height = self.module_info["base"]["height"]
 
         for module_num, module_name in self.module_name_list.items():
-            total_height += module_height_list[module_name]
+            total_height += self.module_info[module_name]["height"]
             
         return total_height
             
