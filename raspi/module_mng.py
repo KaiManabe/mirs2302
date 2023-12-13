@@ -109,6 +109,19 @@ class module_controller():
                     self.door_surv_thread[module_num][door_num].start()
         print(f"[INFO][module_mng.py] : モジュールと扉の状態の監視を開始しました")
         
+    def read(self):
+        # 回路ができたらこいつ使う↓！！！！！！！！！！
+        result = self.serial.send_and_read_response(3, [], 12)
+        response = result[0]
+        # response = [0, 240, 3, 238, 7, 222] # 仮の値 240Ω 1000Ω 2000Ω
+        
+        # 抵抗値を計算
+        self.resistance_list = [
+            response[0]*254+response[1], # 1段目
+            response[2]*254+response[3], # 2段目
+            response[4]*254+response[5] # 3段目
+            ]
+        
     def identify_module(self):
         """
         モジュールを識別をする
@@ -122,20 +135,8 @@ class module_controller():
         doc_res_range = [1000 * (100 - err_rate) / 100, 1000 * (100 + err_rate) / 100] # 資料抵抗値範囲
         ins_res_range = [2000 * (100 - err_rate) / 100, 2000 * (100 + err_rate) / 100] # 保冷・保温抵抗値範囲
         
-        # 回路ができたらこいつ使う↓！！！！！！！！！！
-        # result = self.serial.send_and_read_response(3, [], 12)
-        # response = result[0]
-        response = [0, 240, 3, 238, 7, 222] # 仮の値 240Ω 1000Ω 2000Ω
-        
-        # 抵抗値を計算
-        resistance_list = [
-            response[0]*254+response[1], # 1段目
-            response[2]*254+response[3], # 2段目
-            response[4]*254+response[5] # 3段目
-            ]
-        
         # 各段のモジュール名を振り付け
-        for i, res in enumerate(resistance_list):
+        for i, res in enumerate(self.resistance_list):
             if acc_res_range[0] <= res <= acc_res_range[1]:
                 self.module_info[f"module{i + 1}"]["name"] = "accessories"
             elif doc_res_range[0] <= res <= doc_res_range[1]:
