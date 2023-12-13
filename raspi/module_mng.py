@@ -17,7 +17,7 @@ class module_controller():
         """
         self.serial = serial_port
         
-        """各段のモジュール情報を初期化"""
+        """搭載モジュール情報を初期化"""
         self.module_info = {
             "module1": {
                 "name": "",
@@ -79,7 +79,7 @@ class module_controller():
         }
         self.identify_module() # 各段のモジュール名を振り付け
         
-        # 各モジュールの高さ[mm]
+        """各モジュールの高さ[mm]"""
         self.module_height = {
             "base": {
                 "height": 230
@@ -123,7 +123,8 @@ class module_controller():
         ins_res_range = [2000 * (100 - err_rate) / 100, 2000 * (100 + err_rate) / 100] # 保冷・保温抵抗値範囲
         
         # 回路ができたらこいつ使う↓！！！！！！！！！！
-        # response = self.serial.send_and_read_response(3,[],12)
+        # result = self.serial.send_and_read_response(3, [], 12)
+        # response = result[0]
         response = [0, 240, 3, 238, 7, 222] # 仮の値 240Ω 1000Ω 2000Ω
         
         # 抵抗値を計算
