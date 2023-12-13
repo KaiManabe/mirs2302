@@ -16,7 +16,7 @@ class module_controller():
         """
         self.serial = serial_port
         
-        # 各段のモジュール情報
+        """各段のモジュール情報を初期化"""
         self.module_rank_info = {
             "module1": {
                 "name": "",
@@ -25,14 +25,16 @@ class module_controller():
                         "servo":13,
                         "switch":16
                     },
-                    "current_state": False
+                    "Unlocked": False,
+                    "current_state": True
                 },
                 "door2": {
                     "pin": {
                         "servo":15,
                         "switch":18
                     },
-                    "current_state": False
+                    "Unlocked": False,
+                    "current_state": True
                 }
             },
             "module2": {
@@ -42,14 +44,16 @@ class module_controller():
                         "servo":19,
                         "switch":22
                     },
-                    "current_state": False
+                    "Unlocked": False,
+                    "current_state": True
                 },
                 "door2": {
                     "pin": {
                         "servo":21,
                         "switch":23
                     },
-                    "current_state": False
+                    "Unlocked": False,
+                    "current_state": True
                 }
             },
             "module3": {
@@ -59,14 +63,16 @@ class module_controller():
                         "servo":29,
                         "switch":32
                     },
-                    "current_state": False
+                    "Unlocked": False,
+                    "current_state": True
                 },
                 "door2": {
                     "pin": {
                         "servo":31,
                         "switch":33
                     },
-                    "current_state": False
+                    "Unlocked": False,
+                    "current_state": True
                 }
             }
         }
@@ -101,7 +107,7 @@ class module_controller():
                     self.door_surv_thread[module_num][door_num] = threading.Thread(target = self.door_surv, args = (module_num, door_num,))
                     self.door_surv_thread[module_num][door_num].setDaemon(True)
                     self.door_surv_thread[module_num][door_num].start()
-                    print(f"{module_num},{door_num}の監視を開始しました")
+                    print(f"[INFO][module_controller] : {module_num},{door_num}の監視を開始しました")
         
     def identify_module(self):
         """
@@ -118,7 +124,7 @@ class module_controller():
         
         # 回路ができたらこいつ使う↓
         # response = self.serial.send_and_read_response(3,[],12)
-        response = [0, 240, 3, 238, 0, 20] # 仮の値 240Ω 1000Ω 2000Ω
+        response = [0, 240, 3, 238, 7, 222] # 仮の値 240Ω 1000Ω 2000Ω
         
         # 抵抗値を計算
         resistance_list = [
@@ -140,21 +146,21 @@ class module_controller():
     
     def door_surv(self, module_num: str, door_num: str):
         """
-        扉の開閉状態を監視する
+        扉の開閉状態を監視、こじ開けを検知する
         
         引数：
             module_num : 監視したい扉のモジュール番号 -> str
             
             door_num : 監視したい扉の番号 -> str
             
-        ドアの開閉状態のフラグをセット：
+        扉の開閉状態のフラグをセット：
             self.each_module_info[module_num][door_num]["current_state"]: bool
         """
-        # 扉が閉じている時、開いている時のpinの状態どっちだ？？
+        # 扉が開いているときにTrueとした（内部プルアップ） -> マイクロスイッチが押されている時に導通
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.module_rank_info[module_num][door_num]["pin"]["switch"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
         
-        # 扉の状態フラグの初期化
+        # 扉の開閉状態のフラグを初期化
         self.module_rank_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_rank_info[module_num][door_num]["pin"]["switch"])
         previous_state = self.module_rank_info[module_num][door_num]["current_state"]
         
@@ -162,10 +168,17 @@ class module_controller():
             self.module_rank_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_rank_info[module_num][door_num]["pin"]["switch"])
             # pinの状態が変わった時
             if self.module_rank_info[module_num][door_num]["current_state"] != previous_state:
+                # 扉が開いた場合
                 if self.module_rank_info[module_num][door_num]["current_state"]:
-                    print(f"{module_num},{door_num}が開きました")
+                    # サーボで解錠した場合
+                    if self.module_rank_info[module_num][door_num]["Unlocked"]:
+                        print(f"[INFO][module_controller] : {module_num},{door_num}を解錠しました")
+                    else:
+                        print(f"[INFO][module_controller] : {module_num},{door_num}のこじ開けを検知しました")
+                # 扉が閉じた場合
                 else:
-                    print(f"{module_num},{door_num}が閉じました")
+                    self.module_rank_info[module_num][door_num]["Unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
+                    print(f"[INFO][module_controller] : {module_num},{door_num}が閉じました")
                 previous_state = self.module_rank_info[module_num][door_num]["current_state"]
             time.sleep(0.1) # 0.1sごと監視
             
@@ -180,13 +193,18 @@ class module_controller():
         """
         
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.module_rank_info[module_num][door_num]["servo"], GPIO.OUT)
+        GPIO.setup(self.module_rank_info[module_num][door_num]["pin"]["servo"], GPIO.OUT)
         
-        GPIO.output(self.module_rank_info[module_num][door_num]["servo"], True)
+        self.module_rank_info[module_num][door_num]["Unlocked"]: bool = True # こじ開け検知用フラグを"解錠した"に設定
+        GPIO.output(self.module_rank_info[module_num][door_num]["pin"]["servo"], True)
         time.sleep(0.5) # なぜか待たないと動かない
+        
         self.serial.send(10, [])
-        time.sleep(4) # Arduino側のサーボを開けてから閉じるまでの時間が3sなので、0.5s余裕を持たせておく
-        GPIO.output(self.module_rank_info[module_num][door_num]["servo"], False)
+        print(f"[INFO][module_controller] : 解錠中...")
+        time.sleep(3) # Arduino側のサーボを開けてから閉じるまでの時間が3s
+        time.sleep(0.5) # 0.5s余裕を持たせておく
+
+        GPIO.output(self.module_rank_info[module_num][door_num]["pin"]["servo"], False)
             
     def battery_surv(self):
         """
@@ -208,20 +226,13 @@ class module_controller():
             機体全体の高さ[mm]
         """
         total_height = self.each_module_info["base"]["height"]
-
-        total_height += self.each_module_info[ self.module_rank_info["module1"]["name"] ]["height"]
-        total_height += self.each_module_info[ self.module_rank_info["module2"]["name"] ]["height"]
-        total_height += self.each_module_info[ self.module_rank_info["module3"]["name"] ]["height"]
+        
+        for module in self.module_rank_info.values():
+            total_height += self.each_module_info[module["name"]]["height"]
             
         return total_height
             
             
-# if __name__ == '__main__':
-#     s = ser.arduino_serial()
-#     m = module_controller(s)
-#     m.door_open('paper_under')
-#     m.door_open('paper_upper')
-#     m.door_open('accessories_right')
-#     m.door_open('accessories_left')
-#     m.door_open('hot')
-#     m.door_open('cold')
+if __name__ == '__main__':
+    s = ser.arduino_serial()
+    m = module_controller(s)
