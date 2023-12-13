@@ -98,9 +98,11 @@ class module_controller():
         }
         
         """モジュール抵抗値を取得するスレッドを走らせる(これ以降常時実行)"""
-        read_resistance_thread = threading.Thread(target = self.read_resistance)
-        read_resistance_thread.setDaemon(True)
-        read_resistance_thread.start()
+        self.resistance_list = []
+        resistance_read_thread = threading.Thread(target = self.resistance_read)
+        resistance_read_thread.setDaemon(True)
+        resistance_read_thread.start()
+        time.sleep(1) # 抵抗値を読み取るまで待つ
         
         self.identify_module() # 各段のモジュール名を初期化
         
@@ -115,7 +117,7 @@ class module_controller():
                     self.door_surv_thread[module_num][door_num].start()
         print(f"[INFO][module_mng.py] : モジュールと扉の状態の監視を開始しました")
         
-    def read_resistance(self):
+    def resistance_read(self):
         """
         モジュール抵抗値を取得する
         
@@ -124,9 +126,9 @@ class module_controller():
         """
         while True:
             # 回路ができたらこいつ使う↓！！！！！！！！！！
-            # result = self.serial.send_and_read_response(3, [], 12)
-            # response = result[0]
-            response = [0, 240, 3, 238, 7, 222] # 仮の値 240Ω 1000Ω 2000Ω
+            result = self.serial.send_and_read_response(3, [], 12)
+            response = result[0]
+            # response = [0, 240, 3, 238, 7, 222] # 仮の値 240Ω 1000Ω 2000Ω
         
             # 抵抗値を計算
             self.resistance_list = [
@@ -207,7 +209,7 @@ class module_controller():
             if module_previous_state != self.module_info[module_num]["name"]:
                 print(f"[INFO][module_mng.py] : {module_num}が取り外されました")
             
-            time.sleep(0.1) # 0.1sごと監視
+            time.sleep(1) # 1sごとに監視する
             
     def door_open(self, module_num: str, door_num: str):
         """
@@ -243,7 +245,7 @@ class module_controller():
         戻り値：
             バッテリー電圧[V]
         """
-        response = self.serial.send_and_read_response(5,[],11)
+        response = self.serial.send_and_read_response(5, [], 11)
         batt_vol = response[0][0]/10
         
         return batt_vol
