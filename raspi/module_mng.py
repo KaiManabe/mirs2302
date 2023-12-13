@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 import threading
 import time
 
+# モジュール空き状況未実装、モジュール取り外し検知機能いる？？？？？？？？
 class module_controller():
     """
     モジュールを制御するクラス
@@ -17,7 +18,7 @@ class module_controller():
         self.serial = serial_port
         
         """各段のモジュール情報を初期化"""
-        self.module_rank_info = {
+        self.module_info = {
             "module1": {
                 "name": "",
                 "door1": {
@@ -78,8 +79,8 @@ class module_controller():
         }
         self.identify_module() # 各段のモジュール名を振り付け
         
-        # 各モジュールについての情報
-        self.each_module_info = {
+        # 各モジュールの高さ[mm]
+        self.module_height = {
             "base": {
                 "height": 230
             },
@@ -100,29 +101,29 @@ class module_controller():
         self.door_surv_thread = {} # スレッド用配列
         
         """各扉の状態を監視するスレッドを走らせる(これ以降常時実行)"""
-        for module_num, module_info in self.module_rank_info.items():
+        for module_num, module_info in self.module_info.items():
             self.door_surv_thread.setdefault(module_num, {})
             for door_num, door_info in module_info.items(): # for文でモジュール番号、扉番号を取り出す
                 if "door" in door_num:
                     self.door_surv_thread[module_num][door_num] = threading.Thread(target = self.door_surv, args = (module_num, door_num,))
                     self.door_surv_thread[module_num][door_num].setDaemon(True)
                     self.door_surv_thread[module_num][door_num].start()
-                    print(f"[INFO][module_controller] : {module_num},{door_num}の監視を開始しました")
+                    print(f"[INFO][module_mng.py] : {module_num}-{door_num}の監視を開始しました")
         
     def identify_module(self):
         """
         モジュールを識別をする
         
         各段のモジュールの名前をセット：
-            self.module_rank_info[module_num]["name"]: str
+            self.module_info[module_num]["name"]: str
         """
         # 抵抗値の許容誤差範囲を定義
-        err_rate=20 # 許容誤差範囲[%]
+        err_rate = 20 # 許容誤差範囲[%]
         acc_res_range = [240 * (100 - err_rate) / 100, 240 * (100 + err_rate) / 100] # 小物抵抗値範囲
         doc_res_range = [1000 * (100 - err_rate) / 100, 1000 * (100 + err_rate) / 100] # 資料抵抗値範囲
         ins_res_range = [2000 * (100 - err_rate) / 100, 2000 * (100 + err_rate) / 100] # 保冷・保温抵抗値範囲
         
-        # 回路ができたらこいつ使う↓
+        # 回路ができたらこいつ使う↓！！！！！！！！！！
         # response = self.serial.send_and_read_response(3,[],12)
         response = [0, 240, 3, 238, 7, 222] # 仮の値 240Ω 1000Ω 2000Ω
         
@@ -136,13 +137,13 @@ class module_controller():
         # 各段のモジュール名を振り付け
         for i, res in enumerate(resistance_list):
             if acc_res_range[0] <= res <= acc_res_range[1]:
-                self.module_rank_info[f"module{i + 1}"]["name"] = "accessories"
+                self.module_info[f"module{i + 1}"]["name"] = "accessories"
             elif doc_res_range[0] <= res <= doc_res_range[1]:
-                self.module_rank_info[f"module{i + 1}"]["name"] = "document"
+                self.module_info[f"module{i + 1}"]["name"] = "document"
             elif ins_res_range[0] <= res <= ins_res_range[1]:
-                self.module_rank_info[f"module{i + 1}"]["name"] = "insulation"
+                self.module_info[f"module{i + 1}"]["name"] = "insulation"
             else: # 未接続の場合の値を決めてArduinoから送るようにしたほうがいいか？？？？？？？
-                self.module_rank_info[f"module{i + 1}"]["name"] = "unconnected"
+                self.module_info[f"module{i + 1}"]["name"] = "unconnected"
     
     def door_surv(self, module_num: str, door_num: str):
         """
@@ -154,32 +155,32 @@ class module_controller():
             door_num : 監視したい扉の番号 -> str
             
         扉の開閉状態のフラグをセット：
-            self.each_module_info[module_num][door_num]["current_state"]: bool
+            self.module_info[module_num][door_num]["current_state"]: bool
         """
         # 扉が開いているときにTrueとした（内部プルアップ） -> マイクロスイッチが押されている時に導通
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.module_rank_info[module_num][door_num]["pin"]["switch"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.module_info[module_num][door_num]["pin"]["switch"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
         
         # 扉の開閉状態のフラグを初期化
-        self.module_rank_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_rank_info[module_num][door_num]["pin"]["switch"])
-        previous_state = self.module_rank_info[module_num][door_num]["current_state"]
+        self.module_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
+        previous_state = self.module_info[module_num][door_num]["current_state"]
         
         while True:
-            self.module_rank_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_rank_info[module_num][door_num]["pin"]["switch"])
+            self.module_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
             # pinの状態が変わった時
-            if self.module_rank_info[module_num][door_num]["current_state"] != previous_state:
+            if self.module_info[module_num][door_num]["current_state"] != previous_state:
                 # 扉が開いた場合
-                if self.module_rank_info[module_num][door_num]["current_state"]:
+                if self.module_info[module_num][door_num]["current_state"]:
                     # サーボで解錠した場合
-                    if self.module_rank_info[module_num][door_num]["Unlocked"]:
-                        print(f"[INFO][module_controller] : {module_num},{door_num}を解錠しました")
+                    if self.module_info[module_num][door_num]["Unlocked"]:
+                        print(f"[INFO][module_mng.py] : {module_num}-{door_num}を解錠しました")
                     else:
-                        print(f"[INFO][module_controller] : {module_num},{door_num}のこじ開けを検知しました")
+                        print(f"[INFO][module_mng.py] : {module_num}-{door_num}のこじ開けを検知しました")
                 # 扉が閉じた場合
                 else:
-                    self.module_rank_info[module_num][door_num]["Unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
-                    print(f"[INFO][module_controller] : {module_num},{door_num}が閉じました")
-                previous_state = self.module_rank_info[module_num][door_num]["current_state"]
+                    self.module_info[module_num][door_num]["Unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
+                    print(f"[INFO][module_mng.py] : {module_num}-{door_num}が閉じました")
+                previous_state = self.module_info[module_num][door_num]["current_state"]
             time.sleep(0.1) # 0.1sごと監視
             
     def door_open(self, module_num: str, door_num: str):
@@ -193,18 +194,21 @@ class module_controller():
         """
         
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.module_rank_info[module_num][door_num]["pin"]["servo"], GPIO.OUT)
+        GPIO.setup(self.module_info[module_num][door_num]["pin"]["servo"], GPIO.OUT)
         
-        self.module_rank_info[module_num][door_num]["Unlocked"]: bool = True # こじ開け検知用フラグを"解錠した"に設定
-        GPIO.output(self.module_rank_info[module_num][door_num]["pin"]["servo"], True)
+        self.module_info[module_num][door_num]["Unlocked"]: bool = True # こじ開け検知用フラグを"解錠した"に設定
+        GPIO.output(self.module_info[module_num][door_num]["pin"]["servo"], True)
         time.sleep(0.5) # なぜか待たないと動かない
         
         self.serial.send(10, [])
-        print(f"[INFO][module_controller] : 解錠中...")
+        print(f"[INFO][module_mng.py] : 解錠中...")
         time.sleep(3) # Arduino側のサーボを開けてから閉じるまでの時間が3s
         time.sleep(0.5) # 0.5s余裕を持たせておく
 
-        GPIO.output(self.module_rank_info[module_num][door_num]["pin"]["servo"], False)
+        GPIO.output(self.module_info[module_num][door_num]["pin"]["servo"], False)
+        time.sleep(0.5)
+        
+        GPIO.cleanup(self.module_info[module_num][door_num]["pin"]["servo"]) # GPIOピンを解放
             
     def battery_surv(self):
         """
@@ -225,10 +229,10 @@ class module_controller():
         戻り値：
             機体全体の高さ[mm]
         """
-        total_height = self.each_module_info["base"]["height"]
+        total_height = self.module_height["base"]["height"]
         
-        for module in self.module_rank_info.values():
-            total_height += self.each_module_info[module["name"]]["height"]
+        for module in self.module_info.values():
+            total_height += self.module_height[module["name"]]["height"]
             
         return total_height
             
