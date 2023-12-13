@@ -17,7 +17,8 @@ class module_controller():
         """
         self.serial = serial_port
         
-        """搭載モジュール情報を初期化"""
+        print(f"[INFO][module_mng.py] : モジュール情報初期化中...")
+        """搭載モジュール情報"""
         self.module_info = {
             "module1": {
                 "name": "",
@@ -102,9 +103,10 @@ class module_controller():
         resistance_read_thread = threading.Thread(target = self.resistance_read)
         resistance_read_thread.setDaemon(True)
         resistance_read_thread.start()
-        time.sleep(1) # 抵抗値を読み取るまで待つ
         
-        self.identify_module() # 各段のモジュール名を初期化
+        time.sleep(1) # 抵抗値を読み取るまで待つ
+        self.identify_module() # 搭載モジュール情報を初期化
+        print(f"[INFO][module_mng.py] : モジュール情報初期化完了")
         
         """モジュールの状態と扉の開閉状態を監視し、取り外しとこじ開けを検知するスレッドを走らせる(これ以降常時実行)"""
         self.door_surv_thread = {} # スレッド用配列
@@ -121,14 +123,14 @@ class module_controller():
         """
         モジュール抵抗値を取得する
         
-        モジュール抵抗値をセット：
+        モジュール抵抗値[Ω]をセット：
             self.resistance_list: int
         """
         while True:
             # 回路ができたらこいつ使う↓！！！！！！！！！！
-            result = self.serial.send_and_read_response(3, [], 12)
-            response = result[0]
-            # response = [0, 240, 3, 238, 7, 222] # 仮の値 240Ω 1000Ω 2000Ω
+            # result = self.serial.send_and_read_response(3, [], 12)
+            # response = result[0]
+            response = [0, 240, 3, 238, 7, 222] # 仮の値 240Ω 1000Ω 2000Ω
         
             # 抵抗値を計算
             self.resistance_list = [
