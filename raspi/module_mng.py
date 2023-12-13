@@ -152,7 +152,7 @@ class module_controller():
         """
         # 扉が閉じている時、開いている時のpinの状態どっちだ？？
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.module_rank_info[module_num][door_num]["pin"]["switch"], GPIO.IN)
+        GPIO.setup(self.module_rank_info[module_num][door_num]["pin"]["switch"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
         
         # 扉の状態フラグの初期化
         self.module_rank_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_rank_info[module_num][door_num]["pin"]["switch"])
