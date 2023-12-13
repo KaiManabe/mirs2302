@@ -26,7 +26,7 @@ class module_controller():
                         "servo":13,
                         "switch":16
                     },
-                    "Unlocked": False,
+                    "unlocked": False,
                     "current_state": True
                 },
                 "door2": {
@@ -34,7 +34,7 @@ class module_controller():
                         "servo":15,
                         "switch":18
                     },
-                    "Unlocked": False,
+                    "unlocked": False,
                     "current_state": True
                 }
             },
@@ -45,7 +45,7 @@ class module_controller():
                         "servo":19,
                         "switch":22
                     },
-                    "Unlocked": False,
+                    "unlocked": False,
                     "current_state": True
                 },
                 "door2": {
@@ -53,7 +53,7 @@ class module_controller():
                         "servo":21,
                         "switch":23
                     },
-                    "Unlocked": False,
+                    "unlocked": False,
                     "current_state": True
                 }
             },
@@ -64,7 +64,7 @@ class module_controller():
                         "servo":29,
                         "switch":32
                     },
-                    "Unlocked": False,
+                    "unlocked": False,
                     "current_state": True
                 },
                 "door2": {
@@ -72,7 +72,7 @@ class module_controller():
                         "servo":31,
                         "switch":33
                     },
-                    "Unlocked": False,
+                    "unlocked": False,
                     "current_state": True
                 }
             }
@@ -98,17 +98,16 @@ class module_controller():
             }
         }
         
-        self.door_surv_thread = {} # スレッド用配列
-        
         """各扉の状態を監視するスレッドを走らせる(これ以降常時実行)"""
+        self.door_surv_thread = {} # スレッド用配列
         for module_num, module_info in self.module_info.items():
             self.door_surv_thread.setdefault(module_num, {})
             for door_num, door_info in module_info.items(): # for文でモジュール番号、扉番号を取り出す
                 if "door" in door_num:
-                    self.door_surv_thread[module_num][door_num] = threading.Thread(target = self.door_surv, args = (module_num, door_num,))
+                    self.door_surv_thread[module_num][door_num] = threading.Thread(target = self.state_surv, args = (module_num, door_num,))
                     self.door_surv_thread[module_num][door_num].setDaemon(True)
                     self.door_surv_thread[module_num][door_num].start()
-                    print(f"[INFO][module_mng.py] : {module_num}-{door_num}の監視を開始しました")
+        print(f"[INFO][module_mng.py] : モジュールと扉の状態の監視を開始しました")
         
     def identify_module(self):
         """
@@ -145,9 +144,9 @@ class module_controller():
             else: # 未接続の場合の値を決めてArduinoから送るようにしたほうがいいか？？？？？？？
                 self.module_info[f"module{i + 1}"]["name"] = "unconnected"
     
-    def door_surv(self, module_num: str, door_num: str):
+    def state_surv(self, module_num: str, door_num: str):
         """
-        扉の開閉状態を監視、こじ開けを検知する
+        モジュールの状態と扉の開閉状態を監視し、取り外しとこじ開けを検知する
         
         引数：
             module_num : 監視したい扉のモジュール番号 -> str
@@ -163,24 +162,35 @@ class module_controller():
         
         # 扉の開閉状態のフラグを初期化
         self.module_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
-        previous_state = self.module_info[module_num][door_num]["current_state"]
+        door_previous_state = self.module_info[module_num][door_num]["current_state"]
+        
+        # モジュールの初期状態
+        module_previous_state = self.module_info[module_num]["name"]
         
         while True:
+            # 現在の扉の開閉状態を読み取る
             self.module_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
             # pinの状態が変わった時
-            if self.module_info[module_num][door_num]["current_state"] != previous_state:
+            if self.module_info[module_num][door_num]["current_state"] != door_previous_state:
                 # 扉が開いた場合
                 if self.module_info[module_num][door_num]["current_state"]:
                     # サーボで解錠した場合
-                    if self.module_info[module_num][door_num]["Unlocked"]:
+                    if self.module_info[module_num][door_num]["unlocked"]:
                         print(f"[INFO][module_mng.py] : {module_num}-{door_num}を解錠しました")
                     else:
                         print(f"[INFO][module_mng.py] : {module_num}-{door_num}のこじ開けを検知しました")
                 # 扉が閉じた場合
                 else:
-                    self.module_info[module_num][door_num]["Unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
+                    self.module_info[module_num][door_num]["unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
                     print(f"[INFO][module_mng.py] : {module_num}-{door_num}が閉じました")
-                previous_state = self.module_info[module_num][door_num]["current_state"]
+                door_previous_state = self.module_info[module_num][door_num]["current_state"]
+                
+            # 現在のモジュールの状態を読み取る
+            self.identify_module()
+            # モジュールの状態が変わった時
+            if module_previous_state != self.module_info[module_num]["name"]:
+                print(f"[INFO][module_mng.py] : {module_num}が取り外されました")
+            
             time.sleep(0.1) # 0.1sごと監視
             
     def door_open(self, module_num: str, door_num: str):
@@ -196,7 +206,7 @@ class module_controller():
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.module_info[module_num][door_num]["pin"]["servo"], GPIO.OUT)
         
-        self.module_info[module_num][door_num]["Unlocked"]: bool = True # こじ開け検知用フラグを"解錠した"に設定
+        self.module_info[module_num][door_num]["unlocked"]: bool = True # こじ開け検知用フラグを"解錠した"に設定
         GPIO.output(self.module_info[module_num][door_num]["pin"]["servo"], True)
         time.sleep(0.5) # なぜか待たないと動かない
         
