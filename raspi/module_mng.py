@@ -77,7 +77,6 @@ class module_controller():
                 }
             }
         }
-        self.identify_module() # 各段のモジュール名を振り付け
         
         """各モジュールの高さ[mm]"""
         self.module_height = {
@@ -98,7 +97,14 @@ class module_controller():
             }
         }
         
-        """各扉の状態を監視するスレッドを走らせる(これ以降常時実行)"""
+        """モジュール抵抗値を取得するスレッドを走らせる(これ以降常時実行)"""
+        read_resistance_thread = threading.Thread(target = self.read_resistance)
+        read_resistance_thread.setDaemon(True)
+        read_resistance_thread.start()
+        
+        self.identify_module() # 各段のモジュール名を初期化
+        
+        """モジュールの状態と扉の開閉状態を監視し、取り外しとこじ開けを検知するスレッドを走らせる(これ以降常時実行)"""
         self.door_surv_thread = {} # スレッド用配列
         for module_num, module_info in self.module_info.items():
             self.door_surv_thread.setdefault(module_num, {})
@@ -109,18 +115,26 @@ class module_controller():
                     self.door_surv_thread[module_num][door_num].start()
         print(f"[INFO][module_mng.py] : モジュールと扉の状態の監視を開始しました")
         
-    def read(self):
-        # 回路ができたらこいつ使う↓！！！！！！！！！！
-        result = self.serial.send_and_read_response(3, [], 12)
-        response = result[0]
-        # response = [0, 240, 3, 238, 7, 222] # 仮の値 240Ω 1000Ω 2000Ω
+    def read_resistance(self):
+        """
+        モジュール抵抗値を取得する
         
-        # 抵抗値を計算
-        self.resistance_list = [
-            response[0]*254+response[1], # 1段目
-            response[2]*254+response[3], # 2段目
-            response[4]*254+response[5] # 3段目
-            ]
+        モジュール抵抗値をセット：
+            self.resistance_list: int
+        """
+        while True:
+            # 回路ができたらこいつ使う↓！！！！！！！！！！
+            # result = self.serial.send_and_read_response(3, [], 12)
+            # response = result[0]
+            response = [0, 240, 3, 238, 7, 222] # 仮の値 240Ω 1000Ω 2000Ω
+        
+            # 抵抗値を計算
+            self.resistance_list = [
+                response[0]*254+response[1], # 1段目
+                response[2]*254+response[3], # 2段目
+                response[4]*254+response[5] # 3段目
+                ]
+            time.sleep(1) # 1s周期で抵抗値を取得する
         
     def identify_module(self):
         """
