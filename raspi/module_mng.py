@@ -91,6 +91,18 @@ class module_controller():
             }
         }
         
+        self.door_surv_thread = {} # スレッド用配列
+        
+        """各扉の状態を監視するスレッドを走らせる(これ以降常時実行)"""
+        for module_num, module_info in self.module_rank_info.items():
+            self.door_surv_thread.setdefault(module_num, {})
+            for door_num, door_info in module_info.items(): # for文でモジュール番号、扉番号を取り出す
+                if "door" in door_num:
+                    self.door_surv_thread[module_num][door_num] = threading.Thread(target = self.door_surv, args = (module_num, door_num,))
+                    self.door_surv_thread[module_num][door_num].setDaemon(True)
+                    self.door_surv_thread[module_num][door_num].start()
+                    print(f"{module_num},{door_num}の監視を開始しました")
+        
     def identify_module(self):
         """
         モジュールを識別をする
@@ -138,22 +150,22 @@ class module_controller():
         ドアの開閉状態のフラグをセット：
             self.each_module_info[module_num][door_num]["current_state"]: bool
         """
-        # 扉が閉じている時、開いている時のPINの状態どっちだ？？
+        # 扉が閉じている時、開いている時のpinの状態どっちだ？？
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.module_rank_info[module_num][door_num]["PIN"]["switch"], GPIO.IN)
+        GPIO.setup(self.module_rank_info[module_num][door_num]["pin"]["switch"], GPIO.IN)
         
         # 扉の状態フラグの初期化
-        self.module_rank_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_rank_info[module_num][door_num]["PIN"]["switch"])
+        self.module_rank_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_rank_info[module_num][door_num]["pin"]["switch"])
         previous_state = self.module_rank_info[module_num][door_num]["current_state"]
         
         while True:
-            self.module_rank_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_rank_info[module_num][door_num]["PIN"]["switch"])
-            # PINの状態が変わった時
+            self.module_rank_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_rank_info[module_num][door_num]["pin"]["switch"])
+            # pinの状態が変わった時
             if self.module_rank_info[module_num][door_num]["current_state"] != previous_state:
                 if self.module_rank_info[module_num][door_num]["current_state"]:
-                    print(f"扉{door_num}が開きました")
+                    print(f"{module_num},{door_num}が開きました")
                 else:
-                    print(f"扉{door_num}が閉じました")
+                    print(f"{module_num},{door_num}が閉じました")
                 previous_state = self.module_rank_info[module_num][door_num]["current_state"]
             time.sleep(0.1) # 0.1sごと監視
             
