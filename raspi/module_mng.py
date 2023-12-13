@@ -3,34 +3,6 @@ import RPi.GPIO as GPIO
 import threading
 import time
 
-# Arduinoでモジュールの種類を識別して、ラベル名を適宜変えたい！！！！！！！
-# エレキの配線決まり次第直す エレキ詳細設計書参照
-door_pin_num = {
-    'paper_under': {
-        'servo':13, 'switch':16
-    },
-    
-    'paper_upper': {
-        'servo':15, 'switch':18
-    },
-    
-    'accessories_right': {
-        'servo':19, 'switch':22
-    },
-    
-    'accessories_left': {
-        'servo':21, 'switch':23
-    },
-    
-    'hot': {
-        'servo':29, 'switch':32
-    },
-    
-    'cold': {
-        'servo':31, 'switch':33
-    }
-}
-
 class module_controller():
     """
     モジュールを制御するクラス
@@ -43,10 +15,65 @@ class module_controller():
             serial_port -> serial object : serial_com.pyのarduino_serialクラスのオブジェクトを渡す
         """
         self.serial = serial_port
-        self.door_current_state = {}
-        self.module_name_for_num = self.identify_module()
-        # 各モジュールの情報
-        self.module_info = {
+        
+        # 各段のモジュール情報
+        self.module_rank_info = {
+            "module1": {
+                "name": "",
+                "door1": {
+                    "pin": {
+                        "servo":13,
+                        "switch":16
+                    },
+                    "current_state": False
+                },
+                "door2": {
+                    "pin": {
+                        "servo":15,
+                        "switch":18
+                    },
+                    "current_state": False
+                }
+            },
+            "module2": {
+                "name": "",
+                "door1": {
+                    "pin": {
+                        "servo":19,
+                        "switch":22
+                    },
+                    "current_state": False
+                },
+                "door2": {
+                    "pin": {
+                        "servo":21,
+                        "switch":23
+                    },
+                    "current_state": False
+                }
+            },
+            "module3": {
+                "name": "",
+                "door1": {
+                    "pin": {
+                        "servo":29,
+                        "switch":32
+                    },
+                    "current_state": False
+                },
+                "door2": {
+                    "pin": {
+                        "servo":31,
+                        "switch":33
+                    },
+                    "current_state": False
+                }
+            }
+        }
+        self.identify_module() # 各段のモジュール名を振り付け
+        
+        # 各モジュールについての情報
+        self.each_module_info = {
             "base": {
                 "height": 230
             },
@@ -64,25 +91,12 @@ class module_controller():
             }
         }
         
-        # 渡す引数を決まり次第変える！！！！！！！！
-        # 扉の状態を監視するスレッドを走らせる(これ以降常時実行)
-        # door_surv_thread = threading.Thread(target = self.door_surv, args = (self, door_name))
-        # door_surv_thread.setDaemon(True)
-        # door_surv_thread.start()
-        
     def identify_module(self):
         """
         モジュールを識別をする
         
-        引数：
-            なし
-        戻り値
-            各段のモジュール名：
-            [
-            "module1": "モジュール名",
-            "module2": "モジュール名",
-            "module3": "モジュール名"
-            ]
+        各段のモジュールの名前をセット：
+            self.module_rank_info[module_num]["name"]: str
         """
         # 抵抗値の許容誤差範囲を定義
         err_rate=20 # 許容誤差範囲[%]
@@ -92,7 +106,7 @@ class module_controller():
         
         # 回路ができたらこいつ使う↓
         # response = self.serial.send_and_read_response(3,[],12)
-        response = [0, 240, 3, 238, 7, 222] # 仮の値 240Ω 1000Ω 2000Ω
+        response = [0, 240, 3, 238, 0, 20] # 仮の値 240Ω 1000Ω 2000Ω
         
         # 抵抗値を計算
         resistance_list = [
@@ -101,72 +115,71 @@ class module_controller():
             response[4]*254+response[5] # 3段目
             ]
         
-        # 判定結果を配列にする
-        module_name = {}
+        # 各段のモジュール名を振り付け
         for i, res in enumerate(resistance_list):
             if acc_res_range[0] <= res <= acc_res_range[1]:
-                module_name[f"module{i + 1}"] = "accessories"
+                self.module_rank_info[f"module{i + 1}"]["name"] = "accessories"
             elif doc_res_range[0] <= res <= doc_res_range[1]:
-                module_name[f"module{i + 1}"] = "document"
+                self.module_rank_info[f"module{i + 1}"]["name"] = "document"
             elif ins_res_range[0] <= res <= ins_res_range[1]:
-                module_name[f"module{i + 1}"] = "insulation"
+                self.module_rank_info[f"module{i + 1}"]["name"] = "insulation"
             else: # 未接続の場合の値を決めてArduinoから送るようにしたほうがいいか？？？？？？？
-                module_name[f"module{i + 1}"] = "unconnected"
-                
-        return module_name
+                self.module_rank_info[f"module{i + 1}"]["name"] = "unconnected"
     
-    def door_surv(self, door_name: str):
+    def door_surv(self, module_num: str, door_num: str):
         """
         扉の開閉状態を監視する
         
         引数：
-            監視したい扉の名前
+            module_num : 監視したい扉のモジュール番号 -> str
             
-        ドアの開閉状態フラグ:
-            self.door_current_state[door_name: str]
+            door_num : 監視したい扉の番号 -> str
+            
+        ドアの開閉状態のフラグをセット：
+            self.each_module_info[module_num][door_num]["current_state"]: bool
         """
         # 扉が閉じている時、開いている時のPINの状態どっちだ？？
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(door_pin_num[door_name]['switch'], GPIO.IN)
+        GPIO.setup(self.module_rank_info[module_num][door_num]["PIN"]["switch"], GPIO.IN)
         
         # 扉の状態フラグの初期化
-        self.door_current_state[door_name: str]: bool = GPIO.input(door_pin_num[door_name]['switch'])
-        previous_state = self.door_current_state[door_name: str]
+        self.module_rank_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_rank_info[module_num][door_num]["PIN"]["switch"])
+        previous_state = self.module_rank_info[module_num][door_num]["current_state"]
         
         while True:
-            self.door_current_state[door_name: str]: bool = GPIO.input(door_pin_num[door_name]['switch'])
+            self.module_rank_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_rank_info[module_num][door_num]["PIN"]["switch"])
             # PINの状態が変わった時
-            if self.door_current_state[door_name: str] != previous_state:
-                if self.door_current_state[door_name: str]:
-                    print(f"扉{door_name}が開きました")
+            if self.module_rank_info[module_num][door_num]["current_state"] != previous_state:
+                if self.module_rank_info[module_num][door_num]["current_state"]:
+                    print(f"扉{door_num}が開きました")
                 else:
-                    print(f"扉{door_name}が閉じました")
-                previous_state = self.door_current_state[door_name: str]
+                    print(f"扉{door_num}が閉じました")
+                previous_state = self.module_rank_info[module_num][door_num]["current_state"]
             time.sleep(0.1) # 0.1sごと監視
             
-    def door_open(self, door_name: str):
+    def door_open(self, module_num: str, door_num: str):
         """
         扉の鍵を解錠する
         
         引数：
-            解錠したい扉の名前
+            module_num : 解錠したい扉のモジュール番号 -> str
+            
+            door_num : 解錠したい扉の番号 -> str
         """
         
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(door_pin_num[door_name]['servo'], GPIO.OUT)
+        GPIO.setup(self.module_rank_info[module_num][door_num]["servo"], GPIO.OUT)
         
-        GPIO.output(door_pin_num[door_name]['servo'], 1)
+        GPIO.output(self.module_rank_info[module_num][door_num]["servo"], True)
         time.sleep(0.5) # なぜか待たないと動かない
         self.serial.send(10, [])
         time.sleep(4) # Arduino側のサーボを開けてから閉じるまでの時間が3sなので、0.5s余裕を持たせておく
-        GPIO.output(door_pin_num[door_name]['servo'], 0)
+        GPIO.output(self.module_rank_info[module_num][door_num]["servo"], False)
             
     def battery_surv(self):
         """
         バッテリー電圧を監視する
         
-        引数：
-            なし
         戻り値：
             バッテリー電圧[V]
         """
@@ -178,16 +191,15 @@ class module_controller():
     def height_calculate(self):
         """
         機体の高さを算出する関数
-        
-        引数：
-            なし
+            
         戻り値：
             機体全体の高さ[mm]
         """
-        total_height = self.module_info["base"]["height"]
+        total_height = self.each_module_info["base"]["height"]
 
-        for module_num, module_name in self.module_name_for_num.items():
-            total_height += self.module_info[module_name]["height"]
+        total_height += self.each_module_info[ self.module_rank_info["module1"]["name"] ]["height"]
+        total_height += self.each_module_info[ self.module_rank_info["module2"]["name"] ]["height"]
+        total_height += self.each_module_info[ self.module_rank_info["module3"]["name"] ]["height"]
             
         return total_height
             
