@@ -44,7 +44,7 @@ class module_controller():
         """
         self.serial = serial_port
         self.door_current_state = {}
-        self.module_name_list = self.identify_module()
+        self.module_name_for_num = self.identify_module()
         # 各モジュールの情報
         self.module_info = {
             "base": {
@@ -66,9 +66,9 @@ class module_controller():
         
         # 渡す引数を決まり次第変える！！！！！！！！
         # 扉の状態を監視するスレッドを走らせる(これ以降常時実行)
-        door_surv_thread = threading.Thread(target = self.door_surv, args = (self,))
-        door_surv_thread.setDaemon(True)
-        door_surv_thread.start()
+        # door_surv_thread = threading.Thread(target = self.door_surv, args = (self, door_name))
+        # door_surv_thread.setDaemon(True)
+        # door_surv_thread.start()
         
     def identify_module(self):
         """
@@ -186,7 +186,7 @@ class module_controller():
         """
         total_height = self.module_info["base"]["height"]
 
-        for module_num, module_name in self.module_name_list.items():
+        for module_num, module_name in self.module_name_for_num.items():
             total_height += self.module_info[module_name]["height"]
             
         return total_height
