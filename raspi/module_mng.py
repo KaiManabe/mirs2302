@@ -3,6 +3,9 @@ import RPi.GPIO as GPIO
 import threading
 import time
 
+RES_GET_CYCLE = 1
+SURV_CYCLE = 1
+
 # モジュール空き状況未実装、モジュール取り外し検知機能いる？？？？？？？？
 class module_controller():
     """
@@ -15,10 +18,10 @@ class module_controller():
         引数：
             serial_port -> serial object : serial_com.pyのarduino_serialクラスのオブジェクトを渡す
         """
+        print(f"[INFO][module_mng.py] : モジュール情報初期化中...")
         self.serial = serial_port
         time.sleep(1) # インスタンスを渡し切るまでキープ ※必須なので消さないこと！！！！！
-        
-        print(f"[INFO][module_mng.py] : モジュール情報初期化中...")
+    
         """搭載モジュール情報"""
         self.module_info = {
             "module1": {
@@ -99,23 +102,16 @@ class module_controller():
             }
         }
         
-        result = self.serial.send_and_read_response(3, [], 12) # [[0, 240, 3, 238, 7, 222]]
-        response = result[0]
-        # 抵抗値を計算
-        self.resistance_list = [
-            response[0]*254+response[1], # 1段目
-            response[2]*254+response[3], # 2段目
-            response[4]*254+response[5] # 3段目
-            ]
-        print(f"抵抗値初期状態：{self.resistance_list}") # デバッグ出力
-        
-        self.identify_module() # 搭載モジュール情報を初期化
-        print(f"[INFO][module_mng.py] : モジュール情報初期化完了")
-        
         """モジュール抵抗値を取得するスレッドを走らせる(これ以降常時実行)"""
         resistance_read_thread = threading.Thread(target = self.resistance_read)
         resistance_read_thread.setDaemon(True)
         resistance_read_thread.start()
+        time.sleep(1) # 抵抗値初期状態を設定し終わるまでキープ
+        print(f"抵抗値初期状態：{self.resistance_list}") # デバッグ出力
+        
+        self.identify_module() # 搭載モジュール情報を初期化
+        time.sleep(1) # 初期化し終わるまでキープ
+        print(f"[INFO][module_mng.py] : モジュール情報初期化完了")
         
         """モジュールの状態と扉の開閉状態を監視し、取り外しとこじ開けを検知するスレッドを走らせる(これ以降常時実行)"""
         door_surv_thread = {} # スレッド用配列
@@ -135,22 +131,17 @@ class module_controller():
         モジュール抵抗値[Ω]をセット：
             self.resistance_list: int
         """
-        try:
-            while True:
-                result = self.serial.send_and_read_response(3, [], 12) # ここで止まっちゃってる（serial_com側のwhileに引っかかってる）
-                response = result[0]
-            
-                # 抵抗値を計算
-                self.resistance_list = [
-                    response[0]*254+response[1], # 1段目
-                    response[2]*254+response[3], # 2段目
-                    response[4]*254+response[5] # 3段目
-                    ]
-                print(self.resistance_list)  # デバッグ出力
-                time.sleep(1) # 1s周期で抵抗値を取得する
-                
-        except Exception as e:
-            print(f"[ERROR][module_mng.py] : resistance_readでエラーが発生しました: {e}")
+        while True:
+            result = self.serial.send_and_read_response(3, [], 12)
+            response = result[0]
+        
+            # 抵抗値を計算
+            self.resistance_list = [
+                response[0]*254+response[1], # 1段目
+                response[2]*254+response[3], # 2段目
+                response[4]*254+response[5] # 3段目
+                ]
+            time.sleep(RES_GET_CYCLE)
         
     def identify_module(self):
         """
@@ -188,7 +179,6 @@ class module_controller():
         扉の開閉状態のフラグをセット：
             self.module_info[module_num][door_num]["current_state"]: bool
         """
-        # あれ？？？？？？？？？？？？？？？？？？
         # 扉が開いているときにTrueとした（内部プルアップ） -> マイクロスイッチが押されている時に導通
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.module_info[module_num][door_num]["pin"]["switch"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -221,10 +211,16 @@ class module_controller():
             # 現在のモジュールの状態を更新
             self.identify_module()
             # モジュールの状態が変わった時
-            if module_previous_state != self.module_info[module_num]["name"]:
-                print(f"[INFO][module_mng.py] : {module_num}が取り外されました")
-            
-            time.sleep(1) # 1sごとに監視する
+            if self.module_info[module_num]["name"] != module_previous_state:
+                # 未接続の場合
+                if self.module_info[module_num]["name"] == "unconnected":
+                    print(f"[INFO][module_mng.py] : {module_previous_state}が取り外されました")
+                # 取り付けられた場合
+                else:
+                    tmp = self.module_info[module_num]["name"]
+                    print(f"[INFO][module_mng.py] : {tmp}が取り付けられました")
+                module_previous_state = self.module_info[module_num]["name"]
+            time.sleep(SURV_CYCLE)
             
     def door_open(self, module_num: str, door_num: str):
         """
