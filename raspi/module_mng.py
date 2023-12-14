@@ -3,10 +3,16 @@ import RPi.GPIO as GPIO
 import threading
 import time
 
-RES_GET_CYCLE = 1 # 識別抵抗値取得周期
+IDEN_CYCLE = 1 # 搭載モジュール情報更新周期
 SURV_CYCLE = 0.2 # 監視周期
 
-# モジュール空き状況未実装、モジュール取り外し検知機能いる？？？？？？？？
+# 抵抗値の許容誤差範囲を定義
+err_rate = 20 # 許容誤差範囲[%]
+acc_res_range = [240 * (100 - err_rate) / 100, 240 * (100 + err_rate) / 100] # 小物抵抗値範囲
+doc_res_range = [1000 * (100 - err_rate) / 100, 1000 * (100 + err_rate) / 100] # 資料抵抗値範囲
+ins_res_range = [2000 * (100 - err_rate) / 100, 2000 * (100 + err_rate) / 100] # 保冷・保温抵抗値範囲
+
+# モジュール空き状況未実装
 class module_controller():
     """
     モジュールを制御するクラス
@@ -108,35 +114,32 @@ class module_controller():
         }
         """各モジュールの高さ[mm]"""
         
-        """モジュール抵抗値を取得するスレッドを走らせる(これ以降常時実行)"""
-        resistance_read_thread = threading.Thread(target = self.resistance_read)
-        resistance_read_thread.setDaemon(True)
-        resistance_read_thread.start()
-        time.sleep(1) # 最初の抵抗値を設定し終わるまでキープ
-        
-        self.identify_module() # 搭載モジュール情報を初期化
-        time.sleep(1) # 初期化し終わるまでキープ
+        """モジュールを識別するスレッドを走らせる(これ以降常時実行)"""
+        identify_module_thread = threading.Thread(target = self.identify_module)
+        identify_module_thread.setDaemon(True)
+        identify_module_thread.start()
+        time.sleep(1) # モジュールを識別し終わるまでキープ
         print(f"[INFO][module_mng.py] : モジュール情報初期化完了")
         
         """モジュールの状態と扉の開閉状態を監視し、取り外しとこじ開けを検知するスレッドを走らせる(これ以降常時実行)"""
-        door_surv_thread = {} # スレッド用配列
+        state_surv_thread = {} # スレッド用配列
         for module_num, module_info in self.module_info.items():
-            door_surv_thread.setdefault(module_num, {})
+            state_surv_thread.setdefault(module_num, {})
             for door_num, door_info in module_info.items(): # for文でモジュール番号、扉番号を取り出す
                 if "door" in door_num:
-                    door_surv_thread[module_num][door_num] = threading.Thread(target = self.state_surv, args = (module_num, door_num))
-                    door_surv_thread[module_num][door_num].setDaemon(True)
-                    door_surv_thread[module_num][door_num].start()
+                    state_surv_thread[module_num][door_num] = threading.Thread(target = self.state_surv, args = (module_num, door_num))
+                    state_surv_thread[module_num][door_num].setDaemon(True)
+                    state_surv_thread[module_num][door_num].start()
         print(f"[INFO][module_mng.py] : モジュールと扉の状態の監視を開始しました")
         
-    def resistance_read(self):
+    def identify_module(self):
         """
-        モジュール識別抵抗値を取得する
+        搭載モジュール情報を更新する
         
-        モジュール抵抗値[Ω]をセット（左から順にn段目）:
-            self.resistance_list: list[int]
+        モジュールの名前をセット：
+            self.module_info[module_num]["name"]: str
         """
-        # 一定周期で取得し続ける
+        # 一定周期で識別し続ける
         while True:
             # Arduinoに抵抗値測定指令を出す
             result = self.serial.send_and_read_response(3, [], 12)
@@ -147,41 +150,28 @@ class module_controller():
                 response[0]*254+response[1], # 1段目
                 response[2]*254+response[3], # 2段目
                 response[4]*254+response[5] # 3段目
-                ]
+            ]
             
-            time.sleep(RES_GET_CYCLE)
-        
-    def identify_module(self):
-        """
-        識別抵抗値からモジュールを識別をする
-        
-        各段のモジュールの名前をセット：
-            self.module_info[module_num]["name"]: str
-        """
-        # 抵抗値の許容誤差範囲を定義
-        err_rate = 20 # 許容誤差範囲[%]
-        acc_res_range = [240 * (100 - err_rate) / 100, 240 * (100 + err_rate) / 100] # 小物抵抗値範囲
-        doc_res_range = [1000 * (100 - err_rate) / 100, 1000 * (100 + err_rate) / 100] # 資料抵抗値範囲
-        ins_res_range = [2000 * (100 - err_rate) / 100, 2000 * (100 + err_rate) / 100] # 保冷・保温抵抗値範囲
-        
-        # 各段のモジュール名を振り付け
-        for num, res in enumerate(self.resistance_list, start=1):
-            if acc_res_range[0] <= res <= acc_res_range[1]:
-                self.module_info[f"module{num}"]["name"] = "accessories"
-                self.module_info[f"module{num}"]["door1"]["name"] = "left"
-                self.module_info[f"module{num}"]["door2"]["name"] = "right"
-            elif doc_res_range[0] <= res <= doc_res_range[1]:
-                self.module_info[f"module{num}"]["name"] = "document"
-                self.module_info[f"module{num}"]["door1"]["name"] = "under"
-                self.module_info[f"module{num}"]["door2"]["name"] = "upper"
-            elif ins_res_range[0] <= res <= ins_res_range[1]:
-                self.module_info[f"module{num}"]["name"] = "insulation"
-                self.module_info[f"module{num}"]["door1"]["name"] = "left"
-                self.module_info[f"module{num}"]["door2"]["name"] = "right"
-            else:
-                self.module_info[f"module{num}"]["name"] = "unconnected"
-                self.module_info[f"module{num}"]["door1"]["name"] = ""
-                self.module_info[f"module{num}"]["door2"]["name"] = ""
+            # 搭載モジュール情報を更新
+            for num, res in enumerate(self.resistance_list, start=1):
+                if acc_res_range[0] <= res <= acc_res_range[1]:
+                    self.module_info[f"module{num}"]["name"] = "accessories"
+                    self.module_info[f"module{num}"]["door1"]["name"] = "left"
+                    self.module_info[f"module{num}"]["door2"]["name"] = "right"
+                elif doc_res_range[0] <= res <= doc_res_range[1]:
+                    self.module_info[f"module{num}"]["name"] = "document"
+                    self.module_info[f"module{num}"]["door1"]["name"] = "under"
+                    self.module_info[f"module{num}"]["door2"]["name"] = "upper"
+                elif ins_res_range[0] <= res <= ins_res_range[1]:
+                    self.module_info[f"module{num}"]["name"] = "insulation"
+                    self.module_info[f"module{num}"]["door1"]["name"] = "left"
+                    self.module_info[f"module{num}"]["door2"]["name"] = "right"
+                else:
+                    self.module_info[f"module{num}"]["name"] = "unconnected"
+                    self.module_info[f"module{num}"]["door1"]["name"] = ""
+                    self.module_info[f"module{num}"]["door2"]["name"] = ""
+                
+            time.sleep(IDEN_CYCLE)
     
     def state_surv(self, module_num: str, door_num: str):
         """
@@ -207,7 +197,6 @@ class module_controller():
         # 一定周期で監視し続ける
         while True:
             # 現在のモジュールと扉の情報を取得
-            self.identify_module()
             name_module_current = self.module_info[module_num]["name"]
             name_door_current = self.module_info[module_num][door_num]["name"]
             self.module_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
