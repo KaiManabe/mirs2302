@@ -98,25 +98,33 @@ class module_controller():
             }
         }
         
+        result = [[0, 240, 3, 238, 7, 222]] # self.serial.send_and_read_response(3, [], 12)
+        response = result[0]
+        # 抵抗値を計算
+        self.resistance_list = [
+            response[0]*254+response[1], # 1段目
+            response[2]*254+response[3], # 2段目
+            response[4]*254+response[5] # 3段目
+            ]
+        print(f"抵抗値初期状態：{self.resistance_list}") # デバッグ出力
+        
+        self.identify_module() # 搭載モジュール情報を初期化
+        print(f"[INFO][module_mng.py] : モジュール情報初期化完了")
+        
         """モジュール抵抗値を取得するスレッドを走らせる(これ以降常時実行)"""
-        self.resistance_list = []
         resistance_read_thread = threading.Thread(target = self.resistance_read)
         resistance_read_thread.setDaemon(True)
         resistance_read_thread.start()
         
-        time.sleep(1) # 抵抗値を読み取るまで待つ
-        self.identify_module() # 搭載モジュール情報を初期化
-        print(f"[INFO][module_mng.py] : モジュール情報初期化完了")
-        
         """モジュールの状態と扉の開閉状態を監視し、取り外しとこじ開けを検知するスレッドを走らせる(これ以降常時実行)"""
-        self.door_surv_thread = {} # スレッド用配列
+        door_surv_thread = {} # スレッド用配列
         for module_num, module_info in self.module_info.items():
-            self.door_surv_thread.setdefault(module_num, {})
+            door_surv_thread.setdefault(module_num, {})
             for door_num, door_info in module_info.items(): # for文でモジュール番号、扉番号を取り出す
                 if "door" in door_num:
-                    self.door_surv_thread[module_num][door_num] = threading.Thread(target = self.state_surv, args = (module_num, door_num,))
-                    self.door_surv_thread[module_num][door_num].setDaemon(True)
-                    self.door_surv_thread[module_num][door_num].start()
+                    door_surv_thread[module_num][door_num] = threading.Thread(target = self.state_surv, args = (module_num, door_num))
+                    door_surv_thread[module_num][door_num].setDaemon(True)
+                    door_surv_thread[module_num][door_num].start()
         print(f"[INFO][module_mng.py] : モジュールと扉の状態の監視を開始しました")
         
     def resistance_read(self):
@@ -126,19 +134,22 @@ class module_controller():
         モジュール抵抗値[Ω]をセット：
             self.resistance_list: int
         """
-        while True:
-            # 回路ができたらこいつ使う↓！！！！！！！！！！
-            # result = self.serial.send_and_read_response(3, [], 12)
-            # response = result[0]
-            response = [0, 240, 3, 238, 7, 222] # 仮の値 240Ω 1000Ω 2000Ω
-        
-            # 抵抗値を計算
-            self.resistance_list = [
-                response[0]*254+response[1], # 1段目
-                response[2]*254+response[3], # 2段目
-                response[4]*254+response[5] # 3段目
-                ]
-            time.sleep(1) # 1s周期で抵抗値を取得する
+        try:
+            while True:
+                result = self.serial.send_and_read_response(3, [], 12) # ここで止まっちゃってる（serial_com側のwhileに引っかかってる）
+                response = result[0]
+            
+                # 抵抗値を計算
+                self.resistance_list = [
+                    response[0]*254+response[1], # 1段目
+                    response[2]*254+response[3], # 2段目
+                    response[4]*254+response[5] # 3段目
+                    ]
+                print(self.resistance_list)  # デバッグ出力
+                time.sleep(1) # 1s周期で抵抗値を取得する
+                
+        except Exception as e:
+            print(f"[ERROR][module_mng.py] : resistance_readでエラーが発生しました: {e}")
         
     def identify_module(self):
         """
@@ -154,15 +165,15 @@ class module_controller():
         ins_res_range = [2000 * (100 - err_rate) / 100, 2000 * (100 + err_rate) / 100] # 保冷・保温抵抗値範囲
         
         # 各段のモジュール名を振り付け
-        for i, res in enumerate(self.resistance_list):
+        for num, res in enumerate(self.resistance_list, start=1):
             if acc_res_range[0] <= res <= acc_res_range[1]:
-                self.module_info[f"module{i + 1}"]["name"] = "accessories"
+                self.module_info[f"module{num}"]["name"] = "accessories"
             elif doc_res_range[0] <= res <= doc_res_range[1]:
-                self.module_info[f"module{i + 1}"]["name"] = "document"
+                self.module_info[f"module{num}"]["name"] = "document"
             elif ins_res_range[0] <= res <= ins_res_range[1]:
-                self.module_info[f"module{i + 1}"]["name"] = "insulation"
+                self.module_info[f"module{num}"]["name"] = "insulation"
             else: # 未接続の場合の値を決めてArduinoから送るようにしたほうがいいか？？？？？？？
-                self.module_info[f"module{i + 1}"]["name"] = "unconnected"
+                self.module_info[f"module{num}"]["name"] = "unconnected"
     
     def state_surv(self, module_num: str, door_num: str):
         """
@@ -176,6 +187,7 @@ class module_controller():
         扉の開閉状態のフラグをセット：
             self.module_info[module_num][door_num]["current_state"]: bool
         """
+        # あれ？？？？？？？？？？？？？？？？？？
         # 扉が開いているときにTrueとした（内部プルアップ） -> マイクロスイッチが押されている時に導通
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.module_info[module_num][door_num]["pin"]["switch"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -188,7 +200,7 @@ class module_controller():
         module_previous_state = self.module_info[module_num]["name"]
         
         while True:
-            # 現在の扉の開閉状態を読み取る
+            # 現在の扉の開閉状態を更新
             self.module_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
             # pinの状態が変わった時
             if self.module_info[module_num][door_num]["current_state"] != door_previous_state:
@@ -205,7 +217,7 @@ class module_controller():
                     print(f"[INFO][module_mng.py] : {module_num}-{door_num}が閉じました")
                 door_previous_state = self.module_info[module_num][door_num]["current_state"]
                 
-            # 現在のモジュールの状態を読み取る
+            # 現在のモジュールの状態を更新
             self.identify_module()
             # モジュールの状態が変わった時
             if module_previous_state != self.module_info[module_num]["name"]:
