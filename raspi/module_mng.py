@@ -3,8 +3,8 @@ import RPi.GPIO as GPIO
 import threading
 import time
 
-RES_GET_CYCLE = 1
-SURV_CYCLE = 0.2
+RES_GET_CYCLE = 1 # 識別抵抗値取得周期
+SURV_CYCLE = 0.2 # 監視周期
 
 # モジュール空き状況未実装、モジュール取り外し検知機能いる？？？？？？？？
 class module_controller():
@@ -238,7 +238,6 @@ class module_controller():
                     print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}が閉じました")
                 # フラグを更新
                 state_door_previous = self.module_info[module_num][door_num]["current_state"]
-                
             time.sleep(SURV_CYCLE)
             
     def door_open(self, module_num: str, door_num: str):
