@@ -16,6 +16,7 @@ class module_controller():
             serial_port -> serial object : serial_com.pyのarduino_serialクラスのオブジェクトを渡す
         """
         self.serial = serial_port
+        time.sleep(1) # インスタンスを渡し切るまでキープ ※必須なので消さないこと！！！！！
         
         print(f"[INFO][module_mng.py] : モジュール情報初期化中...")
         """搭載モジュール情報"""
@@ -98,7 +99,7 @@ class module_controller():
             }
         }
         
-        result = [[0, 240, 3, 238, 7, 222]] # self.serial.send_and_read_response(3, [], 12)
+        result = self.serial.send_and_read_response(3, [], 12) # [[0, 240, 3, 238, 7, 222]]
         response = result[0]
         # 抵抗値を計算
         self.resistance_list = [
