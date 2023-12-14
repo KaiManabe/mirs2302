@@ -3,8 +3,8 @@ import RPi.GPIO as GPIO
 import threading
 import time
 
-IDEN_CYCLE = 1 # 搭載モジュール情報更新周期
-SURV_CYCLE = 0.2 # 監視周期
+IDEN_CYCLE = 0.5 # 搭載モジュール情報更新周期[s]
+SURV_CYCLE = 0.01 # 監視周期[s]
 
 # 抵抗値の許容誤差範囲を定義
 err_rate = 20 # 許容誤差範囲[%]
@@ -114,6 +114,9 @@ class module_controller():
         }
         """各モジュールの高さ[mm]"""
         
+        # 排他制御：リソースに同時にアクセスするのを防ぐ
+        self.lock = threading.Lock()  # Lockオブジェクトを作成
+        
         """モジュールを識別するスレッドを走らせる(これ以降常時実行)"""
         identify_module_thread = threading.Thread(target = self.identify_module)
         identify_module_thread.setDaemon(True)
@@ -152,24 +155,25 @@ class module_controller():
                 response[4]*254+response[5] # 3段目
             ]
             
-            # 搭載モジュール情報を更新
-            for num, res in enumerate(self.resistance_list, start=1):
-                if acc_res_range[0] <= res <= acc_res_range[1]:
-                    self.module_info[f"module{num}"]["name"] = "accessories"
-                    self.module_info[f"module{num}"]["door1"]["name"] = "left"
-                    self.module_info[f"module{num}"]["door2"]["name"] = "right"
-                elif doc_res_range[0] <= res <= doc_res_range[1]:
-                    self.module_info[f"module{num}"]["name"] = "document"
-                    self.module_info[f"module{num}"]["door1"]["name"] = "under"
-                    self.module_info[f"module{num}"]["door2"]["name"] = "upper"
-                elif ins_res_range[0] <= res <= ins_res_range[1]:
-                    self.module_info[f"module{num}"]["name"] = "insulation"
-                    self.module_info[f"module{num}"]["door1"]["name"] = "left"
-                    self.module_info[f"module{num}"]["door2"]["name"] = "right"
-                else:
-                    self.module_info[f"module{num}"]["name"] = "unconnected"
-                    self.module_info[f"module{num}"]["door1"]["name"] = ""
-                    self.module_info[f"module{num}"]["door2"]["name"] = ""
+            with self.lock:  # ロックを取得
+                # 搭載モジュール情報を更新
+                for num, res in enumerate(self.resistance_list, start=1):
+                    if acc_res_range[0] <= res <= acc_res_range[1]:
+                        self.module_info[f"module{num}"]["name"] = "accessories"
+                        self.module_info[f"module{num}"]["door1"]["name"] = "left"
+                        self.module_info[f"module{num}"]["door2"]["name"] = "right"
+                    elif doc_res_range[0] <= res <= doc_res_range[1]:
+                        self.module_info[f"module{num}"]["name"] = "document"
+                        self.module_info[f"module{num}"]["door1"]["name"] = "under"
+                        self.module_info[f"module{num}"]["door2"]["name"] = "upper"
+                    elif ins_res_range[0] <= res <= ins_res_range[1]:
+                        self.module_info[f"module{num}"]["name"] = "insulation"
+                        self.module_info[f"module{num}"]["door1"]["name"] = "left"
+                        self.module_info[f"module{num}"]["door2"]["name"] = "right"
+                    else:
+                        self.module_info[f"module{num}"]["name"] = "unconnected"
+                        self.module_info[f"module{num}"]["door1"]["name"] = ""
+                        self.module_info[f"module{num}"]["door2"]["name"] = ""
                 
             time.sleep(IDEN_CYCLE)
     
@@ -185,6 +189,7 @@ class module_controller():
         扉の開閉状態のフラグをセット：
             self.module_info[module_num][door_num]["current_state"]: bool
         """
+        # print(f"[DEBUG] state_surv called for {module_num} {door_num}") # デバッグ出力
         # 扉が開いているときにTrueとした（内部プルアップ） -> マイクロスイッチが押されている時に導通
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.module_info[module_num][door_num]["pin"]["switch"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -196,37 +201,43 @@ class module_controller():
         
         # 一定周期で監視し続ける
         while True:
-            # 現在のモジュールと扉の情報を取得
-            name_module_current = self.module_info[module_num]["name"]
-            name_door_current = self.module_info[module_num][door_num]["name"]
-            self.module_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
-            
-            # モジュールの状態が変わった時
-            if name_module_current != name_module_previous:
-                # 未接続の場合
-                if name_module_current == "unconnected":
-                    print(f"[INFO][module_mng.py] : {name_module_previous}が取り外されました")
-                # 取り付けられた場合
-                else:
-                    print(f"[INFO][module_mng.py] : {name_module_current}が取り付けられました")
-                # フラグを更新
-                name_module_previous = name_module_current
-            
-            # 扉の状態が変わった時
-            if self.module_info[module_num][door_num]["current_state"] != state_door_previous:
-                # 扉が開いた場合
-                if self.module_info[module_num][door_num]["current_state"]:
-                    # サーボで解錠した場合
-                    if self.module_info[module_num][door_num]["unlocked"]:
-                        print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}を解錠しました")
+            with self.lock:  # ロックを取得
+                # 現在のモジュールと扉の情報を取得
+                name_module_current = self.module_info[module_num]["name"]
+                name_door_current = self.module_info[module_num][door_num]["name"]
+                self.module_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
+                
+                # モジュールの状態が変わった時
+                if name_module_current != name_module_previous:
+                    print(f"[DEBUG] Module state changed for {module_num}. Previous: {name_module_previous}, Current: {name_module_current}") # デバッグ出力
+                    # 未接続の場合
+                    if name_module_current == "unconnected":
+                        print(f"[INFO][module_mng.py] : {name_module_previous}が取り外されました")
+                    # 取り付けられた場合
                     else:
-                        print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}のこじ開けを検知しました")
-                # 扉が閉じた場合
-                else:
-                    self.module_info[module_num][door_num]["unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
-                    print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}が閉じました")
-                # フラグを更新
-                state_door_previous = self.module_info[module_num][door_num]["current_state"]
+                        print(f"[INFO][module_mng.py] : {name_module_current}が取り付けられました")
+                    # フラグを更新
+                    print(f"[DEBUG] Before update: Module state for {module_num}. Previous: {name_module_previous}, Current: {name_module_current}") # デバッグ出力
+                    name_module_previous = name_module_current
+                    print(f"[DEBUG] After update: Module state for {module_num}. Previous: {name_module_previous}, Current: {name_module_current}") # デバッグ出力
+                    print()
+                
+                # 扉の状態が変わった時
+                if self.module_info[module_num][door_num]["current_state"] != state_door_previous:
+                    print(f"[DEBUG] Door state changed for {module_num} {door_num}. Previous: {state_door_previous}, Current: {self.module_info[module_num][door_num]['current_state']}") # デバッグ出力
+                    # 扉が開いた場合
+                    if self.module_info[module_num][door_num]["current_state"]:
+                        # サーボで解錠した場合
+                        if self.module_info[module_num][door_num]["unlocked"]:
+                            print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}を解錠しました")
+                        else:
+                            print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}のこじ開けを検知しました")
+                    # 扉が閉じた場合
+                    else:
+                        self.module_info[module_num][door_num]["unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
+                        print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}が閉じました")
+                    # フラグを更新
+                    state_door_previous = self.module_info[module_num][door_num]["current_state"]
             time.sleep(SURV_CYCLE)
             
     def door_open(self, module_num: str, door_num: str):
