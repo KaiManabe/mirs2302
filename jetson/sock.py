@@ -16,7 +16,16 @@ def receive_buffer(socket_class):
         なし
     """
     while(1):
-        received_data = socket_class.client.recv(65536)
+        try:
+            received_data = socket_class.client.recv(65536)
+        except ConnectionResetError:
+            if type(socket_class) == sock_server:
+                socket_class.connected_clients = 0
+                print("[INFO][sock.sock_server] : クライアントとの接続が切断されました。")
+            break
+        except:
+            continue
+        
         for r in received_data:
             socket_class.buf.append(r)
         
@@ -34,25 +43,28 @@ def server_starter(server_class):
     戻り値：
         なし
     """
-    
-    #クライアントから接続されるまで待機する
-    print("[INFO][sock.sock_server] : サーバーへのソケット通信接続を待機しています...")
-    server_class.client, server_class.client_addr = server_class.server.accept()
-    
-    
-    #接続を確立したらバッファ変数を宣言して、ソケットのバッファ監視を開始する
-    print("[INFO][sock.sock_server] : クライアント" , server_class.client_addr , "から接続を受け付けました")
-    server_class.connected_clients += 1
-    server_class.buf = []
-    buf_monitor_thread = threading.Thread(target = receive_buffer, args = (server_class,))
-    buf_monitor_thread.setDaemon(True)
-    buf_monitor_thread.start()
-    print("[INFO][sock.sock_server] : バッファの監視を開始しました")
-    server_class.server_started = True
+    while(1):
+        if server_class.connected_clients == 1:
+            continue
+        
+        #クライアントから接続されるまで待機する
+        print("[INFO][sock.sock_server] : サーバーへのソケット通信接続を待機しています...")
+        server_class.client, server_class.client_addr = server_class.server.accept()
+        
+        
+        #接続を確立したらバッファ変数を宣言して、ソケットのバッファ監視を開始する
+        print("[INFO][sock.sock_server] : クライアント" , server_class.client_addr , "から接続を受け付けました")
+        server_class.connected_clients = 1
+        server_class.buf = []
+        buf_monitor_thread = threading.Thread(target = receive_buffer, args = (server_class,))
+        buf_monitor_thread.setDaemon(True)
+        buf_monitor_thread.start()
+        print("[INFO][sock.sock_server] : バッファの監視を開始しました")
+        server_class.server_started = True
 
 
 class sock_server():
-    def __init__(self, address, port):
+    def __init__(self, address:str, port:int):
         """ 
         コンストラクタ
 
@@ -170,7 +182,7 @@ class sock_server():
 
 
 class sock_client():
-    def __init__(self, address, port):
+    def __init__(self, address:str, port:int):
         """ 
         コンストラクタ
 
@@ -229,7 +241,7 @@ class sock_client():
         return buffer
     
     
-    def send(self, send_data):
+    def send(self, send_data:list):
         
         """ 
         サーバにデータを送信するメソッド
