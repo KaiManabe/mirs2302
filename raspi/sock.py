@@ -21,10 +21,16 @@ def receive_buffer(socket_class):
         except ConnectionResetError:
             if type(socket_class) == sock_server:
                 socket_class.connected_clients = 0
-                print("[INFO][sock.sock_server] : クライアントとの接続が切断されました。")
+                print("[INFO][sock.sock_server] : クライアントとの接続が切断されました")
             break
         except:
             continue
+        
+        if not received_data:
+            if type(socket_class) == sock_server:
+                socket_class.connected_clients = 0
+                print("[INFO][sock.sock_server] : クライアントとの接続が切断されました")
+            break
         
         for r in received_data:
             socket_class.buf.append(r)
