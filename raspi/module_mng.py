@@ -211,6 +211,8 @@ class module_controller():
                 
                 # モジュールの状態が変わった時
                 if name_module_current != name_module_previous:
+                    # デバッグ出力を追加
+                    print(f"[DEBUG] {module_num}-{door_num} : name_module_previous = {name_module_previous}, name_module_current = {name_module_current}")
                     # 未接続の場合
                     if name_module_current == "unconnected":
                         print(f"[INFO][module_mng.py] : {name_module_previous}が取り外されました")
@@ -218,10 +220,7 @@ class module_controller():
                     else:
                         print(f"[INFO][module_mng.py] : {name_module_current}が取り付けられました")
                     # フラグを更新
-                    print(f"[DEBUG] Before update: Module state for {module_num}. Previous: {name_module_previous}, Current: {name_module_current}") # デバッグ出力
                     name_module_previous = name_module_current
-                    print(f"[DEBUG] After update: Module state for {module_num}. Previous: {name_module_previous}, Current: {name_module_current}") # デバッグ出力
-                    print()
                 
                 # 扉の状態が変わった時
                 if self.module_info[module_num][door_num]["current_state"] != state_door_previous:
@@ -230,6 +229,7 @@ class module_controller():
                         # サーボで解錠した場合
                         if self.module_info[module_num][door_num]["unlocked"]:
                             print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}を解錠しました")
+                        # サーボで解錠していない場合
                         else:
                             print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}のこじ開けを検知しました")
                     # 扉が閉じた場合
@@ -238,6 +238,7 @@ class module_controller():
                         print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}が閉じました")
                     # フラグを更新
                     state_door_previous = self.module_info[module_num][door_num]["current_state"]
+                    
             time.sleep(SURV_CYCLE)
             
     def door_open(self, module_num: str, door_num: str):
