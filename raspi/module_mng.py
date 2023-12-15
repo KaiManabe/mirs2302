@@ -13,7 +13,7 @@ acc_res_range = [240 * (100 - err_rate) / 100, 240 * (100 + err_rate) / 100] # �
 doc_res_range = [1000 * (100 - err_rate) / 100, 1000 * (100 + err_rate) / 100] # 資料抵抗値範囲
 ins_res_range = [2000 * (100 - err_rate) / 100, 2000 * (100 + err_rate) / 100] # 保冷・保温抵抗値範囲
 
-# モジュール空き状況未実装
+# モジュール空き状況はweb_app.pyでやった方がいいかも
 class module_controller():
     """
     モジュールを制御するクラス
@@ -43,7 +43,7 @@ class module_controller():
                         "switch":16
                     },
                     "unlocked": False,
-                    "current_state": True
+                    "open": True
                 },
                 "door2": {
                     "name": "",
@@ -52,7 +52,7 @@ class module_controller():
                         "switch":18
                     },
                     "unlocked": False,
-                    "current_state": True
+                    "open": True
                 }
             },
             "module2": {
@@ -64,7 +64,7 @@ class module_controller():
                         "switch":22
                     },
                     "unlocked": False,
-                    "current_state": True
+                    "open": True
                 },
                 "door2": {
                     "name": "",
@@ -73,7 +73,7 @@ class module_controller():
                         "switch":23
                     },
                     "unlocked": False,
-                    "current_state": True
+                    "open": True
                 }
             },
             "module3": {
@@ -85,7 +85,7 @@ class module_controller():
                         "switch":32
                     },
                     "unlocked": False,
-                    "current_state": True
+                    "open": True
                 },
                 "door2": {
                     "name": "",
@@ -94,7 +94,7 @@ class module_controller():
                         "switch":33
                     },
                     "unlocked": False,
-                    "current_state": True
+                    "open": True
                 }
             }
         }
@@ -231,15 +231,15 @@ class module_controller():
             door_num : 監視したい扉の番号 -> str
             
         扉の開閉状態のフラグをセット：
-            self.module_info[module_num][door_num]["current_state"]: bool
+            self.module_info[module_num][door_num]["open"]: bool
         """
         # 扉が開いているときにTrueとした（内部プルアップ） -> マイクロスイッチが押されている時に導通
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.module_info[module_num][door_num]["pin"]["switch"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
         
         # モジュールと扉の情報を初期化
-        self.module_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
-        state_door_previous = self.module_info[module_num][door_num]["current_state"]
+        self.module_info[module_num][door_num]["open"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
+        open_door_previous = self.module_info[module_num][door_num]["open"]
         
         # 一定周期で監視し続ける
         while True:
@@ -247,12 +247,13 @@ class module_controller():
                 # 現在の扉の情報を取得
                 name_module_current = self.module_info[module_num]["name"]
                 name_door_current = self.module_info[module_num][door_num]["name"]
-                self.module_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
+                self.module_info[module_num][door_num]["open"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
                 
                 # 扉の状態が変わった時
-                if self.module_info[module_num][door_num]["current_state"] != state_door_previous:
+                if self.module_info[module_num][door_num]["open"] != open_door_previous:
+                    print(f"[DEBUG][module_mng.py] : {name_module_current}-{name_door_current}") # デバッグ用出力
                     # 扉が開いた場合
-                    if self.module_info[module_num][door_num]["current_state"]:
+                    if self.module_info[module_num][door_num]["open"]:
                         # サーボで解錠した場合
                         if self.module_info[module_num][door_num]["unlocked"]:
                             print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}を解錠しました")
@@ -264,7 +265,7 @@ class module_controller():
                         self.module_info[module_num][door_num]["unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
                         print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}が閉じました")
                     # フラグを更新
-                    state_door_previous = self.module_info[module_num][door_num]["current_state"]
+                    open_door_previous = self.module_info[module_num][door_num]["open"]
                     
             time.sleep(SURV_CYCLE)
             
