@@ -126,7 +126,7 @@ class module_controller():
         time.sleep(1) # モジュールを識別し終わるまでキープ
         print(f"[INFO][module_mng.py] : モジュール情報初期化完了")
         
-        """モジュールの状態と扉の開閉状態を監視し、取り外しとこじ開けを検知するスレッドを走らせる(これ以降常時実行)"""
+        """モジュールの状態を監視して取り外しを検知するスレッド・扉の開閉状態を監視してこじ開けを検知するスレッド走らせる(これ以降常時実行)"""
         module_surv_thread = {} # モジュール監視スレッド用配列
         door_surv_thread = {} # 扉監視スレッド用配列
         for module_num, module_info in self.module_info.items():
@@ -149,12 +149,13 @@ class module_controller():
         
     def identify_module(self):
         """
-        搭載モジュール情報を更新する
+        *** スレッド用なので使用しないこと ***
+        搭載モジュール情報を更新し続ける
         
         モジュールの名前をセット：
             self.module_info[module_num]["name"]: str
         """
-        # 一定周期で識別し続ける
+        # 一定周期で搭載モジュール情報を更新し続ける
         while True:
             # Arduinoに抵抗値測定指令を出す
             result = self.serial.send_and_read_response(3, [], 12)
@@ -191,6 +192,7 @@ class module_controller():
             
     def module_surv(self, module_num: str):
         """
+        *** スレッド用なので使用しないこと ***
         モジュールの状態を監視し、取り外しを検知する
         
         引数：
@@ -220,6 +222,7 @@ class module_controller():
     
     def door_surv(self, module_num: str, door_num: str):
         """
+        *** スレッド用なので使用しないこと ***
         扉の開閉状態を監視し、こじ開けを検知する
         
         引数：
