@@ -13,7 +13,7 @@ acc_res_range = [240 * (100 - err_rate) / 100, 240 * (100 + err_rate) / 100] # �
 doc_res_range = [1000 * (100 - err_rate) / 100, 1000 * (100 + err_rate) / 100] # 資料抵抗値範囲
 ins_res_range = [2000 * (100 - err_rate) / 100, 2000 * (100 + err_rate) / 100] # 保冷・保温抵抗値範囲
 
-# モジュール空き状況はweb_app.pyでやった方がいいかも
+# 詳細設計書には書いてあるけど、モジュール空き状況はweb_app.pyでやった方がいいかも
 class module_controller():
     """
     モジュールを制御するクラス
@@ -152,8 +152,9 @@ class module_controller():
         *** スレッド用なので使用しないこと ***
         搭載モジュール情報を更新し続ける
         
-        モジュールの名前をセット：
-            self.module_info[module_num]["name"]: str
+        モジュールと扉の名前をセット：
+            self.module_info[module_num]["name"] -> str
+            self.module_info[module_num][door_num]["name"] -> str
         """
         # 一定周期で搭載モジュール情報を更新し続ける
         while True:
@@ -251,7 +252,6 @@ class module_controller():
                 
                 # 扉の状態が変わった時
                 if self.module_info[module_num][door_num]["open"] != open_door_previous:
-                    print(f"[DEBUG][module_mng.py] : {name_module_current}-{name_door_current}") # デバッグ用出力
                     # 扉が開いた場合
                     if self.module_info[module_num][door_num]["open"]:
                         # サーボで解錠した場合
@@ -299,19 +299,6 @@ class module_controller():
         
         # GPIOピンを解放
         GPIO.cleanup(self.module_info[module_num][door_num]["pin"]["servo"])
-            
-    def battery_surv(self):
-        """
-        バッテリー電圧を監視する
-        
-        戻り値：
-            バッテリー電圧[V]
-        """
-        # Arduinoに電圧測定指令を出す
-        response = self.serial.send_and_read_response(5, [], 11)
-        batt_vol = response[0][0]/10
-        
-        return batt_vol
     
     def height_calculate(self):
         """
@@ -329,7 +316,59 @@ class module_controller():
             
         return total_height
             
+class airframe_controller():
+    """
+    機体を制御するクラス
+    """
+    def __init__(self, serial_port: ser.arduino_serial):
+        """
+        コンストラクタ
+        
+        引数：
+            serial_port -> serial object : serial_com.pyのarduino_serialクラスのオブジェクトを渡す
+        """
+        self.serial = serial_port
+        time.sleep(1) # インスタンスを渡し切るまでキープ ※必須なので消さないこと！！！！！
+        
+        """機体の持ち去りを検知し続けるスレッドを走らせる(これ以降常時実行)"""
+        airframe_surv_thread = threading.Thread(target = self.airframe_surv)
+        airframe_surv_thread.setDaemon(True)
+        airframe_surv_thread.start()
+        print(airframe_surv_thread)
+        
+    def airframe_surv(self):
+        """
+        *** スレッド用なので使用しないこと ***
+        機体の持ち去りを検知する
+        """
+        # フラグの初期化
+        executed: bool = False # 持ち去りを検知した際の処理を1回のみ実行するためのフラグ
+        
+        while True:
+            # Arduinoに機体持ち去り検知指令を出す
+            airframe_taken = self.serial.send_and_read_response(11, [], 16)
+            
+            # 持ち去りを検知した時（定期的に呼び出しても1回のみ実行される）
+            if airframe_taken and not(executed):
+                print("[INFO][module_mng.py] : 機体の持ち去りを検知しました")
+                executed = True
+            
+            time.sleep(SURV_CYCLE)
+        
+    def battery_surv(self):
+        """
+        バッテリー電圧を監視する
+        
+        戻り値：
+            バッテリー電圧[V]
+        """
+        # Arduinoに電圧測定指令を出す
+        response = self.serial.send_and_read_response(5, [], 11)
+        batt_vol = response[0][0]/10
+        
+        return batt_vol
             
 if __name__ == '__main__':
     s = ser.arduino_serial()
     m = module_controller(s)
+    a = airframe_controller(s)
