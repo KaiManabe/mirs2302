@@ -3,8 +3,9 @@ import RPi.GPIO as GPIO
 import threading
 import time
 
-IDEN_CYCLE = 0.5 # 搭載モジュール情報更新周期[s]
+IDEN_CYCLE = 0.1 # 搭載モジュール情報更新周期[s]
 SURV_CYCLE = 0.01 # 監視周期[s]
+"""統合時こいつらは調整する"""
 
 # 抵抗値の許容誤差範囲を定義
 err_rate = 20 # 許容誤差範囲[%]
@@ -118,7 +119,7 @@ class module_controller():
         }
         """各モジュールの高さ[mm]"""
         
-        """モジュールを識別するスレッドを走らせる(これ以降常時実行)"""
+        """モジュールを識別し続けるスレッドを走らせる(これ以降常時実行)"""
         identify_module_thread = threading.Thread(target = self.identify_module)
         identify_module_thread.setDaemon(True)
         identify_module_thread.start()
@@ -126,14 +127,24 @@ class module_controller():
         print(f"[INFO][module_mng.py] : モジュール情報初期化完了")
         
         """モジュールの状態と扉の開閉状態を監視し、取り外しとこじ開けを検知するスレッドを走らせる(これ以降常時実行)"""
-        state_surv_thread = {} # スレッド用配列
+        module_surv_thread = {} # モジュール監視スレッド用配列
+        door_surv_thread = {} # 扉監視スレッド用配列
         for module_num, module_info in self.module_info.items():
-            state_surv_thread.setdefault(module_num, {})
+            # モジュール監視スレッドを開始
+            module_surv_thread[module_num] = threading.Thread(target = self.module_surv, args = (module_num,))
+            module_surv_thread[module_num].setDaemon(True)
+            module_surv_thread[module_num].start()
+            print(f"[DEBUG][module_mng.py] : {module_num} -> {module_surv_thread[module_num]}") # デバッグ用出力
+            
+            # 扉監視スレッド用配列のを2次元配列に設定
+            door_surv_thread.setdefault(module_num, {})
             for door_num, door_info in module_info.items(): # for文でモジュール番号、扉番号を取り出す
                 if "door" in door_num:
-                    state_surv_thread[module_num][door_num] = threading.Thread(target = self.state_surv, args = (module_num, door_num))
-                    state_surv_thread[module_num][door_num].setDaemon(True)
-                    state_surv_thread[module_num][door_num].start()
+                    # 扉監視スレッドを開始
+                    door_surv_thread[module_num][door_num] = threading.Thread(target = self.door_surv, args = (module_num, door_num,))
+                    door_surv_thread[module_num][door_num].setDaemon(True)
+                    door_surv_thread[module_num][door_num].start()
+                    print(f"[DEBUG][module_mng.py] : {module_num}-{door_num} -> {door_surv_thread[module_num][door_num]}") # デバッグ用出力
         print(f"[INFO][module_mng.py] : モジュールと扉の状態の監視を開始しました")
         
     def identify_module(self):
@@ -177,10 +188,39 @@ class module_controller():
                         self.module_info[f"module{num}"]["door2"]["name"] = ""
                 
             time.sleep(IDEN_CYCLE)
-    
-    def state_surv(self, module_num: str, door_num: str):
+            
+    def module_surv(self, module_num: str):
         """
-        モジュールの状態と扉の開閉状態を監視し、取り外しとこじ開けを検知する
+        モジュールの状態を監視し、取り外しを検知する
+        
+        引数：
+            module_num : 監視したいモジュールの番号 -> str
+        """
+        # モジュールと扉の情報を初期化
+        name_module_previous = self.module_info[module_num]["name"]
+        
+        # 一定周期で監視し続ける
+        while True:
+            with self.lock:  # ロックを取得
+                # 現在のモジュールの情報を取得
+                name_module_current = self.module_info[module_num]["name"]
+                
+                # モジュールの状態が変わった時
+                if name_module_current != name_module_previous:
+                    # 未接続の場合
+                    if name_module_current == "unconnected":
+                        print(f"[INFO][module_mng.py] : {name_module_previous}が取り外されました")
+                    # 取り付けられた場合
+                    else:
+                        print(f"[INFO][module_mng.py] : {name_module_current}が取り付けられました")
+                    # フラグを更新
+                    name_module_previous = name_module_current
+                    
+            time.sleep(SURV_CYCLE)
+    
+    def door_surv(self, module_num: str, door_num: str):
+        """
+        扉の開閉状態を監視し、こじ開けを検知する
         
         引数：
             module_num : 監視したい扉のモジュール番号 -> str
@@ -190,37 +230,21 @@ class module_controller():
         扉の開閉状態のフラグをセット：
             self.module_info[module_num][door_num]["current_state"]: bool
         """
-        # print(f"[DEBUG] state_surv called for {module_num} {door_num}") # デバッグ出力
         # 扉が開いているときにTrueとした（内部プルアップ） -> マイクロスイッチが押されている時に導通
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.module_info[module_num][door_num]["pin"]["switch"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
         
         # モジュールと扉の情報を初期化
-        name_module_previous = self.module_info[module_num]["name"]
-        print(f"{module_num}-{door_num} モジュール名初期値 : {name_module_previous}")
         self.module_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
         state_door_previous = self.module_info[module_num][door_num]["current_state"]
         
         # 一定周期で監視し続ける
         while True:
             with self.lock:  # ロックを取得
-                # 現在のモジュールと扉の情報を取得
+                # 現在の扉の情報を取得
                 name_module_current = self.module_info[module_num]["name"]
                 name_door_current = self.module_info[module_num][door_num]["name"]
                 self.module_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
-                
-                # モジュールの状態が変わった時
-                if name_module_current != name_module_previous:
-                    # デバッグ出力を追加
-                    print(f"[DEBUG] {module_num}-{door_num} : name_module_previous = {name_module_previous}, name_module_current = {name_module_current}")
-                    # 未接続の場合
-                    if name_module_current == "unconnected":
-                        print(f"[INFO][module_mng.py] : {name_module_previous}が取り外されました")
-                    # 取り付けられた場合
-                    else:
-                        print(f"[INFO][module_mng.py] : {name_module_current}が取り付けられました")
-                    # フラグを更新
-                    name_module_previous = name_module_current
                 
                 # 扉の状態が変わった時
                 if self.module_info[module_num][door_num]["current_state"] != state_door_previous:
