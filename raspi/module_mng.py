@@ -27,6 +27,10 @@ class module_controller():
         print(f"[INFO][module_mng.py] : モジュール情報初期化中...")
         self.serial = serial_port
         time.sleep(1) # インスタンスを渡し切るまでキープ ※必須なので消さないこと！！！！！
+        
+        # 排他制御：リソースに同時にアクセスするのを防ぐ
+        self.lock = threading.Lock()  # Lockオブジェクトを作成
+        time.sleep(1) # インスタンスを渡し切るまでキープ
     
         self.module_info = {
             "module1": {
@@ -114,9 +118,6 @@ class module_controller():
         }
         """各モジュールの高さ[mm]"""
         
-        # 排他制御：リソースに同時にアクセスするのを防ぐ
-        self.lock = threading.Lock()  # Lockオブジェクトを作成
-        
         """モジュールを識別するスレッドを走らせる(これ以降常時実行)"""
         identify_module_thread = threading.Thread(target = self.identify_module)
         identify_module_thread.setDaemon(True)
@@ -196,6 +197,7 @@ class module_controller():
         
         # モジュールと扉の情報を初期化
         name_module_previous = self.module_info[module_num]["name"]
+        print(f"{module_num}-{door_num} モジュール名初期値 : {name_module_previous}")
         self.module_info[module_num][door_num]["current_state"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
         state_door_previous = self.module_info[module_num][door_num]["current_state"]
         
@@ -209,7 +211,6 @@ class module_controller():
                 
                 # モジュールの状態が変わった時
                 if name_module_current != name_module_previous:
-                    print(f"[DEBUG] Module state changed for {module_num}. Previous: {name_module_previous}, Current: {name_module_current}") # デバッグ出力
                     # 未接続の場合
                     if name_module_current == "unconnected":
                         print(f"[INFO][module_mng.py] : {name_module_previous}が取り外されました")
@@ -224,7 +225,6 @@ class module_controller():
                 
                 # 扉の状態が変わった時
                 if self.module_info[module_num][door_num]["current_state"] != state_door_previous:
-                    print(f"[DEBUG] Door state changed for {module_num} {door_num}. Previous: {state_door_previous}, Current: {self.module_info[module_num][door_num]['current_state']}") # デバッグ出力
                     # 扉が開いた場合
                     if self.module_info[module_num][door_num]["current_state"]:
                         # サーボで解錠した場合
