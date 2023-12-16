@@ -112,7 +112,7 @@ int photo(){
   int state = 0;
   
   p = digitalRead(PHOTO);
-  if(p == 1){
+  if(p == 0){
     photo_curr = 0;
   }else{
     photo_curr ++;
