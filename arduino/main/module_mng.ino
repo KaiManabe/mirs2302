@@ -57,6 +57,7 @@ void key(){
 
 戻り値：なし
 */
+/*
 void module_temp(){
   double target_temp1 = ;
   double target_temp2 = ;
@@ -76,6 +77,7 @@ void module_temp(){
     digitalWrite(PELTIER,LOW);
   }
 }
+*/
 
 /*
 ペルチェ素子の制御（ペルチェ単体試験のみ）
@@ -105,12 +107,12 @@ void peltier(int p){
       持ち去られてるor転倒してる：1
       問題なし：0
 */
-photo(){
+int photo(){
   int p;
   int state = 0;
   
-  photo = degitalRead(PHOTO);
-  if(photo == 1){
+  p = digitalRead(PHOTO);
+  if(p == 1){
     photo_curr = 0;
   }else{
     photo_curr ++;
