@@ -5,13 +5,8 @@ import time
 
 IDEN_CYCLE = 0.1 # 搭載モジュール情報更新周期[s]
 SURV_CYCLE = 0.01 # 監視周期[s]
+RES_ERR_RATE = 20 # 抵抗値許容誤差範囲[%]
 """統合時こいつらは調整する"""
-
-# 抵抗値の許容誤差範囲を定義
-err_rate = 20 # 許容誤差範囲[%]
-acc_res_range = [240 * (100 - err_rate) / 100, 240 * (100 + err_rate) / 100] # 小物抵抗値範囲
-doc_res_range = [1000 * (100 - err_rate) / 100, 1000 * (100 + err_rate) / 100] # 資料抵抗値範囲
-ins_res_range = [2000 * (100 - err_rate) / 100, 2000 * (100 + err_rate) / 100] # 保冷・保温抵抗値範囲
 
 # 詳細設計書には書いてあるけど、モジュール空き状況はweb_app.pyでやった方がいいかも
 class module_controller():
@@ -156,6 +151,11 @@ class module_controller():
             self.module_info[module_num]["name"] -> str
             self.module_info[module_num][door_num]["name"] -> str
         """
+        # 抵抗値の許容誤差範囲を定義
+        acc_res_range = [240 * (100 - RES_ERR_RATE) / 100, 240 * (100 + RES_ERR_RATE) / 100] # 小物抵抗値範囲
+        doc_res_range = [1000 * (100 - RES_ERR_RATE) / 100, 1000 * (100 + RES_ERR_RATE) / 100] # 資料抵抗値範囲
+        ins_res_range = [2000 * (100 - RES_ERR_RATE) / 100, 2000 * (100 + RES_ERR_RATE) / 100] # 保冷・保温抵抗値範囲
+        
         # 一定周期で搭載モジュール情報を更新し続ける
         while True:
             # Arduinoに抵抗値測定指令を出す
