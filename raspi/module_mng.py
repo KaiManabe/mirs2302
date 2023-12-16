@@ -351,6 +351,7 @@ class airframe_controller():
             # Arduinoに機体持ち去り検知指令を出す
             airframe_taken = self.serial.send_and_read_response(11, [], 16)
             # airframe_taken = 1 # フォトリフレクタの実装前の試験用
+            print(airframe_taken)
             
             # 持ち去りを検知した時（定期的に呼び出しても1回のみ実行される）
             if airframe_taken and not(executed):

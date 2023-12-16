@@ -73,7 +73,7 @@ void check_serial(){
             break;
 
         case 11:
-            photo();
+            send_photo();
             break;
 
         default:
