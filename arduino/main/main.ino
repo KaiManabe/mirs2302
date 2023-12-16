@@ -7,6 +7,10 @@
 long l_spd_target = 0L;
 long r_spd_target = 0L;
 
+//フォトリフレクタ状態フラグ
+const int photo_flg_err = 1;
+const int photo_flg_ok = 0;
+int photo_curr = 0; //現在の車体が浮いた回数
 
 void init_pin(){
     //エンコーダのピン宣言
@@ -34,6 +38,9 @@ void init_pin(){
     //サーミスタ値読み取りピン宣言
     pinMode(THERMISTOR1, INPUT);
     pinMode(THERMISTOR2, INPUT);
+
+    //フォトリフレクタ入力ピン宣言
+    pinMode(PHOTO, INPUT);
 
     //サーボモータの出力ピン宣言
     pinMode(SERVO, OUTPUT);

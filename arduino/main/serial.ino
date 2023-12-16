@@ -318,7 +318,22 @@ void send_batt(){
 }
 
 
+/*
+機体の持ち去り,転倒を知らせる
 
+引数：なし
+
+戻り値：なし
+*/
+void send_photo(){
+    Serial.write((byte)255);
+    Serial.write((byte)16);
+
+    int value = photo();
+    Serial.write(value);
+
+    Serial.write(254);
+}
 
 
 void send_odom(){

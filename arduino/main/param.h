@@ -82,7 +82,8 @@ defineされている場合には、ゲインを保存する。
 #define LONGMAX 2147483647
 #define LONGMIN -2147483648
 
-
+//フォトリフレクタ入力ピン
+#define PHOTO 13
 
 //EEPの番地 変えるな
 #define EEP_ORIGIN 22

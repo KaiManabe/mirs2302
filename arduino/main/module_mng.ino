@@ -94,3 +94,33 @@ void peltier(int p){
   }  
 }
 */
+
+/*
+フォトリフレクタの監視
+この関数を定期的に繰り返す。10回以上車体が浮いたら異常判定
+
+引数：なし
+
+戻り値：
+      持ち去られてるor転倒してる：1
+      問題なし：0
+*/
+photo(){
+  int p;
+  int state = 0;
+  
+  photo = degitalRead(PHOTO);
+  if(photo == 1){
+    photo_curr = 0;
+  }else{
+    photo_curr ++;
+  }
+
+  if(photo_curr >= 10){
+    state = photo_flg_err;
+  }else{
+    state = photo_flg_ok;
+  }
+  
+  return(state);
+}
