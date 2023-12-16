@@ -21,7 +21,7 @@ class module_controller():
         引数：
             serial_port -> serial object : serial_com.pyのarduino_serialクラスのオブジェクトを渡す
         """
-        print(f"[INFO][module_mng.py] : モジュール情報初期化中...")
+        print("[INFO][module_mng.py] : モジュール情報初期化中...")
         self.serial = serial_port
         time.sleep(1) # インスタンスを渡し切るまでキープ ※必須なので消さないこと！！！！！
         
@@ -120,7 +120,7 @@ class module_controller():
         identify_module_thread.setDaemon(True)
         identify_module_thread.start()
         time.sleep(1) # モジュールを識別し終わるまでキープ
-        print(f"[INFO][module_mng.py] : モジュール情報初期化完了")
+        print("[INFO][module_mng.py] : モジュール情報初期化完了")
         
         """モジュールの状態を監視して取り外しを検知するスレッド・扉の開閉状態を監視してこじ開けを検知するスレッド走らせる(これ以降常時実行)"""
         module_surv_thread = {} # モジュール監視スレッド用配列
@@ -141,7 +141,7 @@ class module_controller():
                     door_surv_thread[module_num][door_num].setDaemon(True)
                     door_surv_thread[module_num][door_num].start()
                     print(f"[DEBUG][module_mng.py] : {module_num}-{door_num} -> {door_surv_thread[module_num][door_num]}") # デバッグ用出力
-        print(f"[INFO][module_mng.py] : モジュールと扉の状態の監視を開始しました")
+        print("[INFO][module_mng.py] : モジュールと扉の状態の監視を開始しました")
         
     def identify_module(self):
         """
@@ -335,7 +335,8 @@ class airframe_controller():
         airframe_surv_thread = threading.Thread(target = self.airframe_surv)
         airframe_surv_thread.setDaemon(True)
         airframe_surv_thread.start()
-        print(airframe_surv_thread)
+        print(f"[DEBUG][module_mng.py] : {airframe_surv_thread}") # デバッグ用出力
+        print("[INFO][module_mng.py] : 機体の持ち去り検知を開始しました")
         
     def airframe_surv(self):
         """
@@ -345,6 +346,7 @@ class airframe_controller():
         # フラグの初期化
         executed: bool = False # 持ち去りを検知した際の処理を1回のみ実行するためのフラグ
         
+        # 一定周期で検知し続ける
         while True:
             # Arduinoに機体持ち去り検知指令を出す
             airframe_taken = self.serial.send_and_read_response(11, [], 16)

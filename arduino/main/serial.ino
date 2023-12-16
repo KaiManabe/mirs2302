@@ -72,6 +72,10 @@ void check_serial(){
             key();
             break;
 
+        case 11:
+            photo();
+            break;
+
         default:
             break;
     }
