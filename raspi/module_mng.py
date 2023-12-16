@@ -4,6 +4,7 @@ import threading
 import time
 
 IDEN_CYCLE = 0.1 # 搭載モジュール情報更新周期[s]
+AIR_CYCLE = 0.1 # 機体持ち去り検知周期[s]
 SURV_CYCLE = 0.01 # 監視周期[s]
 RES_ERR_RATE = 20 # 抵抗値許容誤差範囲[%]
 """統合時こいつらは調整する"""
@@ -144,7 +145,7 @@ class module_controller():
         
     def identify_module(self):
         """
-        *** スレッド用なので使用しないこと ***
+        *** module_controller()をオブジェクト化した際に、自動でスレッドが立ち上げられるので使用しないこと ***
         搭載モジュール情報を更新し続ける
         
         モジュールと扉の名前をセット：
@@ -193,7 +194,7 @@ class module_controller():
             
     def module_surv(self, module_num: str):
         """
-        *** スレッド用なので使用しないこと ***
+        *** module_controller()をオブジェクト化した際に、自動でスレッドが立ち上げられるので使用しないこと ***
         モジュールの状態を監視し、取り外しを検知する
         
         引数：
@@ -223,7 +224,7 @@ class module_controller():
     
     def door_surv(self, module_num: str, door_num: str):
         """
-        *** スレッド用なので使用しないこと ***
+        *** module_controller()をオブジェクト化した際に、自動でスレッドが立ち上げられるので使用しないこと ***
         扉の開閉状態を監視し、こじ開けを検知する
         
         引数：
@@ -338,7 +339,7 @@ class airframe_controller():
         
     def airframe_surv(self):
         """
-        *** スレッド用なので使用しないこと ***
+        *** airframe_controller()をオブジェクト化した際に、自動でスレッドが立ち上げられるので使用しないこと ***
         機体の持ち去りを検知する
         """
         # フラグの初期化
@@ -347,13 +348,14 @@ class airframe_controller():
         while True:
             # Arduinoに機体持ち去り検知指令を出す
             airframe_taken = self.serial.send_and_read_response(11, [], 16)
+            # airframe_taken = 1 # フォトリフレクタの実装前の試験用
             
             # 持ち去りを検知した時（定期的に呼び出しても1回のみ実行される）
             if airframe_taken and not(executed):
                 print("[INFO][module_mng.py] : 機体の持ち去りを検知しました")
                 executed = True
             
-            time.sleep(SURV_CYCLE)
+            time.sleep(AIR_CYCLE)
         
     def battery_surv(self):
         """
