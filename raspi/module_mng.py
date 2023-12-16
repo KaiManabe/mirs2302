@@ -350,7 +350,6 @@ class airframe_controller():
         while True:
             # Arduinoに機体持ち去り検知指令を出す
             response = self.serial.send_and_read_response(11, [], 16)
-            # airframe_taken = 1 # フォトリフレクタの実装前の試験用
             airframe_taken = response[0][0]
             print(airframe_taken)
             
