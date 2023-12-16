@@ -1,3 +1,9 @@
+""" 
+モジュールを制御,機体を制御するクラスが定義されている
+
+このファイルをインポートして、module_controller(), airframe_controllerというオブジェクトを定義してつかう
+"""
+
 import serial_com as ser
 import RPi.GPIO as GPIO
 import threading
