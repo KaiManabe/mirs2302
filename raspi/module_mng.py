@@ -331,6 +331,8 @@ class airframe_controller():
         self.serial = serial_port
         time.sleep(1) # インスタンスを渡し切るまでキープ ※必須なので消さないこと！！！！！
         
+        self.airframe_taken: bool = False # 機体持ち去り検知フラグ
+        
         """機体の持ち去りを検知し続けるスレッドを走らせる(これ以降常時実行)"""
         airframe_surv_thread = threading.Thread(target = self.airframe_surv)
         airframe_surv_thread.setDaemon(True)
@@ -350,11 +352,10 @@ class airframe_controller():
         while True:
             # Arduinoに機体持ち去り検知指令を出す
             response = self.serial.send_and_read_response(11, [], 16)
-            airframe_taken = response[0][0]
-            print(airframe_taken)
+            self.airframe_taken = response[0][0]
             
             # 持ち去りを検知した時（定期的に呼び出しても1回のみ実行される）
-            if airframe_taken and not(executed):
+            if self.airframe_taken and not(executed):
                 print("[INFO][module_mng.py] : 機体の持ち去りを検知しました")
                 executed = True
             
