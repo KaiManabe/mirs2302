@@ -13,6 +13,5 @@ function warning(num){
     }else if(num == 1){
         document.getElementById("status").innerText = "！こじ開けを検知しました！"
     }
-    const audio = new Audio('sound.mp3');
     audio.play();
 }
