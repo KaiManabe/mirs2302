@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // とりあえず受け取ったデータをそのままhttpレスポンスとして返す
     // echo json_encode(['status' => 'success', 'data' => $receivedData]);
-    $command = "python3 $pythonScript " . escapeshellarg($inputData);
+    $command = "python3 $pythonScript " . escapeshellarg($receivedData);
 } else {
     // POSTリクエスト以外はエラーとする
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);

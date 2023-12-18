@@ -48,8 +48,49 @@ if __name__ == "__main__":
     TENQに異常が検知されました。直ちに確認作業を行なってください。
     
     ※このメールは自動で送信されています。
-    """
+"""
     
     body = approval_body
+
+    send_email(sender_email, app_password, receiver_email, subject, body)
+
+def approval():
+    sender_email = "your_email@gmail.com"  # 送信元のメールアドレス
+    app_password = "your_app_password"  # 送信元のアプリパスワード
+    receiver_email = "recipient_email@example.com"  # 送信先のメールアドレス
+    subject = "Test Subject"
+
+    approval_type = ""  # 承認の種類
+    approval_link = "http://172.25.19.2/raspi/html/{approval_type}accept/index.html"
+    body = f"""
+    ※このメールは自動で送信されています。
+    D科4年のプロジェクト、「学内配達TENQ」です。
+
+    以下のリンクからメールの承認を行なってください。
+    
+    {approval_link}
+    """
+    send_email(sender_email, app_password, receiver_email, subject, body)
+
+def warning(num, module, door):
+    sender_email = "your_email@gmail.com"  # 送信元のメールアドレス
+    app_password = "your_app_password"  # 送信元のアプリパスワード
+    receiver_email = "recipient_email@example.com"  # 送信先のメールアドレス
+    subject = "Test Subject"
+    
+    if num == 0:
+        body = f"""
+        TENQの異常を検知しました。
+        {module}モジュールが持ち去られた可能性があります。
+        直ちに確認作業を行ってください。
+        ※このメールは自動で送信されています。
+        """
+    elif num == 1:
+        body = f"""
+        TENQの異常を検知しました。
+        {module}モジュールの扉{door}がこじ開けられた可能性があります。
+        直ちに確認作業を行ってください。
+        ※このメールは自動で送信されています。
+        """
 
     send_email(sender_email, app_password, receiver_email, subject, body)
