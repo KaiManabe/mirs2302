@@ -1,29 +1,46 @@
 import pandas as pd
 import uuid
+import time
+import threading
+import datetime
 
-def check_order_status():
-    """
-    注文状況をcsvファイルから取得する関数
+class order_manager():
+    def __init__(self, path = "/home/pi/git/mirs2302/raspi/order_info.csv"):
+        self.file_path = path
+        self.df = pd.read_csv(path)
+        t = threading.Thread(target = self.reflesh)
+        t.setDaemon(True)
+        t.start()
     
-    戻り値：
-        注文状況の連想配列
-    """
-    # CSVファイルから注文状況を確認
-    df = pd.read_csv('order_info.csv')
-    return df
-
-
-def add_new_order(order_type, receipt_time, accepted_time, sender, receiver, pickup_place, pickup_time, receive_place, receive_time):
-    id = str(uuid.uuid4())
+    def reflesh(self):
+        while(1):
+            self.df = pd.read_csv(self.file_path)
+            time.sleep(1)
     
-    status = 'NOT_ACCEPTED_YET' # 初期状態：未承認
-    df = pd.read_csv('order_info.csv')
-    new_order = pd.DataFrame([[order_type, status, receipt_time, accepted_time, sender, receiver, pickup_place, pickup_time, receive_place, receive_time]],
-                             columns=['ID', 'ORDER_TYPE', 'STATUS', 'RECEIPT_TIME', 'ACCEPTED_TIME', 'SENDER', 'RECEIVER', 'PICKUP_PLACE', 'PICKUP_TIME', 'RECEIVE_PLACE', 'RECEIVE_TIME'])
-    df = df.append(new_order, ignore_index=True)
-    df.to_csv('order_info.csv', index=False)
+    def get_order_from_id(self, id):
+        return self.df.set_index("ID", drop=False).loc[id]
     
+    def get_order_from_index(self, idx):
+        return self.df.iloc[idx]
     
-d = pd.DataFrame()
-d.index = ["1", "2", "3"]
-d.columns = ["A", "B", "C"]
+    def modify_order(self, ID, key, value):
+        self.df.loc[ID].loc[key] = value
+    
+    def new_order(self,
+                  ORDER_TYPE= None,
+                  STATUS = "NOT_ACCEPTED_YET",
+                  RECEIPT_TIME = datetime.datetime.now(),
+                  ACCEPTED_TIME = None,
+                  SENDER = None,
+                  RECEIVER = None,
+                  PICKUP_PLACE = None,
+                  PICKUP_TIME = None,
+                  RECEIVE_PLACE = None,
+                  RECEIVE_TIME = None,
+                  ):
+        
+        ID = str(uuid.uuid4())
+        s = pd.DataFrame([[ID,ORDER_TYPE,STATUS,RECEIPT_TIME,ACCEPTED_TIME,SENDER,RECEIVER,PICKUP_PLACE,PICKUP_TIME,RECEIVE_PLACE,RECEIVE_TIME]], columns = self.df.columns)
+        self.df = pd.concat([self.df, s], axis = 0, join = "outer")
+        return ID
+    

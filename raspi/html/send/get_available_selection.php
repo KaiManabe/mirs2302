@@ -1,10 +1,13 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'GET'){
-    // HTTPリクエストを受け取り、Pythonを実行して注文状況を取得
-    $pythonScriptPath = "order_mng.py";
-    $orderStatus = exec("python $pythonScriptPath");
+    $pythonScriptPath = "../../available_picking_time.py";
+    $receivedData = json_decode($_GET['place']); // GETメソッドのクエリ文字列のplaceデータを取得
 
-    // 取得した注文状況をHTTPレスポンスとして送信
-    echo $orderStatus;
+    // pythonスクリプトを実行
+    $command = "python3 $pythonScriptPath " . escapeshellarg($receivedData);
+    $result = shell_exec($command);
+    
+    // httpレスポンスを返す
+    echo $result;
 }
 ?>

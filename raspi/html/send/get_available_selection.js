@@ -43,18 +43,36 @@ function exchangeDataPhp(sendData) {
 }
 
 /*
+選択可能時間を制限する関数
 
+引数：
+    場所 -> str (2byte文字ダメかも)
+
+***クライアントが場所を選択した時に実行するやつ***
 */
-function getOrderStatus() {
-    // HTTPリクエストを送信して注文状況を取得
+function limitSelectTime(place) {
+    // HTTPリクエストを送信して選択可能時間を取得
     var xhr = new XMLHttpRequest();
-    var url = "get_available_selection.php";
+    var url = "get_available_selection.php"; // httpリクエスト先
 
-    xhr.open("GET", url, false);
-    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8"); // ヘッダを設定(文字列も送れるjson形式を指定)
+    // GETメソッドでデータを送信
+    xhr.open("GET", url + "?place=" + encodeURIComponent(JSON.stringify(place)), false);
     xhr.send();
 
-    var orderStatus = xhr.responseText;
+    // httpレスポンス
+    timeList = xhr.responseText.split(",").filter(Boolean);
 
-    return orderStatus
+    // 時間の要素を取得
+    var selectElement = document.getElementById("picking_time");
+
+    // 既存の<option>を削除
+    selectElement.innerHTML = "";
+
+    // 新しい<option>を追加
+    timeList.forEach(function(time) {
+        var option = document.createElement("option");
+        option.value = time;
+        option.text = time;
+        selectElement.appendChild(option);
+    });
 }
