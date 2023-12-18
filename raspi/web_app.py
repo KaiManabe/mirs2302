@@ -54,13 +54,21 @@ if __name__ == "__main__":
 
     send_email(sender_email, app_password, receiver_email, subject, body)
 
+"""
+承認メールを送信する関数
+引数：
+    なし
+
+戻り値：
+    なし
+"""
 def approval():
     sender_email = "your_email@gmail.com"  # 送信元のメールアドレス
     app_password = "your_app_password"  # 送信元のアプリパスワード
     receiver_email = "recipient_email@example.com"  # 送信先のメールアドレス
     subject = "Test Subject"
 
-    approval_type = ""  # 承認の種類
+    approval_type = ""  #承認の種類
     approval_link = "http://172.25.19.2/raspi/html/{approval_type}accept/index.html"
     body = f"""
     ※このメールは自動で送信されています。
@@ -72,6 +80,16 @@ def approval():
     """
     send_email(sender_email, app_password, receiver_email, subject, body)
 
+"""
+異常検知メールを送信する関数
+
+引数：
+    異常の種類、モジュール番号、扉番号
+    以上の種類 0:モジュール持ち去り 1:扉こじ開け
+
+戻り値:
+    なし
+"""
 def warning(num, module, door):
     sender_email = "your_email@gmail.com"  # 送信元のメールアドレス
     app_password = "your_app_password"  # 送信元のアプリパスワード
