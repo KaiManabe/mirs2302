@@ -220,6 +220,7 @@ class module_controller():
                     # 未接続の場合
                     if name_module_current == "unconnected":
                         print(f"[INFO][module_mng.py] : {name_module_previous}が取り外されました")
+                        """ここを異常検知メールを送るやつにする"""
                     # 取り付けられた場合
                     else:
                         print(f"[INFO][module_mng.py] : {name_module_current}が取り付けられました")
@@ -267,6 +268,7 @@ class module_controller():
                         # サーボで解錠していない場合
                         else:
                             print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}のこじ開けを検知しました")
+                            """ここを異常検知メールを送るやつにする"""
                     # 扉が閉じた場合
                     else:
                         self.module_info[module_num][door_num]["unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
