@@ -41,3 +41,20 @@ function exchangeDataPhp(sendData) {
 
     return xhr.responseText;
 }
+
+/*
+
+*/
+function getOrderStatus() {
+    // HTTPリクエストを送信して注文状況を取得
+    var xhr = new XMLHttpRequest();
+    var url = "get_available_selection.php";
+
+    xhr.open("GET", url, false);
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8"); // ヘッダを設定(文字列も送れるjson形式を指定)
+    xhr.send();
+
+    var orderStatus = xhr.responseText;
+
+    return orderStatus
+}
