@@ -57,27 +57,30 @@ void key(){
 
 戻り値：なし
 */
-/*
+
 void module_temp(){
-  double target_temp1 = ;
-  double target_temp2 = ;
-  float temp1 = analogRead(THERMISTOR1);
-  float temp2 = analogRead(THERMISTOR2);
+  double target_temp_h = ;
+  double target_temp_c = ;
+  target_v_h = 5-11*(2*exp(3435*(1/298-1/(target_temp_h+273))));
+  target_v_c = 5-11*(2*exp(3435*(1/298-1/(target_temp_c+273))));
+
+  float temp_h = analogRead(THERMISTOR1);
+  float temp_c = analogRead(THERMISTOR2);
   //保冷用モジュール
-  if(temp1 <= target_temp1){
+  if(temp1 <= target_v_h){
     digitalWrite(PELTIER,HIGH);
   }else{
     digitalWrite(PELTIER,LOW);
   }
 
   //保温用モジュール
-  if(temp2 >= target_temp2){
+  if(temp2 >= target_v_c){
     digitalWrite(PELTIER,HIGH);
   }else{
     digitalWrite(PELTIER,LOW);
   }
 }
-*/
+
 
 /*
 ペルチェ素子の制御（ペルチェ単体試験のみ）
