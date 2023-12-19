@@ -59,22 +59,30 @@ void key(){
 */
 
 void module_temp(){
-  double target_temp_h = ;
-  double target_temp_c = ;
-  target_v_h = 5-11*(2*exp(3435*(1/298-1/(target_temp_h+273))));
-  target_v_c = 5-11*(2*exp(3435*(1/298-1/(target_temp_c+273))));
+  double target_temp_h = 50;
+  double target_temp_c = 10;
 
-  float temp_h = analogRead(THERMISTOR1);
-  float temp_c = analogRead(THERMISTOR2);
-  //保冷用モジュール
-  if(temp1 <= target_v_h){
+  float volt_h = analogRead(THERMISTOR1);
+  float volt_c = analogRead(THERMISTOR2);
+
+  float r_h = volt_h*1000.0/(5-volt_h);
+  float r_c = volt_c*1000.0/(5-volt_c);
+  float temp_h = 1/(log(r_h/10000.0)/3435.0+1.0/293.0)-273.0;
+  float temp_c = 1/(log(r_c/10000.0)/3435.0+1.0/293.0)-273.0;
+
+  Serial.println(temp_h);
+  Serial.println(temp_c);
+  
+  //保温用モジュール
+  
+  if(temp_h <= target_temp_h){
     digitalWrite(PELTIER,HIGH);
   }else{
     digitalWrite(PELTIER,LOW);
   }
 
-  //保温用モジュール
-  if(temp2 >= target_v_c){
+  //保冷用モジュール
+  if(temp_c >= target_temp_c){
     digitalWrite(PELTIER,HIGH);
   }else{
     digitalWrite(PELTIER,LOW);
@@ -90,15 +98,15 @@ void module_temp(){
       ペルチェoff:0
 
 戻り値：なし
-
+*/
 void peltier(int p){
   if(p == 1){
     digitalWrite(PELTIER,HIGH);
   }else if(p == 0){
     digitalWrite(PELTIER,LOW);
-  }  
+  }
 }
-*/
+
 
 /*
 フォトリフレクタの監視
