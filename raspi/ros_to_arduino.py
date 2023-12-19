@@ -23,15 +23,16 @@ def monitor(rta):
     print("[INFO][ros_to_arduino] : cmd_velをarduinoに転送開始しました")
     while(1):
         if len(rta.s.buf) > 0:
-            time.sleep(0.1)
-            tmp = rta.s.read()
-            #print(tmp)
-            for i in range(len(tmp)-3 , -1, -1):
-                if tmp[i] == 255 and len(tmp) > (i+2):
-                    l = (tmp[i+1] - 127) * 6
-                    r = (tmp[i+2] - 127) * 6
-                    rta.send_to_arduino(l,r)
-                    break
+            time.sleep(0.05)
+            if rta.s.isconnected() > 0:
+                tmp = rta.s.read()
+                #print(tmp)
+                for i in range(len(tmp)-3 , -1, -1):
+                    if tmp[i] == 255 and len(tmp) > (i+2):
+                        l = (tmp[i+1] - 127) * 6
+                        r = (tmp[i+2] - 127) * 6
+                        rta.send_to_arduino(l,r)
+                        break
             
 
 if __name__ == "__main__":

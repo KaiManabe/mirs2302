@@ -27,7 +27,11 @@ class order_manager():
         t = threading.Thread(target = self.reflesh)
         t.setDaemon(True)
         t.start()
-    
+
+        #デバッグ用なので消してヨシ
+        self.TIME = []
+        for i in range(3):
+            self.TIME.append(datetime.datetime.now() + datetime.timedelta(minutes = 2 * i))
     
     def reflesh(self):
         """
@@ -120,7 +124,7 @@ class order_manager():
         return ID
 
     
-    def get_next_movement(self):
+    def get_next_movement(self, debug_index):
         """
         【未完】
         次の移動時刻と目的地を取得する
@@ -129,4 +133,7 @@ class order_manager():
             time: 次の出発時刻
             place_idx: 目的地の番号
         """
-        return datetime.datetime.now()
+        
+        
+        
+        return self.TIME[debug_index], debug_index

@@ -36,9 +36,13 @@ if __name__ == "__main__":
     
     
     """テスト用"""
+    called = 0
     while(1):
-        next_movement_time, next_movement_goal = order_manager.get_next_movement()
-        if next_movement_time >= datetime.datetime.now():
+        next_movement_time, next_movement_goal = order_manager.get_next_movement(called)
+        print(f"\r 次の移動時刻：{next_movement_time}     目的地 : {next_movement_goal}       " , end = "")
+        if next_movement_time <= datetime.datetime.now():
+            print("移動の時間だ！")
             ros_controller.set_goal(next_movement_goal)
+            called += 1
         
         time.sleep(1)

@@ -82,6 +82,7 @@ class sock_server():
             なし
         """
         
+        self.connected_clients = 0
         self.server_started = False
         #サーバを立てる
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -96,7 +97,6 @@ class sock_server():
         self.server_started = True
         
         #クライアントからの接続を待機（並列処理なので注意）
-        self.connected_clients = 0
         server_starter_thread = threading.Thread(target = server_starter, args = (self,))
         server_starter_thread.setDaemon(True)
         server_starter_thread.start()

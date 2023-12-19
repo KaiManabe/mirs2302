@@ -18,7 +18,7 @@ class raspi_to_ros():
         
     def set_goal(self, goal_index:int):
         if self.serv.isconnected() > 0:
-            return self.serv.send([255,1,goal_index,254])
+            return self.serv.send([255,goal_index,254])
             
         else:
             print("[ERR][raspi_to_ros] : ros側のクライアントサーバが起動していません", file = sys.stderr)
