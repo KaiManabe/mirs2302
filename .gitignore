@@ -5,3 +5,13 @@ raspi/__pycache__/serial_com.cpython-311.pyc
 raspi/__pycache__/tuning.cpython-311.pyc
 .DS_Store
 
+jetson/src/cartographer_navigation
+jetson/src/gbot_core
+jetson/src/geometry2
+jetson/src/hector_slam
+jetson/src/husky
+jetson/src/openslam_gmapping
+jetson/src/rplidar_ros
+jetson/src/rviz_cinematographer
+jetson/src/slam_gmapping
+jetson/src/teleop_tools
