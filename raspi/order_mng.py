@@ -118,4 +118,15 @@ class order_manager():
         self.df = pd.concat([self.df, s], axis = 0, join = "outer")
         self.changed = datetime.datetime.now()
         return ID
+
     
+    def get_next_movement(self):
+        """
+        【未完】
+        次の移動時刻と目的地を取得する
+        
+        戻り値：
+            time: 次の出発時刻
+            place_idx: 目的地の番号
+        """
+        return datetime.datetime.now()
