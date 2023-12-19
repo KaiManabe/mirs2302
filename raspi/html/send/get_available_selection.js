@@ -50,7 +50,7 @@ function exchangeDataPhp(sendData) {
 
 ***クライアントが場所を選択した時に実行するやつ***
 */
-function limitSelectTime(place) {
+function selectableTime(place) {
     // HTTPリクエストを送信して選択可能時間を取得
     var xhr = new XMLHttpRequest();
     var url = "get_available_selection.php"; // httpリクエスト先
@@ -65,8 +65,8 @@ function limitSelectTime(place) {
     // 時間の要素を取得
     var selectElement = document.getElementById("picking_time");
 
-    // 既存の<option>を削除
-    selectElement.innerHTML = "";
+    // 初期値
+    selectElement.innerHTML = "<option value='' selected disabled>選択してください</option>";
 
     // 新しい<option>を追加
     timeList.forEach(function(time) {
@@ -76,3 +76,46 @@ function limitSelectTime(place) {
         selectElement.appendChild(option);
     });
 }
+
+/*
+時間が選択された時に場所を選択する関数
+
+引数：
+    時間 -> str
+
+***クライアントが時間を選択した時に実行するやつ***
+*/
+function selectablePlace(time) {
+    // HTTPリクエストを送信して場所を取得
+    var xhr = new XMLHttpRequest();
+    var url = "get_available_selection.php"; // HTTPリクエスト先
+
+    // GETメソッドでデータを送信
+    xhr.open("GET", url + "?time=" + encodeURIComponent(JSON.stringify(time)), false);
+    xhr.send();
+
+    // HTTPレスポンス
+    placeList = xhr.responseText.split(",").filter(Boolean);
+
+    // 場所の要素を取得
+    var selectElement = document.getElementById("picking_place");
+
+    // 初期値
+    selectElement.innerHTML = "<option value='' selected disabled>選択してください</option>";
+
+    // 新しい<option>を追加
+    placeList.forEach(function(place) {
+        var option = document.createElement("option");
+        option.value = place;
+        option.text = place;
+        selectElement.appendChild(option);
+    });
+}
+
+/*
+ページが読み込まれた時に実行する処理
+*/
+document.addEventListener("DOMContentLoaded", function(event) {
+    selectablePlace();
+    selectableTime();
+});

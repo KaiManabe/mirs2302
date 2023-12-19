@@ -15,13 +15,13 @@ time_list = ["15:00 - 15:10",
              ]
 
 if picking_place == "D":
+    time_list.remove(time_list[0])
+if picking_place == "S":
     time_list.remove(time_list[1])
-if picking_place == "E":
-    time_list.remove(time_list[2])
 if picking_place == "C":
-    time_list.remove(time_list[3])
+    time_list.remove(time_list[2])
 
 
-for p in time_list:
-    print(p, end = ",")
+for t in time_list:
+    print(t, end = ",")
 # print(json.dumps(time_list))
