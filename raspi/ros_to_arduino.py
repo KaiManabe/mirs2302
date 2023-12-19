@@ -20,6 +20,7 @@ class ros_to_arduino():
         self.c.set_r_speed(r)
 
 def monitor(rta):
+    print("[INFO][ros_to_arduino] : cmd_velをarduinoに転送開始しました")
     while(1):
         if len(rta.s.buf) > 0:
             time.sleep(0.1)
