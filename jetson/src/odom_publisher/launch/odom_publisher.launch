@@ -1,0 +1,4 @@
+<launch>
+  <!-- <node name="rviz" pkg="rviz" type="rviz" required="true" /> -->
+  <node name="odom_publisher"    pkg="odom_publisher" type="tf_odom_pub" output="screen"/>
+</launch>

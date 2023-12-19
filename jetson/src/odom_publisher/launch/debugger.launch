@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="odom_publisher" type="tf_odom_pub" name="odom_publisher" launch-prefix="gdb --args"/>
+</launch>

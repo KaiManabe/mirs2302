@@ -1,0 +1,4 @@
+<launch>
+  <!-- <node name="rviz" pkg="rviz" type="rviz" required="true" /> -->
+  <node name="goal_publisher"    pkg="goal_publisher" type="goal_publisher" output="screen"/>
+</launch>

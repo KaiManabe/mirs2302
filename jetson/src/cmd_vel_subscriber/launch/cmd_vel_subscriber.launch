@@ -1,0 +1,4 @@
+<launch>
+  <!-- <node name="rviz" pkg="rviz" type="rviz" required="true" /> -->
+  <node name="cmd_vel_subscriber"    pkg="cmd_vel_subscriber" type="cmd_vel_subscriber" output="screen"/>
+</launch>
