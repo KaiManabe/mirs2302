@@ -59,22 +59,42 @@ function selectableTime(place) {
     xhr.open("GET", url + "?place=" + encodeURIComponent(JSON.stringify(place)), false);
     xhr.send();
 
-    // httpレスポンス
+    // httpレスポンスを配列にして受け取る
     timeList = xhr.responseText.split(",").filter(Boolean);
 
-    // 時間の要素を取得
+    // 集荷時間の要素を取得
     var selectElement = document.getElementById("picking_time");
 
-    // 初期値
-    selectElement.innerHTML = "<option value='' selected disabled>選択してください</option>";
+    // 既存の選択肢の配列を作成
+    var existingOptions = Array.from(selectElement.options).map(option => option.value);
 
-    // 新しい<option>を追加
+    // 既存の選択肢にない選択可能な時間を追加
     timeList.forEach(function(time) {
-        var option = document.createElement("option");
-        option.value = time;
-        option.text = time;
-        selectElement.appendChild(option);
+        if (!existingOptions.includes(time)) {
+            var option = document.createElement("option");
+            option.value = time;
+            option.text = time;
+            selectElement.appendChild(option);
+        }
     });
+    // 既存の選択肢にある選択可能な時間ではないものを削除
+    existingOptions.forEach(function(optionValue) {
+        if (!timeList.includes(optionValue)) {
+            selectElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
+        }
+    });
+    // 時間をソート(したかったけどまだできてない)
+    Array.from(selectElement.options)
+    .sort((a, b) => {
+        if (a.value < b.value) {
+            return -1;
+        }
+        if (a.value > b.value) {
+            return 1;
+        }
+        return 0;
+    })
+    .forEach(option => selectElement.appendChild(option));
 }
 
 /*
@@ -100,15 +120,20 @@ function selectablePlace(time) {
     // 場所の要素を取得
     var selectElement = document.getElementById("picking_place");
 
-    // 初期値
-    selectElement.innerHTML = "<option value='' selected disabled>選択してください</option>";
-
-    // 新しい<option>を追加
+    // selectablePlace関数内で、新しい<option>要素を条件文で追加し、既存の要素を削除する方法
+    var existingOptions = Array.from(selectElement.options).map(option => option.value);
     placeList.forEach(function(place) {
-        var option = document.createElement("option");
-        option.value = place;
-        option.text = place;
-        selectElement.appendChild(option);
+        if (!existingOptions.includes(place)) {
+            var option = document.createElement("option");
+            option.value = place;
+            option.text = place;
+            selectElement.appendChild(option);
+        }
+    });
+    existingOptions.forEach(function(optionValue) {
+        if (!timeList.includes(optionValue)) {
+            selectElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
+        }
     });
 }
 
@@ -116,6 +141,8 @@ function selectablePlace(time) {
 ページが読み込まれた時に実行する処理
 */
 document.addEventListener("DOMContentLoaded", function(event) {
+    document.getElementById("picking_place").innerHTML = "<option value='' selected disabled>選択してください</option>";
     selectablePlace();
+    document.getElementById("picking_time").innerHTML = "<option value='' selected disabled>選択してください</option>";
     selectableTime();
 });
