@@ -62,16 +62,23 @@ void module_temp(){
   double target_temp_h = 50;
   double target_temp_c = 10;
 
-  float volt_h = analogRead(THERMISTOR1);
-  float volt_c = analogRead(THERMISTOR2);
+  float volt_h;
+  volt_h = analogRead(THERMISTOR1);
+  float volt_c;
+  volt_c = analogRead(THERMISTOR2);
+  Serial.println("moto");
+  Serial.print(volt_h);
+  Serial.println(volt_c);
 
-  float r_h = volt_h*1000.0/(5-volt_h);
-  float r_c = volt_c*1000.0/(5-volt_c);
-  float temp_h = 1/(log(r_h/10000.0)/3435.0+1.0/293.0)-273.0;
-  float temp_c = 1/(log(r_c/10000.0)/3435.0+1.0/293.0)-273.0;
+  volt_h = volt_h*5.0/1023.0;
+  volt_c = volt_c*5.0/1024.0;
+  float r_h = (volt_h+5.0)*1000.0/volt_h;
+  float r_c = (volt_c+5.0)*1000.0/volt_c;
+  float temp_h = 1.0/(log(r_h/10000.0)/3435.0+1.0/298.0)-273.0;
+  float temp_c = 1.0/(log(r_c/10000.0)/3435.0+1.0/293.0)-273.0;
 
-  Serial.println(temp_h);
-  Serial.println(temp_c);
+  Serial.print((int)temp_h);
+  Serial.println((int)temp_c);
   
   //保温用モジュール
   
