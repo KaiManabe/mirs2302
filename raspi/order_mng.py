@@ -137,3 +137,22 @@ class order_manager():
         
         
         return self.TIME[debug_index], debug_index
+    
+    
+
+if __name__ == '__main__':
+    """
+    コマンドライン(phpなど)から実行された時の処理
+    """
+    o = order_manager()
+    time.sleep(0.5) # インスタンス化し終わるまで待つ
+    
+    if(sys.argv[1] == 'new_order' and sys.argv[2] == 'SEND'):
+        o.new_order(
+            ORDER_TYPE = 'SEND',
+            SENDER = sys.argv[3],
+            RECEIVER = sys.argv[4],
+            PICKUP_PLACE = sys.argv[5],
+            PICKUP_TIME = sys.argv[6]
+        )
+        time.sleep(0.5) # 注文情報を書き込み切るまで待つ

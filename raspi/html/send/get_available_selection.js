@@ -5,14 +5,18 @@ function execution(){
     var formIds = ['client_address', 'client_address_type', 'target_address', 'target_address_type', 'item_type', 'item_name', 'picking_place', 'picking_time', 'picking_pincode', 'note']; // formのID
     var couplingIds = [['client_address', 'client_address_type'], ['target_address', 'target_address_type']]; // 結合する要素のID
     sendData = readFormData(formIds, couplingIds);
-    exchangeDataPhp(sendData);
+    res = sendDataToPhp(sendData);
+    
+    return res; // デバッグ出力
 }
 
 /*
 formデータ読み込む関数
 
-引数：formのID, 結合したい要素のID（先頭のIDの要素に結合）
-戻り値：formデータの配列
+引数：
+    formのID, 結合したい要素のID（先頭のIDの要素に結合）
+戻り値：
+    formデータの配列
 */
 function readFormData(formIds, couplingIds) {
     var formData = {};
@@ -37,18 +41,16 @@ function readFormData(formIds, couplingIds) {
         });
     });
 
-    console.log(formData); // デバッグ出力
-
     return formData;
 }
 
 /*
-phpとやり取りする関数
+phpに送信する関数
 
-引数：phpに送りたいデータ(json形式で送信する)
-戻り値：結果
+引数：
+    phpに送りたいデータ(json形式で送信する)
 */
-function exchangeDataPhp(sendData) {
+function sendDataToPhp(sendData) {
     // XMLHttpRequestオブジェクトを使用してPHPにHTTPリクエストを送信
     var xhr = new XMLHttpRequest();
     var url = "receive.php";
@@ -64,7 +66,7 @@ function exchangeDataPhp(sendData) {
 選択可能な時間を制限する関数
 
 引数(なしでもいける)：
-    場所 -> str
+    場所: str
 
 ***クライアントが集荷場所を選択した時に実行するやつ***
 */
@@ -116,7 +118,7 @@ function selectableTime(place) {
 時間が選択された時に場所を選択する関数
 
 引数(なしでもいける)：
-    時間 -> str
+    時間: str
 
 ***クライアントが集荷時間を選択した時に実行するやつ***
 */
@@ -164,11 +166,12 @@ function selectablePlace(time) {
 */
 
 // 要素の定義
+const formElement = document.getElementById("form");
 const pickingPlaceElement = document.getElementById("picking_place");
 const pickingTimeElement = document.getElementById("picking_time");
 
 // ページが読み込まれた時に実行する処理
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function(event) {
     pickingPlaceElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
     pickingTimeElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
     selectablePlace();
@@ -181,4 +184,9 @@ pickingPlaceElement.addEventListener('change', function(event) {
 // 集荷時間が選択された時の処理
 pickingTimeElement.addEventListener('change', function(event) {
     selectablePlace(event.target.value);
+});
+// データを送信するボタンが押された時の処理
+formElement.addEventListener('submit', function(event) {
+    execution();
+    console.log('送信されました'); // デバッグ出力
 });
