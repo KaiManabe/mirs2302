@@ -2,24 +2,42 @@
 全体を実行するやつ
 */
 function execution(){
-    var formIds = ['client_address', 'client_address_type', 'target_address', 'target_address_type', 'item_type', 'item_name', 'picking_place', 'picking_time', 'picking_pincode', 'note'];
-    sendData = readFormData(formIds);
+    var formIds = ['client_address', 'client_address_type', 'target_address', 'target_address_type', 'item_type', 'item_name', 'picking_place', 'picking_time', 'picking_pincode', 'note']; // formのID
+    var couplingIds = [['client_address', 'client_address_type'], ['target_address', 'target_address_type']]; // 結合する要素のID
+    sendData = readFormData(formIds, couplingIds);
     exchangeDataPhp(sendData);
 }
 
 /*
 formデータ読み込む関数
 
-引数：formのID
+引数：formのID, 結合したい要素のID（先頭のIDの要素に結合）
 戻り値：formデータの配列
 */
-function readFormData(formIds){
+function readFormData(formIds, couplingIds) {
     var formData = {};
 
-    // 各IDの入力フォームの値をdataに格納
-    formIds.forEach(function(id) {
+    // 各IDの入力フォームの値をformDataに格納
+    formIds.forEach(function (id) {
         formData[id] = document.getElementById(id).value;
     });
+
+    // 特定のフォームの値を結合
+    couplingIds.forEach(function (coupling) {
+        var combinedValue = coupling.slice(1).reduce(function (combined, id) {
+            return combined + formData[id];
+        }, '');
+
+        // 結合
+        formData[coupling[0]] += combinedValue;
+
+        // 結合後に不要なプロパティを削除
+        coupling.slice(1).forEach(function (id) {
+            delete formData[id];
+        });
+    });
+
+    console.log(formData); // デバッグ出力
 
     return formData;
 }
