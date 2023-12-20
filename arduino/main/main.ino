@@ -66,5 +66,7 @@ void setup(){
 void loop(){
     check_serial();
     pid();
+    module_temp();
+    delay(100);
     //send_odom();
 }

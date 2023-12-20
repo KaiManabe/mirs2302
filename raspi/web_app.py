@@ -48,7 +48,7 @@ if __name__ == "__main__":
     TENQに異常が検知されました。直ちに確認作業を行なってください。
     
     ※このメールは自動で送信されています。
-"""
+    """
     
     body = approval_body
 
@@ -57,19 +57,22 @@ if __name__ == "__main__":
 """
 承認メールを送信する関数
 引数：
-    なし
+    依頼のID,依頼者のメールアドレス,依頼の種類,依頼物
 
 戻り値：
     なし
 """
-def approval():
+def approval(order_id, mail, order_type):
+    #sender_email = "your_email@gmail.com"  # 送信元のメールアドレス
+    #app_password = "your_app_password"  # 送信元のアプリパスワード
+    #receiver_email = "recipient_email@example.com"  # 送信先のメールアドレス
+
     sender_email = "your_email@gmail.com"  # 送信元のメールアドレス
     app_password = "your_app_password"  # 送信元のアプリパスワード
-    receiver_email = "recipient_email@example.com"  # 送信先のメールアドレス
-    subject = "Test Subject"
+    receiver_email = mail #送信先のメールアドレス
+    subject = "学内配達ロボットTENQ-依頼承認メール"
 
-    approval_type = ""  #承認の種類
-    approval_link = "http://172.25.19.2/raspi/html/{approval_type}accept/index.html"
+    approval_link = 'http://172.25.19.2/raspi/html/${order_type}/accept/index.html?id=${order_id}'
     body = f"""
     ※このメールは自動で送信されています。
     D科4年のプロジェクト、「学内配達TENQ」です。
