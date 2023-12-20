@@ -45,10 +45,10 @@ function exchangeDataPhp(sendData) {
 /*
 選択可能な時間を制限する関数
 
-引数：
-    場所 -> str (2byte文字ダメかも)
+引数(なしでもいける)：
+    場所 -> str (2byte文字なぜかできない)
 
-***クライアントが場所を選択した時に実行するやつ***
+***クライアントが集荷場所を選択した時に実行するやつ***
 */
 function selectableTime(place) {
     // httpリクエストを送信して選択可能な時間を取得
@@ -64,7 +64,7 @@ function selectableTime(place) {
     // 既存の選択肢の配列を作成
     var existingOptions = Array.from(selectElement.options).map(option => option.value);
 
-    // 既存の選択肢にない選択可能な時間を追加
+    // 既存の選択肢にない選択可能な集荷時間を追加
     timeList.forEach(function(time) {
         if (!existingOptions.includes(time)) {
             var option = document.createElement("option");
@@ -73,14 +73,15 @@ function selectableTime(place) {
             selectElement.appendChild(option);
         }
     });
-    // 既存の選択肢にある選択可能な時間ではないものを削除
+    // 既存の選択肢にある選択可能な集荷時間ではないものを削除
     existingOptions.forEach(function(optionValue) {
-        if (!timeList.includes(optionValue)) {
+        if (!timeList.includes(optionValue) && optionValue != 'init') {
             selectElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
         }
     });
     // 集荷時間の選択肢をソート
     Array.from(selectElement.options)
+    .filter(option => option.value !== 'init')
     .sort((a, b) => {
         if (a.value < b.value) {
             return -1;
@@ -96,10 +97,10 @@ function selectableTime(place) {
 /*
 時間が選択された時に場所を選択する関数
 
-引数：
+引数(なしでもいける)：
     時間 -> str
 
-***クライアントが時間を選択した時に実行するやつ***
+***クライアントが集荷時間を選択した時に実行するやつ***
 */
 function selectablePlace(time) {
     // httpリクエストを送信して選択可能な集荷場所を取得
@@ -109,11 +110,13 @@ function selectablePlace(time) {
     xhr.send();
     placeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
-    // 場所の要素を取得
+    // 集荷場所の要素を取得
     var selectElement = document.getElementById("picking_place");
 
-    // selectablePlace関数内で、新しい<option>要素を条件文で追加し、既存の要素を削除する方法
+    // 既存の選択肢の配列を作成
     var existingOptions = Array.from(selectElement.options).map(option => option.value);
+
+    // 既存の選択肢にない選択可能な集荷場所を追加
     placeList.forEach(function(place) {
         if (!existingOptions.includes(place)) {
             var option = document.createElement("option");
@@ -122,32 +125,42 @@ function selectablePlace(time) {
             selectElement.appendChild(option);
         }
     });
+    // 既存の選択肢にある選択可能な集荷場所ではないものを削除
     existingOptions.forEach(function(optionValue) {
-        if (!timeList.includes(optionValue)) {
+        if (!placeList.includes(optionValue) && optionValue != 'init') {
             selectElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
         }
     });
+    // 集荷場所の選択肢をソート
+    const sortRule = ['共通棟', 'D科棟', 'E科棟', 'S科棟', 'M科棟', 'C科棟']; // 集荷場のソート規則（要素の早い順にソートされる）
+    Array.from(selectElement.options)
+    .filter(option => option.value !== 'init')
+    .sort(function(a, b) {
+        return sortRule.indexOf(a.value) - sortRule.indexOf(b.value);
+    })
+    .forEach(option => selectElement.appendChild(option));
 }
 
 /*
-ページが読み込まれた時に実行する処理
+---------- 以下イベントリスナー ----------
 */
-document.addEventListener("DOMContentLoaded", function(event) {
-    document.getElementById("picking_place").innerHTML = "<option value='' selected disabled>選択してください</option>";
+
+// 要素の定義
+const pickingPlaceElement = document.getElementById("picking_place");
+const pickingTimeElement = document.getElementById("picking_time");
+
+// ページが読み込まれた時に実行する処理
+document.addEventListener("DOMContentLoaded", function() {
+    pickingPlaceElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
+    pickingTimeElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
     selectablePlace();
-    document.getElementById("picking_time").innerHTML = "<option value='' selected disabled>選択してください</option>";
     selectableTime();
 });
-
-/*
-イベントリスナー
-*/
-const picking_place = document.getElementById('picking_place');
-const picking_time = document.getElementById('picking_time');
-
-picking_place.addEventListener('change', function(event) {
+// 集荷場所が選択された時の処理
+pickingPlaceElement.addEventListener('change', function(event) {
     selectableTime(event.target.value);
 });
-picking_time.addEventListener('change', function(event) {
+// 集荷時間が選択された時の処理
+pickingTimeElement.addEventListener('change', function(event) {
     selectablePlace(event.target.value);
 });
