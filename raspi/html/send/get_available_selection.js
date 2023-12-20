@@ -43,7 +43,7 @@ function exchangeDataPhp(sendData) {
 }
 
 /*
-選択可能時間を制限する関数
+選択可能な時間を制限する関数
 
 引数：
     場所 -> str (2byte文字ダメかも)
@@ -51,16 +51,12 @@ function exchangeDataPhp(sendData) {
 ***クライアントが場所を選択した時に実行するやつ***
 */
 function selectableTime(place) {
-    // HTTPリクエストを送信して選択可能時間を取得
+    // httpリクエストを送信して選択可能な時間を取得
     var xhr = new XMLHttpRequest();
     var url = "get_available_selection.php"; // httpリクエスト先
-
-    // GETメソッドでデータを送信
-    xhr.open("GET", url + "?place=" + encodeURIComponent(JSON.stringify(place)), false);
+    xhr.open("GET", url + "?place=" + encodeURIComponent(JSON.stringify(place)), false); // 同期通信GETメソッド
     xhr.send();
-
-    // httpレスポンスを配列にして受け取る
-    timeList = xhr.responseText.split(",").filter(Boolean);
+    timeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
     // 集荷時間の要素を取得
     var selectElement = document.getElementById("picking_time");
@@ -83,7 +79,7 @@ function selectableTime(place) {
             selectElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
         }
     });
-    // 時間をソート(したかったけどまだできてない)
+    // 集荷時間の選択肢をソート
     Array.from(selectElement.options)
     .sort((a, b) => {
         if (a.value < b.value) {
@@ -106,16 +102,12 @@ function selectableTime(place) {
 ***クライアントが時間を選択した時に実行するやつ***
 */
 function selectablePlace(time) {
-    // HTTPリクエストを送信して場所を取得
+    // httpリクエストを送信して選択可能な集荷場所を取得
     var xhr = new XMLHttpRequest();
-    var url = "get_available_selection.php"; // HTTPリクエスト先
-
-    // GETメソッドでデータを送信
-    xhr.open("GET", url + "?time=" + encodeURIComponent(JSON.stringify(time)), false);
+    var url = "get_available_selection.php"; // httpリクエスト先
+    xhr.open("GET", url + "?time=" + encodeURIComponent(JSON.stringify(time)), false); // 同期通信GETメソッド
     xhr.send();
-
-    // HTTPレスポンス
-    placeList = xhr.responseText.split(",").filter(Boolean);
+    placeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
     // 場所の要素を取得
     var selectElement = document.getElementById("picking_place");
@@ -145,4 +137,17 @@ document.addEventListener("DOMContentLoaded", function(event) {
     selectablePlace();
     document.getElementById("picking_time").innerHTML = "<option value='' selected disabled>選択してください</option>";
     selectableTime();
+});
+
+/*
+イベントリスナー
+*/
+const picking_place = document.getElementById('picking_place');
+const picking_time = document.getElementById('picking_time');
+
+picking_place.addEventListener('change', function(event) {
+    selectableTime(event.target.value);
+});
+picking_time.addEventListener('change', function(event) {
+    selectablePlace(event.target.value);
 });
