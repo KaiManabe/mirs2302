@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET'){
     }
 
     // pythonスクリプトを実行
-    $command = "python3 $pythonScriptPath " . escapeshellarg($receivedData);
+    $command = "python3 $pythonScriptPath $receivedData"; // なぜかescapeshellarg()を使用すると2byte文字が消えてしまう
     $result = shell_exec($command);
     
     // httpレスポンスを返す

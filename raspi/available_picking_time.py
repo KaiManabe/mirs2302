@@ -14,11 +14,11 @@ time_list = ["15:00 - 15:10",
              "16:20 - 16:30",
              ]
 
-if picking_place == "D":
+if picking_place == "D科棟":
     time_list.remove(time_list[0])
-if picking_place == "S":
+if picking_place == "S科棟":
     time_list.remove(time_list[1])
-if picking_place == "C":
+if picking_place == "C科棟":
     time_list.remove(time_list[2])
 
 
