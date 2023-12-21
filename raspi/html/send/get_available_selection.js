@@ -206,6 +206,5 @@ pickingTimeElement.addEventListener('change', function(event) {
 });
 // データを送信するボタンが押された時の処理
 formElement.addEventListener('submit', function(event) {
-    event.preventDefault(); // ページのリロードを防ぐ
     submitProcessing();
 });

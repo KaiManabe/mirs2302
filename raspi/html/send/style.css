@@ -1,8 +1,8 @@
-.center {
+.center{
     width: fit-content;
     margin: auto;
 }
-form th {
+th{
     text-align: left;
     vertical-align: top;
 }
