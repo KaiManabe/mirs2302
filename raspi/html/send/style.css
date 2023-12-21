@@ -14,7 +14,7 @@ input{
     height: 20px;
     font-size: 15px;
 }
-input[type="time"], input[type="submit"]{
+.form input[type="submit"]{
     width: auto;
     height: auto;
 }

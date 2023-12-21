@@ -17,25 +17,19 @@
                 <label for="receive_place">受け取る場所</label>
             </th>
             <td>
-                <select name="receive_place" id="receive_place">
-                    <option value="共通棟">共通棟</option>
-                    <option value="D科棟">D科棟</option>
-                    <option value="E科棟">E科棟</option>
-        
-                    <!-- 外をやらない場合は削除 -->
-                    <option value="M科棟">M科棟</option>
-                    <option value="C科棟">C科棟</option>
-                    <option value="専攻科棟">専攻科棟</option>
-                    <option value="講義棟">講義棟</option>
-                    <option value="尚友会館">尚友会館</option>
+                <select name="receive_place" id="receive_place" title = "受け取り場所を選択してください" required>
+                    <option value="0"></option>
+                    <!-- jsでここに選択可能な場所を追加する -->
                 </select><br>
             </td>
             <th>
-                <label for="receive_time">受け取る時間</label>
+                <label for="receive_time" id="time_select">受け取る時間</label>
             </th>
             <td>
-                <input type="time" name="receive_time" id="receive_time"/><br>
-
+                <select name = "receive_time" id = "receive_time" title = "受取時間を選択してください" required>
+                    <option></option>
+                    <!-- jsでここに選択可能な時間を追加する -->
+                </select><br>
             </td>
             <th>
                 <label for="receive_pincode">受け取る際のPINコード</label>
