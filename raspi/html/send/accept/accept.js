@@ -1,9 +1,15 @@
-let url = new URL(window.location.href);
-let params = url.searchParams;
+let current_url = new URL(window.location.href);
+let params = current_url.searchParams;
 
 var order_id = params.get('id');
 
 pywebview.order_manager().get_order("ORDER_TYPE","order_id")
+
+var request = new XMLHttpRequest();
+var url = "get_order_data.php"; //リクエスト先のphpのurl
+request.open("GET", url + "?id=" + encodeURIComponent(JSON.stringify(order_id)), false);
+request.send();
+dataList = request.responseText.split(",").filter(Boolean);
 
 document.querySelector('#text').textContent = `${mail}さんから${thing}を集荷するように依頼が来ています`;
 
