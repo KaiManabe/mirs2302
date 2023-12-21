@@ -181,16 +181,16 @@ class module_controller():
                 for num, res in enumerate(self.resistance_list, start=1):
                     if acc_res_range[0] <= res <= acc_res_range[1]:
                         self.module_info[f"module{num}"]["name"] = "accessories"
-                        self.module_info[f"module{num}"]["door1"]["name"] = "left"
-                        self.module_info[f"module{num}"]["door2"]["name"] = "right"
+                        self.module_info[f"module{num}"]["door1"]["name"] = "right"
+                        self.module_info[f"module{num}"]["door2"]["name"] = "left"
                     elif doc_res_range[0] <= res <= doc_res_range[1]:
                         self.module_info[f"module{num}"]["name"] = "document"
                         self.module_info[f"module{num}"]["door1"]["name"] = "under"
                         self.module_info[f"module{num}"]["door2"]["name"] = "upper"
                     elif ins_res_range[0] <= res <= ins_res_range[1]:
                         self.module_info[f"module{num}"]["name"] = "insulation"
-                        self.module_info[f"module{num}"]["door1"]["name"] = "left"
-                        self.module_info[f"module{num}"]["door2"]["name"] = "right"
+                        self.module_info[f"module{num}"]["door1"]["name"] = "right"
+                        self.module_info[f"module{num}"]["door2"]["name"] = "left"
                     else:
                         self.module_info[f"module{num}"]["name"] = "unconnected"
                         self.module_info[f"module{num}"]["door1"]["name"] = ""
@@ -248,7 +248,7 @@ class module_controller():
         
         # モジュールと扉の情報を初期化
         self.module_info[module_num][door_num]["open"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
-        open_door_previous = self.module_info[module_num][door_num]["open"]
+        openFlag_door_previous = self.module_info[module_num][door_num]["open"]
         
         # 一定周期で監視し続ける
         while True:
@@ -259,7 +259,7 @@ class module_controller():
                 self.module_info[module_num][door_num]["open"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
                 
                 # 扉の状態が変わった時
-                if self.module_info[module_num][door_num]["open"] != open_door_previous:
+                if self.module_info[module_num][door_num]["open"] != openFlag_door_previous and name_module_current != "unconnected":
                     # 扉が開いた場合
                     if self.module_info[module_num][door_num]["open"]:
                         # サーボで解錠した場合
@@ -274,7 +274,7 @@ class module_controller():
                         self.module_info[module_num][door_num]["unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
                         print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}が閉じました")
                     # フラグを更新
-                    open_door_previous = self.module_info[module_num][door_num]["open"]
+                    openFlag_door_previous = self.module_info[module_num][door_num]["open"]
                     
             time.sleep(SURV_CYCLE)
             
