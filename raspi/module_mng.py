@@ -353,19 +353,16 @@ class airframe_controller():
         *** airframe_controller()をオブジェクト化した際に、自動でスレッドが立ち上げられるので使用しないこと ***
         機体の持ち去りを検知する
         """
-        # フラグの初期化
-        executed: bool = False # 持ち去りを検知した際の処理を1回のみ実行するためのフラグ
-        
         # 一定周期で検知し続ける
         while True:
             # Arduinoに機体持ち去り検知指令を出す
             response = self.serial.send_and_read_response(11, [], 16)
             self.airframe_taken = response[0][0]
             
-            # 持ち去りを検知した時（定期的に呼び出しても1回のみ実行される）
-            if self.airframe_taken and not(executed):
+            # 持ち去りを検知した時（1回のみ実行される）
+            if self.airframe_taken:
                 print("[INFO][module_mng.py] : 機体の持ち去りを検知しました")
-                executed = True
+                break
             
             time.sleep(AIR_CYCLE)
         
