@@ -149,9 +149,16 @@ if __name__ == '__main__':
     o = order_manager()
     time.sleep(0.5) # インスタンス化し終わるまで待つ
     
+    # 追加のコマンドライン引数がある場合
     if(len(sys.argv) > 1):
+        
         # 新しい注文情報を書き込む
         if(sys.argv[1] == 'new_order'):
+            # 備考の有無判別
+            if(len(sys.argv) > 10):
+                note = sys.argv[10]
+            else:
+                note = ""
             # "送る"の場合
             if(sys.argv[2] == 'SEND'):
                 o.new_order(
@@ -163,7 +170,7 @@ if __name__ == '__main__':
                     PICKUP_PLACE = sys.argv[7],
                     PICKUP_TIME = sys.argv[8],
                     PICKUP_PIN = sys.argv[9],
-                    NOTE = sys.argv[10]
+                    NOTE = note
                 )
                 time.sleep(0.5) # 注文情報を書き込み切るまで待つ
             # "送ってもらう"の場合
@@ -177,7 +184,7 @@ if __name__ == '__main__':
                     REVEIVE_PLACE = sys.argv[7],
                     RECEIVE_TIME = sys.argv[8],
                     RECEIVE_PIN = sys.argv[9],
-                    NOTE = sys.argv[10]
+                    NOTE = note
                 )
                 time.sleep(0.5) # 注文情報を書き込み切るまで待つ
                 
