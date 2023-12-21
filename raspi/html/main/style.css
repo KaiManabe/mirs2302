@@ -5,6 +5,10 @@
 	height:100vh;
   }
 
+body{
+	font-family: 'Zen Kaku Gothic Antique', sans-serif;
+}
+
 .view{
 	visibility : visible;
 }

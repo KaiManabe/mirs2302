@@ -1,15 +1,15 @@
 let current_url = new URL(window.location.href);
 let params = current_url.searchParams;
-
 var order_id = params.get('id');
-
-pywebview.order_manager().get_order("ORDER_TYPE","order_id")
 
 var request = new XMLHttpRequest();
 var url = "get_order_data.php"; //リクエスト先のphpのurl
 request.open("GET", url + "?id=" + encodeURIComponent(JSON.stringify(order_id)), false);
 request.send();
-dataList = request.responseText.split(",").filter(Boolean);
+var dataList = request.responseText.split(/\s+/); //連想配列をコンマで区切った普通の配列に変換
+
+var mail = dataList.slice(16,17); //dataList配列のうち、16番目の要素をmailに代入
+var thing = dataList.slice(7,8); //dataList配列のうち、8番目の要素をthingに代入
 
 document.querySelector('#text').textContent = `${mail}さんから${thing}を集荷するように依頼が来ています`;
 

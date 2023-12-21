@@ -1,13 +1,11 @@
 /*
-全体を実行するやつ
+送信ボタンに関する処理
 */
 function execution(){
     var formIds = ['client_address', 'client_address_type', 'target_address', 'target_address_type', 'item_type', 'item_name', 'picking_place', 'picking_time', 'picking_pincode', 'note']; // formのID
     var couplingIds = [['client_address', 'client_address_type'], ['target_address', 'target_address_type']]; // 結合する要素のID
     sendData = readFormData(formIds, couplingIds);
-    res = sendDataToPhp(sendData);
-    
-    return res; // デバッグ出力
+    sendDataToPhp(sendData);
 }
 
 /*

@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET'){ //メソッドがGETでリクエス�
     }
 }
 
-$command = "python3 $pythonScriptPath $receivedData"
+$command = "python3 $pythonScriptPath get_order $receivedData";
 $result = shell_exec($command);
 
 echo $result;
