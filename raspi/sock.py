@@ -86,6 +86,9 @@ class sock_server():
         self.server_started = False
         #サーバを立てる
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                
+        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                
         try:
             self.server.bind((address, port))
         except:
@@ -201,6 +204,7 @@ class sock_client():
         """
         #サーバに接続する
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         print("[INFO][sock.sock_client] : ポート", port, "に接続を試みています...")
         try:
             self.client.connect((address, port))

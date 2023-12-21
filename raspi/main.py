@@ -9,7 +9,7 @@ import web_app
 import config
 import datetime
 import time
-
+import sys
 
 if __name__ == "__main__":
     #シリアルポート
@@ -34,15 +34,24 @@ if __name__ == "__main__":
     #オーダー管理用クラス
     order_manager = order_mng.order_manager()
     
+    time.sleep(5)
     
-    """テスト用"""
-    called = 0
-    while(1):
-        next_movement_time, next_movement_goal = order_manager.get_next_movement(called)
-        print(f"\r 次の移動時刻：{next_movement_time}     目的地 : {next_movement_goal}       " , end = "")
-        if next_movement_time <= datetime.datetime.now():
-            print("移動の時間だ！")
-            ros_controller.set_goal(next_movement_goal)
-            called += 1
+    for i in range(3):
+        idx = 2 - i
+        print(f"[INFO][main.py] : 目的地を{idx}に設定しました")
+        ros_controller.set_goal(idx)
+        while(1):
+            time.sleep(0.2)
+            if ros_controller.status == "ACTIVE":
+                break
+        print(f"[INFO][main.py] : ロボットが走行中です... ROSステータス : {ros_controller.status}")
+        while(1):
+            time.sleep(0.2)
+            if ros_controller.status == "SUCCEEDED":
+                print(f"[INFO][main.py] : 目的地{idx}に到着しました ROSステータス : {ros_controller.status}")
+                break
+            elif ros_controller.status != "ACTIVE":
+                print(f"[INFO][main.py] : 目的地{idx}に到着できませんでした ROSステータス : {ros_controller.status}")
+                sys.exit(1)
         
-        time.sleep(1)
+        time.sleep(3)

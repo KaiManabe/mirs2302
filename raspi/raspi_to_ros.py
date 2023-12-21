@@ -3,18 +3,31 @@ import sys
 import time
 import threading
 
+STATUS = [
+    "PENDING",
+    "ACTIVE",
+    "PREEMPTED",
+    "SUCCEEDED",
+    "ABORTED",
+    "REJECTED",
+    "PREEMPTING",
+    "RECALLING",
+    "RECALLED",
+    "LOST"]
+
+
+
 class raspi_to_ros():
     def __init__(self, serv:sock.sock_server):
         self.serv = serv
-        self.x = 0.0
-        self.y = 0.0
+        self.status = ""
         while(1):
             if serv.isconnected() > 0:
                 break
         
-        t = threading.Thread(target = self.position_monitor)
+        t = threading.Thread(target = self.status_monitor)
         t.setDaemon(True)
-        #t.start()
+        t.start()
         
     def set_goal(self, goal_index:int):
         if self.serv.isconnected() > 0:
@@ -24,15 +37,9 @@ class raspi_to_ros():
             print("[ERR][raspi_to_ros] : ros側のクライアントサーバが起動していません", file = sys.stderr)
             return -1
     
-    def position_monitor(self):
+    def status_monitor(self):
         while(1):
-            if self.serv.isconnected() > 0:
-                if len(self.serv.buf) >= 6:
-                    tmp = self.serv.read()
-                    for i in range(len(tmp)-6 , -1, -1):
-                        if tmp[i] == 255 and len(tmp) > i + 3 and tmp[i+5] == 254:
-                            self.x = (tmp[i+1] * 254 + tmp[i+2]) / 100
-                            self.y = (tmp[i+3] * 254 + tmp[i+4]) / 100
-                
-            time.sleep(1.0)
-                        
+            if self.serv.isconnected() > 0 and self.serv.buffer_length() > 0:
+                st = self.serv.read()
+                self.status = STATUS[st[-1]]
+            time.sleep(1)
