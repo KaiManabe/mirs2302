@@ -15,7 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $NOTE = $orderData['note'];
 
     // 注文情報を書き込み
-    $command = "sudo -u pi python3 $pythonScript new_order $ORDER_TYPE $ITEM_TYPE $ITEM_NAME $SENDER $RECEIVER $PICKING_PLACE $PICKING_TIME $PICKING_PINCODE $NOTE";
-    exec($command);
+    $command = "sudo -u pi python3 $pythonScript new_order '$ORDER_TYPE' '$ITEM_TYPE' '$ITEM_NAME' '$SENDER' '$RECEIVER' '$PICKING_PLACE' '$PICKING_TIME' '$PICKING_PINCODE' '$NOTE'";
+    $result = exec($command, $output, $return_var);
+
+    echo $return_var; // 正常終了:0 異常終了:0以外
 }
 ?>

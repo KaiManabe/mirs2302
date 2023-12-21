@@ -1,11 +1,13 @@
 /*
 送信ボタンに関する処理
 */
-function execution(){
+function submitProcessing(){
     var formIds = ['client_address', 'client_address_type', 'target_address', 'target_address_type', 'item_type', 'item_name', 'picking_place', 'picking_time', 'picking_pincode', 'note']; // formのID
     var couplingIds = [['client_address', 'client_address_type'], ['target_address', 'target_address_type']]; // 結合する要素のID
-    sendData = readFormData(formIds, couplingIds);
-    sendDataToPhp(sendData);
+    var sendData = readFormData(formIds, couplingIds);
+    var result = sendDataToPhp(sendData);
+
+    changePageResult(result); // 送信結果を知らせるページに変更
 }
 
 /*
@@ -61,6 +63,25 @@ function sendDataToPhp(sendData) {
 }
 
 /*
+データ送信結果を表示する関数
+
+引数：
+    実行結果
+*/
+function changePageResult(result) {
+    var selectElement = document.getElementById('form');
+
+    // 正常終了
+    if(result == 0){
+        selectElement.innerHTML = '正常に取引を承りました';
+    }
+    // 異常終了
+    else{
+        selectElement.innerHTML = 'ERROR : 取引を承れませんでした';
+    }
+}
+
+/*
 選択可能な時間を制限する関数
 
 引数(なしでもいける)：
@@ -74,7 +95,7 @@ function selectableTime(place) {
     var url = "get_available_selection.php"; // httpリクエスト先
     xhr.open("GET", url + "?place=" + encodeURIComponent(JSON.stringify(place)), false); // 同期通信GETメソッド
     xhr.send();
-    timeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
+    var timeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
     // 集荷時間の要素を取得
     var selectElement = document.getElementById("picking_time");
@@ -126,7 +147,7 @@ function selectablePlace(time) {
     var url = "get_available_selection.php"; // httpリクエスト先
     xhr.open("GET", url + "?time=" + encodeURIComponent(JSON.stringify(time)), false); // 同期通信GETメソッド
     xhr.send();
-    placeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
+    var placeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
     // 集荷場所の要素を取得
     var selectElement = document.getElementById("picking_place");
@@ -185,6 +206,6 @@ pickingTimeElement.addEventListener('change', function(event) {
 });
 // データを送信するボタンが押された時の処理
 formElement.addEventListener('submit', function(event) {
-    execution();
-    console.log('送信されました'); // デバッグ出力
+    event.preventDefault(); // ページのリロードを防ぐ
+    submitProcessing();
 });
