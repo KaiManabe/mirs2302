@@ -28,10 +28,11 @@ def send_email(sender_email, app_password, receiver_email, subject, body):
         # メールの送信
         server.sendmail(sender_email, receiver_email, message.as_string())
 
+
 # 以下は、実際にメールを送信するための例です。
 if __name__ == "__main__":
-    sender_email = "your_email@gmail.com"  # 送信元のメールアドレス
-    app_password = "your_app_password"  # 送信元のアプリパスワード
+    sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
+    app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
     receiver_email = "recipient_email@example.com"  # 送信先のメールアドレス
     subject = "Test Subject"
     
@@ -63,12 +64,8 @@ if __name__ == "__main__":
     なし
 """
 def approval(order_id, mail, order_type):
-    #sender_email = "your_email@gmail.com"  # 送信元のメールアドレス
-    #app_password = "your_app_password"  # 送信元のアプリパスワード
-    #receiver_email = "recipient_email@example.com"  # 送信先のメールアドレス
-
-    sender_email = "your_email@gmail.com"  # 送信元のメールアドレス
-    app_password = "your_app_password"  # 送信元のアプリパスワード
+    sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
+    app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
     receiver_email = mail #送信先のメールアドレス
     subject = "学内配達ロボットTENQ-依頼承認メール"
 
@@ -88,15 +85,16 @@ def approval(order_id, mail, order_type):
 
 引数：
     異常の種類、モジュール番号、扉番号
-    以上の種類 0:モジュール持ち去り 1:扉こじ開け
+    異常の種類 0:モジュール持ち去り 1:扉こじ開け
 
 戻り値:
     なし
 """
 def warning(num, module, door):
-    sender_email = "umiikegaya@gmail.com"  # 送信元のメールアドレス
-    app_password = "kwmj dgoh lxvq uizw"  # 送信元のアプリパスワード
-    subject = "Test Subject"
+    sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
+    app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
+    receiver_email = "d20102@numazu.kosen-ac.jp" #送信先のメールアドレス
+    subject = "TENQ error"
     
     if num == 0:
         body = f"""
