@@ -94,9 +94,8 @@ def approval(order_id, mail, order_type):
     なし
 """
 def warning(num, module, door):
-    sender_email = "your_email@gmail.com"  # 送信元のメールアドレス
-    app_password = "your_app_password"  # 送信元のアプリパスワード
-    receiver_email = "recipient_email@example.com"  # 送信先のメールアドレス
+    sender_email = "umiikegaya@gmail.com"  # 送信元のメールアドレス
+    app_password = "kwmj dgoh lxvq uizw"  # 送信元のアプリパスワード
     subject = "Test Subject"
     
     if num == 0:

@@ -19,10 +19,10 @@ document.querySelector('#text').textContent = `${mail}さんから${thing}を${t
 /*
 ページを読み込んだタイミングで、依頼者の設定した時間に基づき選択できる時間を制限する処理
 */
-var time = dataList.slice(22,23);
-var timekey = null; //それまでに積み込んで欲しい時間のキー
+var time = dataList.slice(22,23); //依頼者が設定した時間をtimeに代入
+var timekey = null; //それまでに積み込んで欲しいという時間のキー
 var timelist = null; //制限された後の時間(連想配列)
-var timelist_base = {
+var timelist_base = { //最初のとりあえずの時間
     1:"15:00-15:10",
     2:"15:10-15:20",
     3:"15:20-15:30",
@@ -32,7 +32,7 @@ var timelist_base = {
     7:"16:10-16:20",
     8:"16:20-16:30"
 }
-const keys = Object.keys(timelist_base);
+const keys = Object.keys(timelist_base); //timelist_baseのkeyを配列keysに
 for(let i = 0; i < keys.length; i++){
     if(timelist_base[keys[i]] === time){
         timekey = keys[i];
