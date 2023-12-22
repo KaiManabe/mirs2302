@@ -59,6 +59,9 @@ void key(){
 */
 
 void module_temp(){
+  if(millis() % 1000L != 0L){
+    return;
+  }
   double target_temp_h = 50;
   double target_temp_c = 10;
 
@@ -141,6 +144,8 @@ int photo(){
   }else{
     state = photo_flg_ok;
   }
+  delay(10);
+  //Serial.println(p);
   
   return(state);
 }

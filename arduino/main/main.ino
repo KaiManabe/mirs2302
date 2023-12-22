@@ -67,5 +67,6 @@ void loop(){
     check_serial();
     pid();
     module_temp();
+    //photo();
     //send_odom();
 }
