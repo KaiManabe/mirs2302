@@ -11,7 +11,7 @@ double read_module(int module_num){
     double v;   //アナログ入力の電圧
     v = (double)analogRead(module_num) * 5.0 / 1024.0;
     
-    return ((double)MODULE_R * v) /  (5.0 - v);
+    return (double)MODULE_R * (5.0 - v) / v;
 }
 
 /*
