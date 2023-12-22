@@ -35,7 +35,7 @@ class module_controller():
         self.lock = threading.Lock()  # Lockオブジェクトを作成
         time.sleep(1) # インスタンスを渡し切るまでキープ
     
-        self.module_info = {
+        self.onb_module_info = {
             "module1": {
                 "name": "",
                 "door1": {
@@ -102,7 +102,7 @@ class module_controller():
         }
         """搭載モジュール情報"""
         
-        self.module_height = {
+        self.each_module_info = {
             "base": {
                 "height": 230
             },
@@ -131,7 +131,7 @@ class module_controller():
         """モジュールの状態を監視して取り外しを検知するスレッド・扉の開閉状態を監視してこじ開けを検知するスレッド走らせる(これ以降常時実行)"""
         module_surv_thread = {} # モジュール監視スレッド用配列
         door_surv_thread = {} # 扉監視スレッド用配列
-        for module_num, module_info in self.module_info.items():
+        for module_num, module_info in self.onb_module_info.items():
             # モジュール監視スレッドを開始
             module_surv_thread[module_num] = threading.Thread(target = self.module_surv, args = (module_num,))
             module_surv_thread[module_num].setDaemon(True)
@@ -155,8 +155,8 @@ class module_controller():
         搭載モジュール情報を更新し続ける
         
         モジュールと扉の名前をセット：
-            self.module_info[module_num]["name"] -> str
-            self.module_info[module_num][door_num]["name"] -> str
+            self.onb_module_info[module_num]["name"] -> str
+            self.onb_module_info[module_num][door_num]["name"] -> str
         """
         # 抵抗値の許容誤差範囲を定義
         acc_res_range = [240 * (100 - RES_ERR_RATE) / 100, 240 * (100 + RES_ERR_RATE) / 100] # 小物抵抗値範囲
@@ -180,21 +180,21 @@ class module_controller():
                 # 搭載モジュール情報を更新
                 for num, res in enumerate(self.resistance_list, start=1):
                     if acc_res_range[0] <= res <= acc_res_range[1]:
-                        self.module_info[f"module{num}"]["name"] = "accessories"
-                        self.module_info[f"module{num}"]["door1"]["name"] = "right"
-                        self.module_info[f"module{num}"]["door2"]["name"] = "left"
+                        self.onb_module_info[f"module{num}"]["name"] = "accessories"
+                        self.onb_module_info[f"module{num}"]["door1"]["name"] = "right"
+                        self.onb_module_info[f"module{num}"]["door2"]["name"] = "left"
                     elif doc_res_range[0] <= res <= doc_res_range[1]:
-                        self.module_info[f"module{num}"]["name"] = "document"
-                        self.module_info[f"module{num}"]["door1"]["name"] = "under"
-                        self.module_info[f"module{num}"]["door2"]["name"] = "upper"
+                        self.onb_module_info[f"module{num}"]["name"] = "document"
+                        self.onb_module_info[f"module{num}"]["door1"]["name"] = "under"
+                        self.onb_module_info[f"module{num}"]["door2"]["name"] = "upper"
                     elif ins_res_range[0] <= res <= ins_res_range[1]:
-                        self.module_info[f"module{num}"]["name"] = "insulation"
-                        self.module_info[f"module{num}"]["door1"]["name"] = "right"
-                        self.module_info[f"module{num}"]["door2"]["name"] = "left"
+                        self.onb_module_info[f"module{num}"]["name"] = "insulation"
+                        self.onb_module_info[f"module{num}"]["door1"]["name"] = "right"
+                        self.onb_module_info[f"module{num}"]["door2"]["name"] = "left"
                     else:
-                        self.module_info[f"module{num}"]["name"] = "unconnected"
-                        self.module_info[f"module{num}"]["door1"]["name"] = ""
-                        self.module_info[f"module{num}"]["door2"]["name"] = ""
+                        self.onb_module_info[f"module{num}"]["name"] = "unconnected"
+                        self.onb_module_info[f"module{num}"]["door1"]["name"] = ""
+                        self.onb_module_info[f"module{num}"]["door2"]["name"] = ""
                 
             time.sleep(IDEN_CYCLE)
             
@@ -207,13 +207,13 @@ class module_controller():
             module_num : 監視したいモジュールの番号 -> str
         """
         # モジュールと扉の情報を初期化
-        name_module_previous = self.module_info[module_num]["name"]
+        name_module_previous = self.onb_module_info[module_num]["name"]
         
         # 一定周期で監視し続ける
         while True:
             with self.lock:  # ロックを取得
                 # 現在のモジュールの情報を取得
-                name_module_current = self.module_info[module_num]["name"]
+                name_module_current = self.onb_module_info[module_num]["name"]
                 
                 # モジュールの状態が変わった時
                 if name_module_current != name_module_previous:
@@ -240,30 +240,30 @@ class module_controller():
             door_num : 監視したい扉の番号 -> str
             
         扉の開閉状態のフラグをセット：
-            self.module_info[module_num][door_num]["open"]: bool
+            self.onb_module_info[module_num][door_num]["open"]: bool
         """
         # 扉が開いているときにTrueとした（内部プルアップ） -> マイクロスイッチが押されている時に導通
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.module_info[module_num][door_num]["pin"]["SWITCH"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.onb_module_info[module_num][door_num]["pin"]["SWITCH"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
         
         # モジュールと扉の情報を初期化
-        self.module_info[module_num][door_num]["open"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["SWITCH"])
-        openFlag_door_previous = self.module_info[module_num][door_num]["open"]
+        self.onb_module_info[module_num][door_num]["open"]: bool = GPIO.input(self.onb_module_info[module_num][door_num]["pin"]["SWITCH"])
+        openFlag_door_previous = self.onb_module_info[module_num][door_num]["open"]
         
         # 一定周期で監視し続ける
         while True:
             with self.lock:  # ロックを取得
                 # 現在の扉の情報を取得
-                name_module_current = self.module_info[module_num]["name"]
-                name_door_current = self.module_info[module_num][door_num]["name"]
-                self.module_info[module_num][door_num]["open"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["SWITCH"])
+                name_module_current = self.onb_module_info[module_num]["name"]
+                name_door_current = self.onb_module_info[module_num][door_num]["name"]
+                self.onb_module_info[module_num][door_num]["open"]: bool = GPIO.input(self.onb_module_info[module_num][door_num]["pin"]["SWITCH"])
                 
                 # 扉の状態が変わった時
-                if self.module_info[module_num][door_num]["open"] != openFlag_door_previous and name_module_current != "unconnected":
+                if self.onb_module_info[module_num][door_num]["open"] != openFlag_door_previous and name_module_current != "unconnected":
                     # 扉が開いた場合
-                    if self.module_info[module_num][door_num]["open"]:
+                    if self.onb_module_info[module_num][door_num]["open"]:
                         # サーボで解錠した場合
-                        if self.module_info[module_num][door_num]["unlocked"]:
+                        if self.onb_module_info[module_num][door_num]["unlocked"]:
                             print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}を解錠しました")
                         # サーボで解錠していない場合
                         else:
@@ -271,10 +271,10 @@ class module_controller():
                             """ここを異常検知メールを送るやつにする"""
                     # 扉が閉じた場合
                     else:
-                        self.module_info[module_num][door_num]["unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
+                        self.onb_module_info[module_num][door_num]["unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
                         print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}が閉じました")
                     # フラグを更新
-                    openFlag_door_previous = self.module_info[module_num][door_num]["open"]
+                    openFlag_door_previous = self.onb_module_info[module_num][door_num]["open"]
                     
             time.sleep(SURV_CYCLE)
             
@@ -289,11 +289,11 @@ class module_controller():
         """
         # ピンの初期化
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.module_info[module_num][door_num]["pin"]["SERVO"], GPIO.OUT)
+        GPIO.setup(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], GPIO.OUT)
         
         # ピンにHIGHを出力
-        self.module_info[module_num][door_num]["unlocked"]: bool = True # こじ開け検知用フラグを"解錠した"に設定
-        GPIO.output(self.module_info[module_num][door_num]["pin"]["SERVO"], True)
+        self.onb_module_info[module_num][door_num]["unlocked"]: bool = True # こじ開け検知用フラグを"解錠した"に設定
+        GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], True)
         time.sleep(0.5) # なぜか待たないと動かない
         
         # ArduinoにPWM出力指令を出す
@@ -303,11 +303,11 @@ class module_controller():
         time.sleep(0.5) # 0.5s余裕を持たせておく
 
         # ピンにLOWを出力
-        GPIO.output(self.module_info[module_num][door_num]["pin"]["SERVO"], False)
+        GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], False)
         time.sleep(0.5) # 0.5s余裕を持たせておく
         
         # GPIOピンを解放
-        GPIO.cleanup(self.module_info[module_num][door_num]["pin"]["SERVO"])
+        GPIO.cleanup(self.onb_module_info[module_num][door_num]["pin"]["SERVO"])
     
     def height_calculate(self):
         """
@@ -317,11 +317,11 @@ class module_controller():
             機体全体の高さ[mm]
         """
         # 土台の高さを設定
-        total_height = self.module_height["base"]["height"]
+        total_height = self.each_module_info["base"]["height"]
         
         # 接続されているモジュールの高さを足し合わせる
-        for module in self.module_info.values():
-            total_height += self.module_height[module["name"]]["height"]
+        for module in self.onb_module_info.values():
+            total_height += self.each_module_info[module["name"]]["height"]
             
         return total_height
     
@@ -339,7 +339,7 @@ class module_controller():
         """
         with self.lock: # ロックを取得
             # 各モジュールの名前・各扉の名前を比較し、一致した時の値を返す
-            for module_num, module_data in self.module_info.items():
+            for module_num, module_data in self.onb_module_info.items():
                 for door_num, door_data in module_data.items():
                     # ドア情報にアクセスするために辞書内の文字列キーを確認
                     if door_num.startswith("door") and isinstance(door_data, dict):
