@@ -62,7 +62,7 @@ defineされている場合には、ゲインを保存する。
 #define MODULE_R3 430  //小物
 
 //モジュール基本抵抗
-#define MODULE_R 1000
+#define MODULE_R 500
 
 //バッテリ分圧比
 #define V_RATIO 0.5 
