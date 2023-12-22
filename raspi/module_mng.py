@@ -278,15 +278,18 @@ class module_controller():
                     
             time.sleep(SURV_CYCLE)
             
-    def door_open(self, module_num: str, door_num: str):
+    def door_open(self, module_name: str, door_name: str):
         """
         扉の鍵を解錠する
         
         引数：
-            module_num : 解錠したい扉のモジュール番号 -> str
+            module_name : 解錠したい扉のモジュール名 -> str
             
-            door_num : 解錠したい扉の番号 -> str
+            door_name : 解錠したい扉の名 -> str
         """
+        # モジュール名・扉名に対応するモジュール番号・扉番号を引っ張る
+        module_num, door_num = self.reverse_lookup(module_name, door_name)
+        
         # ピンの初期化
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], GPIO.OUT)
