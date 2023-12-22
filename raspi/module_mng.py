@@ -41,8 +41,8 @@ class module_controller():
                 "door1": {
                     "name": "",
                     "pin": {
-                        "servo":13,
-                        "switch":16
+                        "SERVO":13,
+                        "SWITCH":16
                     },
                     "unlocked": False,
                     "open": True
@@ -50,8 +50,8 @@ class module_controller():
                 "door2": {
                     "name": "",
                     "pin": {
-                        "servo":15,
-                        "switch":18
+                        "SERVO":15,
+                        "SWITCH":18
                     },
                     "unlocked": False,
                     "open": True
@@ -62,8 +62,8 @@ class module_controller():
                 "door1": {
                     "name": "",
                     "pin": {
-                        "servo":19,
-                        "switch":22
+                        "SERVO":19,
+                        "SWITCH":22
                     },
                     "unlocked": False,
                     "open": True
@@ -71,8 +71,8 @@ class module_controller():
                 "door2": {
                     "name": "",
                     "pin": {
-                        "servo":21,
-                        "switch":23
+                        "SERVO":21,
+                        "SWITCH":23
                     },
                     "unlocked": False,
                     "open": True
@@ -83,8 +83,8 @@ class module_controller():
                 "door1": {
                     "name": "",
                     "pin": {
-                        "servo":29,
-                        "switch":32
+                        "SERVO":29,
+                        "SWITCH":32
                     },
                     "unlocked": False,
                     "open": True
@@ -92,8 +92,8 @@ class module_controller():
                 "door2": {
                     "name": "",
                     "pin": {
-                        "servo":31,
-                        "switch":33
+                        "SERVO":31,
+                        "SWITCH":33
                     },
                     "unlocked": False,
                     "open": True
@@ -244,10 +244,10 @@ class module_controller():
         """
         # 扉が開いているときにTrueとした（内部プルアップ） -> マイクロスイッチが押されている時に導通
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.module_info[module_num][door_num]["pin"]["switch"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.module_info[module_num][door_num]["pin"]["SWITCH"], GPIO.IN, pull_up_down=GPIO.PUD_UP)
         
         # モジュールと扉の情報を初期化
-        self.module_info[module_num][door_num]["open"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
+        self.module_info[module_num][door_num]["open"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["SWITCH"])
         openFlag_door_previous = self.module_info[module_num][door_num]["open"]
         
         # 一定周期で監視し続ける
@@ -256,7 +256,7 @@ class module_controller():
                 # 現在の扉の情報を取得
                 name_module_current = self.module_info[module_num]["name"]
                 name_door_current = self.module_info[module_num][door_num]["name"]
-                self.module_info[module_num][door_num]["open"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["switch"])
+                self.module_info[module_num][door_num]["open"]: bool = GPIO.input(self.module_info[module_num][door_num]["pin"]["SWITCH"])
                 
                 # 扉の状態が変わった時
                 if self.module_info[module_num][door_num]["open"] != openFlag_door_previous and name_module_current != "unconnected":
@@ -289,11 +289,11 @@ class module_controller():
         """
         # ピンの初期化
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.module_info[module_num][door_num]["pin"]["servo"], GPIO.OUT)
+        GPIO.setup(self.module_info[module_num][door_num]["pin"]["SERVO"], GPIO.OUT)
         
         # ピンにHIGHを出力
         self.module_info[module_num][door_num]["unlocked"]: bool = True # こじ開け検知用フラグを"解錠した"に設定
-        GPIO.output(self.module_info[module_num][door_num]["pin"]["servo"], True)
+        GPIO.output(self.module_info[module_num][door_num]["pin"]["SERVO"], True)
         time.sleep(0.5) # なぜか待たないと動かない
         
         # ArduinoにPWM出力指令を出す
@@ -303,11 +303,11 @@ class module_controller():
         time.sleep(0.5) # 0.5s余裕を持たせておく
 
         # ピンにLOWを出力
-        GPIO.output(self.module_info[module_num][door_num]["pin"]["servo"], False)
+        GPIO.output(self.module_info[module_num][door_num]["pin"]["SERVO"], False)
         time.sleep(0.5) # 0.5s余裕を持たせておく
         
         # GPIOピンを解放
-        GPIO.cleanup(self.module_info[module_num][door_num]["pin"]["servo"])
+        GPIO.cleanup(self.module_info[module_num][door_num]["pin"]["SERVO"])
     
     def height_calculate(self):
         """
@@ -324,6 +324,33 @@ class module_controller():
             total_height += self.module_height[module["name"]]["height"]
             
         return total_height
+    
+    def reverse_lookup(self, module_name: str, door_name: str):
+        """
+        モジュールの名前・扉の名前からモジュール番号・扉番号を逆算する関数（動作未確認）
+        
+        引数：
+            module_name : モジュールの名前
+            door_name : 扉の名前
+            
+        戻り値：
+            module_num : モジュール番号(str)
+            door_num : 扉番号(str)
+        """
+        with self.lock: # ロックを取得
+            # 各モジュールの名前・各扉の名前を比較し、一致した時の値を返す
+            for module_num, module_data in self.module_info.items():
+                for door_num, door_data in module_data.items():
+                    # ドア情報にアクセスするために辞書内の文字列キーを確認
+                    if door_num.startswith("door") and isinstance(door_data, dict):
+                        org_module_name = module_data.get("name")
+                        org_door_name = door_data.get("name")
+                        # モジュールの名前・扉の名前が指定されたものと一致した場合
+                        if org_module_name == module_name and org_door_name == door_name:
+                            return module_num, door_num
+            # 何も一致しなかった場合、空の文字列を返す
+            return "", ""
+
             
 class airframe_controller():
     """
