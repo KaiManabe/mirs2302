@@ -146,8 +146,10 @@ if __name__ == '__main__':
     """
     コマンドライン(phpなど)から実行された時の処理
     """
+    WAIT = 0.5 # time.sleepは必須なので消さないこと
+    
     o = order_manager()
-    time.sleep(0.5) # インスタンス化し終わるまで待つ
+    time.sleep(WAIT) # インスタンス化し終わるまで待つ
     
     # 追加のコマンドライン引数がある場合
     if(len(sys.argv) > 1):
@@ -172,7 +174,7 @@ if __name__ == '__main__':
                     PICKUP_PIN = sys.argv[9],
                     NOTE = note
                 )
-                time.sleep(0.5) # 注文情報を書き込み切るまで待つ
+                time.sleep(WAIT) # 注文情報を書き込み切るまで待つ
             # "送ってもらう"の場合
             if(sys.argv[2] == 'RECEIVE'):
                 o.new_order(
@@ -186,7 +188,7 @@ if __name__ == '__main__':
                     RECEIVE_PIN = sys.argv[9],
                     NOTE = note
                 )
-                time.sleep(0.5) # 注文情報を書き込み切るまで待つ
+                time.sleep(WAIT) # 注文情報を書き込み切るまで待つ
                 
         # 指定のIDのオーダー情報(DataFrame)を入手する
         if(sys.argv[1] == 'get_order'):
@@ -194,5 +196,5 @@ if __name__ == '__main__':
                 "ID",
                 sys.argv[2]
             )
-            time.sleep(0.5) # 注文情報を読み込み切るまで待つ
+            time.sleep(WAIT) # 注文情報を読み込み切るまで待つ
             print(result)
