@@ -11,6 +11,30 @@ import datetime
 import time
 import sys
 
+
+def set_goal():
+     for i in range(3):
+        idx = 2 - i
+        print(f"[INFO][main.py] : 目的地を{idx}に設定しました")
+        ros_controller.set_goal(idx)
+        while(1):
+            time.sleep(0.2)
+            if ros_controller.status == "ACTIVE":
+                break
+        print(f"[INFO][main.py] : ロボットが走行中です... ROSステータス : {ros_controller.status}")
+        while(1):
+            time.sleep(0.2)
+            if ros_controller.status == "SUCCEEDED":
+                print(f"[INFO][main.py] : 目的地{idx}に到着しました ROSステータス : {ros_controller.status}")
+                break
+            elif ros_controller.status != "ACTIVE":
+                print(f"[INFO][main.py] : 目的地{idx}に到着できませんでした ROSステータス : {ros_controller.status}")
+                sys.exit(1)
+        
+        time.sleep(3)    
+
+
+
 if __name__ == "__main__":
     #シリアルポート
     serial_port = ser.arduino_serial()
@@ -36,22 +60,4 @@ if __name__ == "__main__":
     
     time.sleep(5)
     
-    for i in range(3):
-        idx = 2 - i
-        print(f"[INFO][main.py] : 目的地を{idx}に設定しました")
-        ros_controller.set_goal(idx)
-        while(1):
-            time.sleep(0.2)
-            if ros_controller.status == "ACTIVE":
-                break
-        print(f"[INFO][main.py] : ロボットが走行中です... ROSステータス : {ros_controller.status}")
-        while(1):
-            time.sleep(0.2)
-            if ros_controller.status == "SUCCEEDED":
-                print(f"[INFO][main.py] : 目的地{idx}に到着しました ROSステータス : {ros_controller.status}")
-                break
-            elif ros_controller.status != "ACTIVE":
-                print(f"[INFO][main.py] : 目的地{idx}に到着できませんでした ROSステータス : {ros_controller.status}")
-                sys.exit(1)
-        
-        time.sleep(3)
+   

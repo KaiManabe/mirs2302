@@ -52,6 +52,59 @@ timelist.forEach(function(time) {
     }
 });
 
+/*
+選択できるitemTypeを制限する関数
+
+引数(なしでもいける)：
+    場所: str
+    時間: str
+
+***クライアントが集荷時間を選択した時に実行するやつ***
+*/
+function selectableItem(place, time) {
+    // httpリクエストを送信
+    var xhr = new XMLHttpRequest();
+    var url = "get_available_selection.php"; // httpリクエスト先
+    xhr.open("POST", url, false); // 同期通信POSTメソッド
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8"); // ヘッダを設定(文字列も送れるjson形式を指定)
+    // 送信するデータを連想配列にする
+    var Data = {
+        "place": JSON.stringify(place),
+        "time": JSON.stringify(time)
+    };
+    xhr.send(JSON.stringify(Data)); // データを送信
+
+    // httpレスポンスを配列にして受け取る
+    var itemList = xhr.responseText.split(",").filter(Boolean); 
+
+    // 既存の選択肢を取得
+    var itemTypeElement = document.getElementById("item_type");
+    var existingOptions = Array.from(itemTypeElement.options).map(option => option.value); // 既存の選択肢の配列を作成
+
+    // 既存の選択肢にない選択可能なitemTypeを追加
+    itemList.forEach(function(item) {
+        if (!existingOptions.includes(item)) {
+            var option = document.createElement("option");
+            option.value = item;
+            option.text = item;
+            itemTypeElement.appendChild(option);
+        }
+    });
+    // 既存の選択肢にある選択可能な集荷場所ではないものを削除
+    existingOptions.forEach(function(optionValue) {
+        if (!itemList.includes(optionValue) && optionValue != 'init') {
+            itemTypeElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
+        }
+    });
+    // 集荷場所の選択肢をソート
+    const sortRule = ['共通棟', 'D科棟', 'E科棟', 'S科棟', 'M科棟', 'C科棟']; // 集荷場のソート規則（要素の早い順にソートされる）
+    Array.from(itemTypeElement.options)
+    .filter(option => option.value !== 'init')
+    .sort(function(a, b) {
+        return sortRule.indexOf(a.value) - sortRule.indexOf(b.value);
+    })
+    .forEach(option => itemTypeElement.appendChild(option));
+}
 
 /*
 チェックボックスの処理

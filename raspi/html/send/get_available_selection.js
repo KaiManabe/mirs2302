@@ -1,3 +1,6 @@
+const itemTypeElement = document.getElementById("item_type");
+const itemSortRule = ['小物', '書類', '食品(保冷)', '食品(保温)']; // itemTypeのソート規則（要素の早い順にソートされる）
+
 /*
 送信ボタンに関する処理
 */
@@ -76,6 +79,61 @@ function sendDataToPhp(sendData) {
     xhr.send(JSON.stringify(sendData)); // データを送信
 
     return xhr.responseText;
+}
+
+/*
+選択できるitemTypeを制限する関数
+
+引数(なしでもいける)：
+    場所: str
+    時間: str
+
+***クライアント選択した時に実行するやつ***
+*/
+function selectableItem(place, time) {
+    // httpリクエストを送信
+    var xhr = new XMLHttpRequest();
+    var url = "test.php"; // httpリクエスト先
+    xhr.open("POST", url, false); // 同期通信POSTメソッド
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8"); // ヘッダを設定(文字列も送れるjson形式を指定)
+    var selectData = { // 送信するデータを連想配列にする
+        "place": place,
+        "time": time
+    };
+    xhr.send(JSON.stringify(selectData)); // データを送信
+
+    // httpレスポンスを配列にして受け取る
+    var itemList = xhr.responseText.split(",").filter(Boolean); 
+
+    return itemList;
+
+    // // 既存の選択肢を取得
+    // var existingOptions = Array.from(itemTypeElement.options).map(option => option.value); // 既存の選択肢の配列を作成
+
+    // // 既存の選択肢にない選択可能なitemTypeを追加
+    // itemList.forEach(function(item) {
+    //     if (!existingOptions.includes(item)) {
+    //         var option = document.createElement("option");
+    //         option.value = item;
+    //         option.text = item;
+    //         itemTypeElement.appendChild(option);
+    //     }
+    // });
+
+    // // 既存の選択肢にある選択可能なitemTypeではないものを削除
+    // existingOptions.forEach(function(optionValue) {
+    //     if (!itemList.includes(optionValue) && optionValue != 'init') {
+    //         itemTypeElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
+    //     }
+    // });
+
+    // // itemTypeの選択肢をソート
+    // Array.from(itemTypeElement.options)
+    // .filter(option => option.value !== 'init') // 初期値(選択してください)は省く
+    // .sort(function(a, b) {
+    //     return itemSortRule.indexOf(a.value) - itemSortRule.indexOf(b.value);
+    // })
+    // .forEach(option => itemTypeElement.appendChild(option));
 }
 
 /*
