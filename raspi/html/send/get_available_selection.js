@@ -2,12 +2,28 @@
 送信ボタンに関する処理
 */
 function submitProcessing(){
+    // formデータの読み込み
     var formIds = ['client_address', 'client_address_type', 'target_address', 'target_address_type', 'item_type', 'item_name', 'picking_place', 'picking_time', 'picking_pincode', 'note']; // formのID
     var couplingIds = [['client_address', 'client_address_type'], ['target_address', 'target_address_type']]; // 結合する要素のID
     var sendData = readFormData(formIds, couplingIds);
+
+    // 送信中の画面を表示（なぜかできねえ！！！！！！！！！！！！！！）
+    var formElement = document.getElementById("form");
+    formElement.innerHTML = "<div id='sending'>取引情報を送信中です...</div>";
+
+    // formデータを送信
     var result = sendDataToPhp(sendData);
 
-    changePageResult(result); // 送信結果を知らせるページに変更
+    // 送信結果の画面を表示
+    var sendingElement = document.getElementById("sending");
+    // 正常終了
+    if(result == 0){
+        sendingElement.innerHTML = "<div id='success'>正常に取引を承りました</div>";
+    }
+    // 異常終了
+    else{
+        sendingElement.innerHTML = "<div id='error'>ERROR : 取引を承れませんでした</div>";
+    }
 }
 
 /*
@@ -60,25 +76,6 @@ function sendDataToPhp(sendData) {
     xhr.send(JSON.stringify(sendData)); // データを送信
 
     return xhr.responseText;
-}
-
-/*
-データ送信結果を表示する関数
-
-引数：
-    実行結果
-*/
-function changePageResult(result) {
-    var selectElement = document.getElementById('form');
-
-    // 正常終了
-    if(result == 0){
-        selectElement.innerHTML = '正常に取引を承りました';
-    }
-    // 異常終了
-    else{
-        selectElement.innerHTML = 'ERROR : 取引を承れませんでした';
-    }
 }
 
 /*
@@ -206,5 +203,6 @@ pickingTimeElement.addEventListener('change', function(event) {
 });
 // データを送信するボタンが押された時の処理
 formElement.addEventListener('submit', function(event) {
+    event.preventDefault(); // ページのリロードを防ぐ
     submitProcessing();
 });
