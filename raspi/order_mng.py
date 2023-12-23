@@ -4,29 +4,37 @@ import time
 import threading
 import datetime
 import sys
+import os
+import warnings
+
+
+warnings.filterwarnings('ignore', category=pd.core.common.SettingWithCopyWarning)
 
 
 
 class order_manager():
     """
-    オーダーを管理する関数
-    order_info.csvに対する【書き込み】はこのオブジェクト経由で行うこと  
+    オーダーを管理するクラス
+    ・order_info.csvに対する【書き込み】はこのオブジェクト経由で行うこと  
     複数プロセスがcsvに対してアクセスすると同期がとれなかったりpermission errorになる可能性がある
     """
     def __init__(self, path:str = "/home/pi/git/mirs2302/raspi/order_info.csv"):
         """
+        オーダーを管理するクラス
+                
+        ・order_info.csvに対する【書き込み】はこのオブジェクト経由で行うこと  
+        
+        複数プロセスがcsvに対してアクセスすると同期がとれなかったりpermission errorになる可能性がある
+                
+                
         コンストラクタ
         
         引数：
             path : csvファイルのパス（任意・デフォルト値あり）
-        """
+        """            
         self.file_path = path
-        self.changed = datetime.datetime.now()
-        self.wrote = datetime.datetime.now()
         self.df = pd.read_csv(path)
-        t = threading.Thread(target = self.reflesh)
-        t.setDaemon(True)
-        t.start()
+        self.read = datetime.datetime.now()
 
     
     def reflesh(self):
@@ -34,12 +42,18 @@ class order_manager():
         【自動実行するため呼び出し不要】
         変更に応じてcsvを更新する関数
         """
-        while(1):
-            if self.changed > self.wrote:
-                self.df.to_csv(self.file_path, index = None)
-                self.wrote = datetime.datetime.now()
-            time.sleep(1)
+        self.df = pd.read_csv(self.file_path)
+        self.read = datetime.datetime.now()
     
+    
+    def update(self):
+        #最後にcsvを読んだ時刻　以降に　csvに変更が加えられていた場合
+        if self.read < datetime.datetime.fromtimestamp(os.stat(self.file_path).st_mtime):
+            print("[WARN][order_mng.py] : ファイルの書き込みに失敗しました", file = sys.stderr)
+            return -1
+
+        self.df.to_csv(self.file_path, index = None)
+        return 1
     
     def get_order(self, label:str = None, value = None):
         """
@@ -56,6 +70,7 @@ class order_manager():
             該当する注文情報(DataFrame)
             ない場合には-1を返す
         """
+        self.reflesh()
         if type(label) == int:
             return self.df.iloc[label]
         elif label in self.df.columns and value != None:
@@ -78,8 +93,12 @@ class order_manager():
             key : 変更する値の種類
             value : 変更後の値
         """
-        self.df.loc[ID].loc[key] = value
-        self.changed = datetime.datetime.now()
+        while(1):
+            self.reflesh()
+            row =  self.df.query(f"ID == '{ID}'").index[-1]
+            self.df.iloc[row, self.df.columns.get_loc(key)] = value
+            if self.update() > 0:
+                break
     
     def new_order(self,
                   ORDER_TYPE:str = None,
@@ -118,11 +137,14 @@ class order_manager():
         戻り値：
                 追加されたオーダーのID
         """
-        ID = str(uuid.uuid4())
-        #s = pd.DataFrame([[ID,ORDER_TYPE,STATUS,RECEIPT_TIME,ACCEPTED_TIME,SENDER,RECEIVER,PICKUP_PLACE,PICKUP_TIME,RECEIVE_PLACE,RECEIVE_TIME]], columns = self.df.columns)
-        s = pd.DataFrame([[ID,ORDER_TYPE,ITEM_TYPE,ITEM_NAME,STATUS,RECEIPT_TIME,ACCEPTED_TIME,SENDER,RECEIVER,PICKUP_PLACE,PICKUP_TIME,PICKUP_PIN,RECEIVE_PLACE,RECEIVE_TIME,RECEIVE_PIN,NOTE]], columns = self.df.columns)
-        self.df = pd.concat([self.df, s], axis = 0, join = "outer")
-        self.changed = datetime.datetime.now()
+        while(1):
+            self.reflesh()
+            ID = str(uuid.uuid4())
+            #s = pd.DataFrame([[ID,ORDER_TYPE,STATUS,RECEIPT_TIME,ACCEPTED_TIME,SENDER,RECEIVER,PICKUP_PLACE,PICKUP_TIME,RECEIVE_PLACE,RECEIVE_TIME]], columns = self.df.columns)
+            s = pd.DataFrame([[ID,ORDER_TYPE,ITEM_TYPE,ITEM_NAME,STATUS,RECEIPT_TIME,ACCEPTED_TIME,SENDER,RECEIVER,PICKUP_PLACE,PICKUP_TIME,PICKUP_PIN,RECEIVE_PLACE,RECEIVE_TIME,RECEIVE_PIN,NOTE]], columns = self.df.columns)
+            self.df = pd.concat([self.df, s], axis = 0, join = "outer")
+            if self.update() > 0:
+                break
         return ID
 
     
@@ -146,9 +168,10 @@ if __name__ == '__main__':
     """
     コマンドライン(phpなど)から実行された時の処理
     """
+    
     WAIT = 0.5 # time.sleepは必須なので消さないこと
     
-    o = order_manager()
+    o = order_manager(writer = True)
     time.sleep(WAIT) # インスタンス化し終わるまで待つ
     
     # 追加のコマンドライン引数がある場合
