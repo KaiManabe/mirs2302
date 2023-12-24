@@ -15,96 +15,87 @@ var mail = dataList.slice(16,17); //dataList配列のうち、16番目の要素�
 var thing = dataList.slice(7,8); //dataList配列のうち、8番目の要素をthingに代入
 
 document.querySelector('#text').textContent = `${mail}さんから${thing}を${time}時までに集荷するように依頼が来ています`; //テキスト差し替え
+var timelist_available = available_order_time(dataList.slice(22,23)); //依頼主の受取時間から制限される時間を配列で取得
 
 /*
-ページを読み込んだタイミングで、依頼者の設定した時間に基づき選択できる時間を制限する処理
+依頼者の設定した時間に基づき選択できる時間を制限する処理
 */
-var time = dataList.slice(22,23); //依頼者が設定した時間をtimeに代入
-var timekey = null; //それまでに積み込んで欲しいという時間のキー
-var timelist = null; //制限された後の時間(連想配列)
-var timelist_base = { //最初のとりあえずの時間
-    1:"15:00-15:10",
-    2:"15:10-15:20",
-    3:"15:20-15:30",
-    4:"15:30-15:40",
-    5:"15:40-15:50",
-    6:"16:00-16:10",
-    7:"16:10-16:20",
-    8:"16:20-16:30"
-}
-const keys = Object.keys(timelist_base); //timelist_baseのkeyを配列keysに
-for(let i = 0; i < keys.length; i++){
-    if(timelist_base[keys[i]] === time){
-        timekey = keys[i];
+function available_order_time(order_time){ //依頼者が設定した時間をorder_timeに代入
+    var limit_time //依頼者の設定した時間までに届けるために発送しなきゃならない限界の時間
+    var timelist_available; //制限後の選択可能な時間
+    var timelist_base = { //最初のとりあえずの時間
+        1:"15:00-15:10",
+        2:"15:10-15:20",
+        3:"15:20-15:30",
+        4:"15:30-15:40",
+        5:"15:40-15:50",
+        6:"16:00-16:10",
+        7:"16:10-16:20",
+        8:"16:20-16:30"
     }
-}
 
-for(let i = 0; i < timekey; i++){
-    timelist["i"] = timelist_base[i];
-}
-
-timelist.forEach(function(time) {
-    for (let i = 0; i < timekey; i++) {
-        var option = document.createElement("option");
-        option.value = time;
-        option.text = time;
-        selectElement.appendChild(option);
+    for(let i = 0; i < Object.keys(timelist_base).length; i++){ //limit_timeを代入するためのループ
+        if(timelist_base[keys(i)] == order_time){
+            limit_time = timelist_base[keys(i-6)] //最低限必要な移動時間によって調節
+            break;
+        }
+        timelist_available[i] = timelist_base[keys(i)];
     }
-});
+    return timelist_available; //制限後の選択可能時間を返す
+}
 
 /*
-選択できるitemTypeを制限する関数
+選択可能な時間を制限する関数
 
 引数(なしでもいける)：
     場所: str
-    時間: str
 
-***クライアントが集荷時間を選択した時に実行するやつ***
+***クライアントが集荷場所を選択した時に実行するやつ***
 */
-function selectableItem(place, time) {
-    // httpリクエストを送信
+function selectableTime(place) {
+    // httpリクエストを送信して選択可能な時間を取得
     var xhr = new XMLHttpRequest();
     var url = "get_available_selection.php"; // httpリクエスト先
-    xhr.open("POST", url, false); // 同期通信POSTメソッド
-    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8"); // ヘッダを設定(文字列も送れるjson形式を指定)
-    // 送信するデータを連想配列にする
-    var Data = {
-        "place": JSON.stringify(place),
-        "time": JSON.stringify(time)
-    };
-    xhr.send(JSON.stringify(Data)); // データを送信
+    xhr.open("GET", url + "?place=" + encodeURIComponent(JSON.stringify(place)), false); // 同期通信GETメソッド
+    xhr.send();
+    var timeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
-    // httpレスポンスを配列にして受け取る
-    var itemList = xhr.responseText.split(",").filter(Boolean); 
+    // 集荷時間の要素を取得
+    var selectElement = document.getElementById("picking_time");
 
-    // 既存の選択肢を取得
-    var itemTypeElement = document.getElementById("item_type");
-    var existingOptions = Array.from(itemTypeElement.options).map(option => option.value); // 既存の選択肢の配列を作成
+    // 既存の選択肢の配列を作成
+    var existingOptions = Array.from(selectElement.options).map(option => option.value);
 
-    // 既存の選択肢にない選択可能なitemTypeを追加
-    itemList.forEach(function(item) {
-        if (!existingOptions.includes(item)) {
+    // 既存の選択肢にない選択可能な集荷時間を追加
+    timeList.forEach(function(time) {
+        if (!existingOptions.includes(time)) {
             var option = document.createElement("option");
-            option.value = item;
-            option.text = item;
-            itemTypeElement.appendChild(option);
+            option.value = time;
+            option.text = time;
+            selectElement.appendChild(option);
         }
     });
-    // 既存の選択肢にある選択可能な集荷場所ではないものを削除
+    // 既存の選択肢にある選択可能な集荷時間ではないものを削除
     existingOptions.forEach(function(optionValue) {
-        if (!itemList.includes(optionValue) && optionValue != 'init') {
-            itemTypeElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
+        if (!timeList.includes(optionValue) && optionValue != 'init') {
+            selectElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
         }
     });
-    // 集荷場所の選択肢をソート
-    const sortRule = ['共通棟', 'D科棟', 'E科棟', 'S科棟', 'M科棟', 'C科棟']; // 集荷場のソート規則（要素の早い順にソートされる）
-    Array.from(itemTypeElement.options)
+    // 集荷時間の選択肢をソート
+    Array.from(selectElement.options)
     .filter(option => option.value !== 'init')
-    .sort(function(a, b) {
-        return sortRule.indexOf(a.value) - sortRule.indexOf(b.value);
+    .sort((a, b) => {
+        if (a.value < b.value) {
+            return -1;
+        }
+        if (a.value > b.value) {
+            return 1;
+        }
+        return 0;
     })
-    .forEach(option => itemTypeElement.appendChild(option));
+    .forEach(option => selectElement.appendChild(option));
 }
+
 
 /*
 チェックボックスの処理
