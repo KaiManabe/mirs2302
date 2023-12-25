@@ -55,15 +55,15 @@ if __name__ == "__main__":
 
     send_email(sender_email, app_password, receiver_email, subject, body)
 
-"""
-承認メールを送信する関数
-引数：
-    依頼のID,依頼者のメールアドレス,依頼の種類,依頼物
-
-戻り値：
-    なし
-"""
 def approval(order_id, mail, order_type):
+    """
+    承認メールを送信する関数
+    引数：
+        依頼のID,依頼者のメールアドレス,依頼の種類,依頼物
+
+    戻り値：
+        なし
+    """
     sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
     app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
     receiver_email = mail #送信先のメールアドレス
@@ -80,35 +80,49 @@ def approval(order_id, mail, order_type):
     """
     send_email(sender_email, app_password, receiver_email, subject, body)
 
-"""
-異常検知メールを送信する関数
+def warning(warn_type: str, module: str = None, door: str = None):
+    """
+    異常検知メールを送信する関数
 
-引数：
-    異常の種類、モジュール番号、扉番号
-    異常の種類 0:モジュール持ち去り 1:扉こじ開け
+    引数：
+        異常の種類、モジュール番号、扉番号
+        異常の種類 "module":モジュール持ち去り "door":扉こじ開け "airframe":機体持ち去り
 
-戻り値:
-    なし
-"""
-def warning(num, module, door):
+    戻り値:
+        なし
+    """
     sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
     app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
-    receiver_email = "d20102@numazu.kosen-ac.jp" #送信先のメールアドレス
+    # 管理者のメールアドレスリスト
+    manager_list = [
+        "d20139@numazu.kosen-ac.jp"
+        ]
+    # "d20102@numazu.kosen-ac.jp",
+    # "d20136@numazu.kosen-ac.jp",
     subject = "TENQ error"
     
-    if num == 0:
+    if warn_type == "module":
         body = f"""
         TENQの異常を検知しました。
         {module}モジュールが持ち去られた可能性があります。
         直ちに確認作業を行ってください。
         ※このメールは自動で送信されています。
         """
-    elif num == 1:
+    elif warn_type == "door":
         body = f"""
         TENQの異常を検知しました。
         {module}モジュールの扉{door}がこじ開けられた可能性があります。
         直ちに確認作業を行ってください。
         ※このメールは自動で送信されています。
         """
-
-    send_email(sender_email, app_password, receiver_email, subject, body)
+    elif warn_type == "airframe":
+        body = f"""
+        TENQの異常を検知しました。
+        機体が持ち去られた可能性があります。
+        直ちに確認作業を行ってください。
+        ※このメールは自動で送信されています。
+        """
+    # 各管理者に送信
+    for receiver_email in manager_list:
+        print([sender_email, app_password, receiver_email, subject, body]) # デバッグ用
+        send_email(sender_email, app_password, receiver_email, subject, body)

@@ -5,6 +5,7 @@
 """
 
 import serial_com as ser
+import web_app
 import RPi.GPIO as GPIO
 import threading
 import time
@@ -392,6 +393,7 @@ class airframe_controller():
             # 持ち去りを検知した時（1回のみ実行される）
             if self.airframe_taken:
                 print("[INFO][module_mng.py] : 機体の持ち去りを検知しました")
+                web_app.warning(warn_type="airframe") # 異常検知メールを送信
                 break
             
             time.sleep(AIR_CYCLE)
