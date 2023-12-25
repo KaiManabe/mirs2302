@@ -15,7 +15,7 @@ var mail = dataList.slice(16,17); //dataList配列のうち、16番目の要素�
 var thing = dataList.slice(7,8); //dataList配列のうち、8番目の要素をthingに代入
 
 document.querySelector('#text').textContent = `${mail}さんから${thing}を${time}時までに集荷するように依頼が来ています`; //テキスト差し替え
-var timelist_available = available_order_time(dataList.slice(22,23)); //依頼主の受取時間から制限される時間を配列で取得
+var timelist_available_order = available_order_time(dataList.slice(22,23)); //依頼主の受取時間から制限される時間を配列で取得
 
 /*
 依頼者の設定した時間に基づき選択できる時間を制限する処理
@@ -64,17 +64,8 @@ function selectableTime(place) {
     var selectElement = document.getElementById("picking_time");
 
     // 既存の選択肢の配列を作成
-    var existingOptions = Array.from(selectElement.options).map(option => option.value);
+    var existingOptions = timelist_available_order;
 
-    // 既存の選択肢にない選択可能な集荷時間を追加
-    timeList.forEach(function(time) {
-        if (!existingOptions.includes(time)) {
-            var option = document.createElement("option");
-            option.value = time;
-            option.text = time;
-            selectElement.appendChild(option);
-        }
-    });
     // 既存の選択肢にある選択可能な集荷時間ではないものを削除
     existingOptions.forEach(function(optionValue) {
         if (!timeList.includes(optionValue) && optionValue != 'init') {
@@ -96,6 +87,52 @@ function selectableTime(place) {
     .forEach(option => selectElement.appendChild(option));
 }
 
+/*
+時間が選択された時に場所を選択する関数
+
+引数(なしでもいける)：
+    時間: str
+
+***クライアントが集荷時間を選択した時に実行するやつ***
+*/
+function selectablePlace(time) {
+    // httpリクエストを送信して選択可能な集荷場所を取得
+    var xhr = new XMLHttpRequest();
+    var url = "get_available_selection.php"; // httpリクエスト先
+    xhr.open("GET", url + "?time=" + encodeURIComponent(JSON.stringify(time)), false); // 同期通信GETメソッド
+    xhr.send();
+    var placeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
+
+    // 集荷場所の要素を取得
+    var selectElement = document.getElementById("picking_place");
+
+    // 既存の選択肢の配列を作成
+    var existingOptions = Array.from(selectElement.options).map(option => option.value);
+
+    // 既存の選択肢にない選択可能な集荷場所を追加
+    placeList.forEach(function(place) {
+        if (!existingOptions.includes(place)) {
+            var option = document.createElement("option");
+            option.value = place;
+            option.text = place;
+            selectElement.appendChild(option);
+        }
+    });
+    // 既存の選択肢にある選択可能な集荷場所ではないものを削除
+    existingOptions.forEach(function(optionValue) {
+        if (!placeList.includes(optionValue) && optionValue != 'init') {
+            selectElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
+        }
+    });
+    // 集荷場所の選択肢をソート
+    const sortRule = ['共通棟', 'D科棟', 'E科棟', 'S科棟', 'M科棟', 'C科棟']; // 集荷場のソート規則（要素の早い順にソートされる）
+    Array.from(selectElement.options)
+    .filter(option => option.value !== 'init')
+    .sort(function(a, b) {
+        return sortRule.indexOf(a.value) - sortRule.indexOf(b.value);
+    })
+    .forEach(option => selectElement.appendChild(option));
+}
 
 /*
 チェックボックスの処理
