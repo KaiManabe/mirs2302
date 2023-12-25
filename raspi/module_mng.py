@@ -137,7 +137,6 @@ class module_controller():
             module_surv_thread[module_num] = threading.Thread(target = self.module_surv, args = (module_num,))
             module_surv_thread[module_num].setDaemon(True)
             module_surv_thread[module_num].start()
-            print(f"[DEBUG][module_mng.py] : {module_num} -> {module_surv_thread[module_num]}") # デバッグ用出力
             
             # 扉監視スレッド用配列のを2次元配列に設定
             door_surv_thread.setdefault(module_num, {})
@@ -147,7 +146,6 @@ class module_controller():
                     door_surv_thread[module_num][door_num] = threading.Thread(target = self.door_surv, args = (module_num, door_num,))
                     door_surv_thread[module_num][door_num].setDaemon(True)
                     door_surv_thread[module_num][door_num].start()
-                    print(f"[DEBUG][module_mng.py] : {module_num}-{door_num} -> {door_surv_thread[module_num][door_num]}") # デバッグ用出力
         print("[INFO][module_mng.py] : モジュールと扉の状態の監視を開始しました")
         
     def identify_module(self):
@@ -376,8 +374,7 @@ class airframe_controller():
         airframe_surv_thread = threading.Thread(target = self.airframe_surv)
         airframe_surv_thread.setDaemon(True)
         airframe_surv_thread.start()
-        print(f"[DEBUG][module_mng.py] : {airframe_surv_thread}") # デバッグ用出力
-        print("[INFO][module_mng.py] : 機体の持ち去り検知を開始しました")
+        print("[INFO][module_mng.py] : 機体持ち去りの監視を開始しました")
         
     def airframe_surv(self):
         """
