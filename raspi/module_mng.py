@@ -10,9 +10,9 @@ import RPi.GPIO as GPIO
 import threading
 import time
 
-IDEN_CYCLE = 0.1 # 搭載モジュール情報更新周期[s]
+IDEN_CYCLE = 1 # 搭載モジュール情報更新周期[s]
 AIR_CYCLE = 0.1 # 機体持ち去り検知周期[s]
-SURV_CYCLE = 0.01 # 監視周期[s]
+SURV_CYCLE = 1 # 監視周期[s]
 RES_ERR_RATE = 10 # 抵抗値許容誤差範囲[%]
 """統合時こいつらは調整する"""
 
@@ -219,7 +219,7 @@ class module_controller():
                     # 未接続の場合
                     if name_module_current == "unconnected":
                         print(f"[INFO][module_mng.py] : {name_module_previous}が取り外されました")
-                        web_app.warning(warn_type="door", module=name_module_current) # 異常検知メールを送信
+                        # web_app.warning(warn_type="door", module=name_module_current) # 異常検知メールを送信
                     # 取り付けられた場合
                     else:
                         print(f"[INFO][module_mng.py] : {name_module_current}が取り付けられました")
@@ -267,7 +267,7 @@ class module_controller():
                         # サーボで解錠していない場合
                         else:
                             print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}のこじ開けを検知しました")
-                            web_app.warning(warn_type="door", module=name_module_current, door=name_door_current) # 異常検知メールを送信
+                            # web_app.warning(warn_type="door", module=name_module_current, door=name_door_current) # 異常検知メールを送信
                     # 扉が閉じた場合
                     else:
                         self.onb_module_info[module_num][door_num]["unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
@@ -289,32 +289,31 @@ class module_controller():
         # モジュール名・扉名に対応するモジュール番号・扉番号を引っ張る
         module_num, door_num = self.reverse_lookup(module_name, door_name)
         
-        if module_num != None and door_num != None:
-            # ピンの初期化
-            GPIO.setmode(GPIO.BOARD)
-            GPIO.setup(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], GPIO.OUT)
-            
-            # ピンにHIGHを出力
-            self.onb_module_info[module_num][door_num]["unlocked"]: bool = True # こじ開け検知用フラグを"解錠した"に設定
-            GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], True)
-            time.sleep(0.5) # なぜか待たないと動かない
-            
-            # ArduinoにPWM出力指令を出す
-            if door_name == "right":
-                rot_dir = 0
-            else:
-                rot_dir = 1
-            self.serial.send(10, [rot_dir])
-            print(f"[INFO][module_mng.py] : 解錠中...")
-            time.sleep(3) # Arduino側のサーボを開けてから閉じるまでの時間が3s
-            time.sleep(0.5) # 0.5s余裕を持たせておく
+        # ピンの初期化
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], GPIO.OUT)
+        
+        # 対応するリレーのピンにHIGHを出力
+        self.onb_module_info[module_num][door_num]["unlocked"]: bool = True # こじ開け検知用フラグを"解錠した"に設定
+        GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], True)
+        time.sleep(0.5) # なぜか待たないと動かない
+        
+        # ArduinoにPWM出力指令を出す
+        if door_name == "right":
+            rot_dir = 0
+        else:
+            rot_dir = 1
+        self.serial.send(10, [rot_dir])
+        print(f"[INFO][module_mng.py] : 解錠中...")
+        time.sleep(3) # Arduino側のサーボを開けてから閉じるまでの時間が3s
+        time.sleep(0.5) # 0.5s余裕を持たせておく
 
-            # ピンにLOWを出力
-            GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], False)
-            time.sleep(0.5) # 0.5s余裕を持たせておく
-            
-            # GPIOピンを解放
-            GPIO.cleanup(self.onb_module_info[module_num][door_num]["pin"]["SERVO"])
+        # ピンにLOWを出力
+        GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], False)
+        time.sleep(0.5) # 0.5s余裕を持たせておく
+        
+        # GPIOピンを解放
+        GPIO.cleanup(self.onb_module_info[module_num][door_num]["pin"]["SERVO"])
     
     def height_calculate(self):
         """
@@ -356,7 +355,7 @@ class module_controller():
                         if org_module_name == module_name and org_door_name == door_name:
                             return module_num, door_num
             # 何も一致しなかった場合、空の文字列を返す
-            return None, None
+            return "", ""
 
             
 class airframe_controller():

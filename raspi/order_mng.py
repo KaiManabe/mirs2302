@@ -213,6 +213,7 @@ if __name__ == '__main__':
                 "ID",
                 sys.argv[2]
             )
+            print(result)
 
         #承認されたデータでcsvを更新する
         if(sys.argv[1] == 'modify_order'):
