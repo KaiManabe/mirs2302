@@ -32,7 +32,7 @@ function onLoad(){
     for(let key in timelist_base){
         if(timelist_base[key] == order_time){
             limit_time = timelist_base[key-1];
-            limit_key = key;
+            limit_key = key-1;
             break;
         }
     }
