@@ -289,27 +289,32 @@ class module_controller():
         # モジュール名・扉名に対応するモジュール番号・扉番号を引っ張る
         module_num, door_num = self.reverse_lookup(module_name, door_name)
         
-        # ピンの初期化
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], GPIO.OUT)
-        
-        # ピンにHIGHを出力
-        self.onb_module_info[module_num][door_num]["unlocked"]: bool = True # こじ開け検知用フラグを"解錠した"に設定
-        GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], True)
-        time.sleep(0.5) # なぜか待たないと動かない
-        
-        # ArduinoにPWM出力指令を出す
-        self.serial.send(10, [])
-        print(f"[INFO][module_mng.py] : 解錠中...")
-        time.sleep(3) # Arduino側のサーボを開けてから閉じるまでの時間が3s
-        time.sleep(0.5) # 0.5s余裕を持たせておく
+        if module_num != None and door_num != None:
+            # ピンの初期化
+            GPIO.setmode(GPIO.BOARD)
+            GPIO.setup(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], GPIO.OUT)
+            
+            # ピンにHIGHを出力
+            self.onb_module_info[module_num][door_num]["unlocked"]: bool = True # こじ開け検知用フラグを"解錠した"に設定
+            GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], True)
+            time.sleep(0.5) # なぜか待たないと動かない
+            
+            # ArduinoにPWM出力指令を出す
+            if door_name == "right":
+                rot_dir = 0
+            else:
+                rot_dir = 1
+            self.serial.send(10, [rot_dir])
+            print(f"[INFO][module_mng.py] : 解錠中...")
+            time.sleep(3) # Arduino側のサーボを開けてから閉じるまでの時間が3s
+            time.sleep(0.5) # 0.5s余裕を持たせておく
 
-        # ピンにLOWを出力
-        GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], False)
-        time.sleep(0.5) # 0.5s余裕を持たせておく
-        
-        # GPIOピンを解放
-        GPIO.cleanup(self.onb_module_info[module_num][door_num]["pin"]["SERVO"])
+            # ピンにLOWを出力
+            GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], False)
+            time.sleep(0.5) # 0.5s余裕を持たせておく
+            
+            # GPIOピンを解放
+            GPIO.cleanup(self.onb_module_info[module_num][door_num]["pin"]["SERVO"])
     
     def height_calculate(self):
         """
@@ -351,7 +356,7 @@ class module_controller():
                         if org_module_name == module_name and org_door_name == door_name:
                             return module_num, door_num
             # 何も一致しなかった場合、空の文字列を返す
-            return "", ""
+            return None, None
 
             
 class airframe_controller():
