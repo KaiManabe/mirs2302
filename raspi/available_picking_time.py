@@ -1,5 +1,24 @@
 import sys
 import json
+import order_mng
+import datetime
+
+#営業時間
+#日によって変えなければならない
+opening_time_begin = datetime.datetime.combine(datetime.datetime.today(), datetime.time(8,30))
+opening_time_end = datetime.datetime.combine(datetime.datetime.today(), datetime.time(12,30))
+
+
+
+def calc_required_time(start:int, goal:int):
+    return 2
+
+
+
+
+
+
+
 
 if len(sys.argv) > 1:
     picking_place = sys.argv[1]

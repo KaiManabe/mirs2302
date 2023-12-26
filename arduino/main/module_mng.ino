@@ -30,24 +30,43 @@ void servo_open(){
 モジュールの鍵用サーボの開閉を行う
 解錠→3秒待機→施錠
 
-引数：なし
+引数： direction -> int[0,1]
+      0なら時計回り (90deg -> 0deg -> 90deg)
+      1なら反時計回り (0deg -> 90deg -> 0deg)
 
 戻り値：なし
 */
-void key(){
-  for(int i=0; i<100; i++){
-    digitalWrite(SERVO,HIGH);
-    delay(3);
-    digitalWrite(SERVO,LOW);
-    delay(3);
-  }
-  delay(1000);
-  for(int i=0; i<250; i++){
-    digitalWrite(SERVO,HIGH);
-    delay(1);
-    digitalWrite(SERVO,LOW);
-    delay(2);
-  }
+void key(int direction){
+  /*0degにする*/
+    if (direction > 0){
+      for(int i=0; i<250; i++){
+        digitalWrite(SERVO,HIGH);
+        delay(1);
+        digitalWrite(SERVO,LOW);
+        delay(2);
+      }
+      delay(1000);
+      for(int i=0; i<100; i++){
+        digitalWrite(SERVO,HIGH);
+        delay(3);
+        digitalWrite(SERVO,LOW);
+        delay(3);
+      }
+    }else{
+      for(int i=0; i<100; i++){
+        digitalWrite(SERVO,HIGH);
+        delay(3);
+        digitalWrite(SERVO,LOW);
+        delay(3);
+      }
+      delay(1000);
+      for(int i=0; i<250; i++){
+        digitalWrite(SERVO,HIGH);
+        delay(1);
+        digitalWrite(SERVO,LOW);
+        delay(2);
+      }
+    }
 }
 
 /*

@@ -69,7 +69,7 @@ void check_serial(){
             break;
         
         case 10:
-            key();
+            key(inc_bytes[1]);
             break;
 
         case 11:
