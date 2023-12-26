@@ -12,27 +12,23 @@
 </head>
 
 <body>
-	<div class = "banner_title">
-		<h1 class = "site_title">TENQ</h1>
-	</div>
-	
-	<div class = "banner_menu">
-		<ul class = "menu">
-			<li onclick = "select_view_html('iframe_about')" class="contact">TENQとは？</li>
-			<li onclick = "select_view_html('iframe_send')" class="contact">送る</li>
-			<li onclick = "select_view_html('iframe_receive')" class="contact">送ってもらう</li>
-			<li onclick = "select_view_html('iframe_order')" class="contact">注文する</li>
-		</ul>
-	</div>
-	
-	<div class="iframe-container">
-		<iframe id = "iframe_about" src = "../about/index.html" class="view"></iframe>
-		<iframe id = "iframe_send" src = "../send/index.html" class="hide"></iframe>
-		<iframe id = "iframe_receive" src = "../receive/index.html" class="hide"></iframe>
-		<iframe id = "iframe_order" src = "../order/index.html" class="hide"></iframe>
-	</div>
-
-	<iframe id = "main_iframe"></iframe>
+    <div class="container">
+        <div class="title">MIRS2302 TENQ Project Demo Page</div>
+        <nav>
+            <ul>
+                <li onclick = "select_view_html('iframe_about')" class="contact"><div class="menu selected">TENQとは？</div></li>
+                <li onclick = "select_view_html('iframe_send')" class="contact"><div class="menu">荷物を送る</div></li>
+                <li onclick = "select_view_html('iframe_receive')" class="contact"><div class="menu">荷物を受け取る</div></li>
+                <li onclick = "select_view_html('iframe_order')" class="contact"><div class="menu">注文する</div></li>
+            </ul>
+        </nav>
+        <div class="iframe-container">
+            <iframe id = "iframe_about" src = "../about/index.html" class="view"></iframe>
+            <iframe id = "iframe_send" src = "../send/index.html" class="hide"></iframe>
+            <iframe id = "iframe_receive" src = "../receive/index.html" class="hide"></iframe>
+            <iframe id = "iframe_order" src = "../order/index.html" class="hide"></iframe>
+        </div>
+    </div>
 	<script type = "text/javascript" src="view.js"></script>
 </body>
 </html>
