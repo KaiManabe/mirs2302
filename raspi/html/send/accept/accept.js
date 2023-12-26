@@ -28,14 +28,6 @@ function onLoad(){
         8:"16:20-16:30"
     }
 
-    /*
-    for(let i = 0; i < Object.keys(timelist_base).length; i++){ //limit_timeを代入するためのループ
-        if(timelist_base[keys(i)] == order_time){
-            limit_time = timelist_base[keys(i-6)] //最低限必要な移動時間によって調節
-            break;
-        }
-        timelist_available[i] = timelist_base[keys(i)]; //制限後の時間の配列
-    }*/
     var limit_key;
     for(let key in timelist_base){
         if(timelist_base[key] == order_time){
@@ -43,20 +35,16 @@ function onLoad(){
             limit_key = key - 1;
             break;
         }
-        //time_now = timelist_base[key];
-        //timelist_available.push(time_now);
     }
     timelist_available = Object.values(timelist_base);
     timelist_available.splice(limit_key, Object.keys(timelist_base).length - limit_key);
-    //var num = Object.keys(timelist_base).length - limit_key;
-    //var num = timelist_available[5];
 
     //ページの最初の文を更新する処理↓
     var mail = dataList.slice(16,17); //dataList配列のうち、16番目の要素をmailに代入
     var thing = dataList.slice(7,8); //dataList配列のうち、8番目の要素をthingに代入
-    //var time = dataList.slice(22,23); //dataList配列のうち、12番目の要素をstrに代入
+    var yes = readFormData('yes')
 
-    document.querySelector('#text').textContent = `${mail}さんから${thing}を${limit_time}までに集荷するように依頼が来ています`; //テキスト差し替え
+    document.querySelector('#text').textContent = `${mail}さんから${thing}を${limit_time}まで${yes}に集荷するように依頼が来ています`; //テキスト差し替え
 
     //既存の選択肢にない選択可能な集荷時間を追加
     timelist_available.forEach(function(time) {
@@ -85,7 +73,7 @@ function selectableTime(place) {
     var timeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
     // 集荷時間の要素を取得
-    var selectElement = document.getElementById("picking_time");
+    var selectElement = document.getElementById("receive_time");
 
     // 既存の選択肢の配列を作成
     var existingOptions = timelist_available;
@@ -138,7 +126,7 @@ function selectablePlace(time) {
     var placeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
     // 集荷場所の要素を取得
-    var selectElement = document.getElementById("picking_place");
+    var selectElement = document.getElementById("receive_place");
 
     // 既存の選択肢の配列を作成
     var existingOptions = Array.from(selectElement.options).map(option => option.value);
@@ -196,13 +184,30 @@ function notview(){
 }
 
 /*
+formデータ読み込む関数
+
+引数：
+    formのID
+戻り値：
+    formデータの配列
+*/
+function readFormData(formIds) {
+    var formData = {};
+
+    // 各IDの入力フォームの値をformDataに格納
+    formIds.forEach(function (id) {
+        formData[id] = document.getElementById(id).value;
+    });
+    return formData;
+}
+
+/*
 送信ボタンに関する処理
 */
 function submitProcessing(){
     // formデータの読み込み
-    var formIds = ['client_address', 'client_address_type', 'target_address', 'target_address_type', 'item_type', 'item_name', 'picking_place', 'picking_time', 'picking_pincode', 'note']; // formのID
-    var couplingIds = [['client_address', 'client_address_type'], ['target_address', 'target_address_type']]; // 結合する要素のID
-    var sendData = readFormData(formIds, couplingIds);
+    var formIds = ['yes','no','receive_time', 'receive_place']; // formのID
+    var sendData = readFormData(formIds);
 
     // 送信中の画面を表示（なぜかできねえ！！！！！！！！！！！！！！）
     var formElement = document.getElementById("form");
@@ -221,40 +226,6 @@ function submitProcessing(){
     else{
         sendingElement.innerHTML = "<div id='error'>ERROR : 取引を承れませんでした</div>";
     }
-}
-
-/*
-formデータ読み込む関数
-
-引数：
-    formのID, 結合したい要素のID（先頭のIDの要素に結合）
-戻り値：
-    formデータの配列
-*/
-function readFormData(formIds, couplingIds) {
-    var formData = {};
-
-    // 各IDの入力フォームの値をformDataに格納
-    formIds.forEach(function (id) {
-        formData[id] = document.getElementById(id).value;
-    });
-
-    // 特定のフォームの値を結合
-    couplingIds.forEach(function (coupling) {
-        var combinedValue = coupling.slice(1).reduce(function (combined, id) {
-            return combined + formData[id];
-        }, '');
-
-        // 結合
-        formData[coupling[0]] += combinedValue;
-
-        // 結合後に不要なプロパティを削除
-        coupling.slice(1).forEach(function (id) {
-            delete formData[id];
-        });
-    });
-
-    return formData;
 }
 
 /*
