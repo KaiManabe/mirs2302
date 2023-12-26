@@ -59,7 +59,7 @@ def approval(order_id, mail, order_type):
     """
     承認メールを送信する関数
     引数：
-        依頼のID,依頼者のメールアドレス,依頼の種類,依頼物
+        依頼のID,被依頼者のメールアドレス,依頼の種類,依頼物
 
     戻り値：
         なし
@@ -67,17 +67,45 @@ def approval(order_id, mail, order_type):
     sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
     app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
     receiver_email = mail #送信先のメールアドレス
-    subject = "学内配達ロボットTENQ-依頼承認メール"
+    subject = "学内配達ロボットTENQ-依頼が来ています"
 
     approval_link = 'http://172.25.19.2/raspi/html/${order_type}/accept/index.html?id=${order_id}'
     body = f"""
     ※このメールは自動で送信されています。
-    D科4年のプロジェクト、「学内配達TENQ」です。
+    D科4年のプロジェクト,「学内配達TENQ」です。
 
     以下のリンクからメールの承認を行なってください。
     
     {approval_link}
     """
+    send_email(sender_email, app_password, receiver_email, subject, body)
+
+def denied(order_mail, order_type, ordered_mail, item_type):
+    """
+    依頼が拒否されたというメールを送信する関数
+    引数：
+        依頼者のメールアドレス,依頼の種類,被依頼者のメールアドレス,依頼物
+    戻り値：
+        なし
+    """
+    sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
+    app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
+    receiver_email = order_mail
+    subject = "学内配達ロボットTENQ-依頼が非承認されました"
+
+    body = f"""
+    ※このメールは自動で送信されています。
+    D科4年のプロジェクト,  「学内配達ロボットTENQ」です。
+
+    お相手の承認をとることができなかったため、以下の依頼はキャンセルされます。
+    再度依頼をする際は、お相手のメールアドレスに間違いが無いことをご確認ください。
+
+    <依頼内容>
+    依頼の種類：${order_type}
+    相手：${ordered_mail}
+    商品：${item_type}
+    """
+
     send_email(sender_email, app_password, receiver_email, subject, body)
 
 def warning(warn_type: str, module: str = None, door: str = None):
