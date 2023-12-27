@@ -9,10 +9,8 @@ def servo(pin):
     GPIO.setup(pin, GPIO.OUT)
     GPIO.output(pin, True)
     time.sleep(0.5)
-    # s.send(10, [0])
+    s.send(10, [0])
     time.sleep(3)
     
     GPIO.output(pin, False)
     time.sleep(0.5)
-    
-# if __name__ == "__main__":
