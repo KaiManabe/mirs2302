@@ -194,7 +194,7 @@ function selectableItem(time) {
         }
     });
     // ITEM_TYPEの選択肢をソート
-    const sortRule = ['小物', '資料', '食品(保冷)', '食品(保温)']; // 集荷場のソート規則（要素の早い順にソートされる）
+    const sortRule = ['小物', '資料', '食品（保冷）', '食品（保温）']; // ITEM_TYPEのソート規則（要素の早い順にソートされる）
     Array.from(itemTypeElement.options)
     .filter(option => option.value !== 'init')
     .sort(function(a, b) {

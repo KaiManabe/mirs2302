@@ -1,26 +1,3 @@
 ID,ORDER_TYPE,ITEM_TYPE,ITEM_NAME,STATUS,RECEIPT_TIME,ACCEPTED_TIME,SENDER,RECEIVER,PICKUP_PLACE,PICKUP_TIME,PICKUP_PIN,RECEIVE_PLACE,RECEIVE_TIME,RECEIVE_PIN,NOTE
-a0ae211d-59b4-4343-a266-48199c8967f3,,,,NOT_ACCEPTED_YET,2023-12-21 15:27:16.587836,,,,,,,,,,
-bee89926-40f2-4198-a579-12acfc35d2d6,SEND,,,NOT_ACCEPTED_YET,2023-12-21 15:29:46.345564,,d12345@numazu.kosen-ac.jp,d23456@numazu.kosen-ac.jp,S科棟,16:10-16:20,,,,,
-805d3054-acee-4433-abe4-0465e1d782f5,SEND,小物,鍵,NOT_ACCEPTED_YET,2023-12-21 17:28:50.538477,,MyMail@numazu.kosen-ac.jp,Targ@numazu.kosen-ac.jp,D科棟,15:10-15:20,1234.0,,,,なし
-0a930bdc-a759-453f-ad1b-799ca8481df7,SEND,小物,鍵,NOT_ACCEPTED_YET,2023-12-21 17:48:57.694175,,MyMail@numazu.kosen-ac.jp,Targ@numazu.kosen-ac.jp,D科棟,15:10-15:20,1234.0,,,,なし
-d4b0bda0-5e91-41ca-8049-b6f3fef74267,SEND,小物,鍵,NOT_ACCEPTED_YET,2023-12-21 17:56:52.315592,,MyMail@numazu.kosen-ac.jp,Targ@numazu.kosen-ac.jp,D科棟,15:10-15:20,1234.0,,,,なし
-4c2b0a47-6931-4a3f-942a-9dd0ea692ee2,SEND,小物,テスト,NOT_ACCEPTED_YET,2023-12-21 17:59:20.390812,,Me@numazu.kosen-ac.jp,Target@numazu.kosen-ac.jp,D科棟,15:20-15:30,1234.0,,,,ああああああああ
-c63c647a-cd7e-4b1a-9cf4-f57ffefd29f9,SEND,小物,チョーク,NOT_ACCEPTED_YET,2023-12-21 18:23:44.740293,,MyAddress@numazu.kosen-ac.jp,TgAddress@numazu.kosen-ac.jp,D科棟,16:00-16:10,1234.0,,,,ないよ
-370e566b-a6c8-4340-8062-212b38896990,SEND,書類,歴史のプリント,NOT_ACCEPTED_YET,2023-12-21 18:24:51.994448,,Me@numazu.kosen-ac.jp,Tg@numazu.kosen-ac.jp,D科棟,15:10-15:20,1234.0,,,,
-faa917b8-2dda-4cf0-bd81-d7390020ee46,SEND,小物,ちょ,NOT_ACCEPTED_YET,2023-12-21 18:55:04.888349,,Me@numazu.kosen-ac.jp,Tg@numazu.kosen-ac.jp,D科棟,16:10-16:20,1234.0,,,,
-8e8e49a2-f153-481b-ae90-a15a941ad44b,SEND,小物,ああ,NOT_ACCEPTED_YET,2023-12-21 19:02:33.318061,,Test@numazu.kosen-ac.jp,test2@numazu.kosen-ac.jp,S科棟,16:00-16:10,1234.0,,,,
-0f9bce76-107f-4adc-9f26-2a7647f275a2,SEND,書類,歴史プリント,NOT_ACCEPTED_YET,2023-12-21 19:07:50.345987,,MyAddress@numazu.kosen-ac.jp,TargetAddress@numazu.kosen-ac.jp,D科棟,16:00-16:10,12345678.0,,,,ない
-19371338-4b2d-44a3-a86e-105a9ff63084,SEND,小物,a,NOT_ACCEPTED_YET,2023-12-21 19:08:32.289640,,a@numazu.kosen-ac.jp,b@numazu.kosen-ac.jp,D科棟,15:20-15:30,1111.0,,,,
-7195e86b-da37-4f42-832f-d23750ee9b91,SEND,小物,登,NOT_ACCEPTED_YET,2023-12-21 19:10:16.921356,,プリント,mmm@numazu.kosen-ac.jp,aaaaaa@numazu.kosen-ac.jp,D科棟,15:20-15:30,,,,1232
-781f0fed-5e22-427a-a336-9d8a67d49fb0,SEND,食品(保冷),あ い,NOT_ACCEPTED_YET,2023-12-21 19:12:07.860051,,ahgvigd@numazu.kosen-ac.jp,jaidgad@numazu.kosen-ac.jp,D科棟,16:00-16:10,12345,,,,ない
-e17822b3-91ef-453d-84c1-7608e0df65d0,SEND,小物,かいい,NOT_ACCEPTED_YET,2023-12-22 10:48:17.855350,,mine@numazu.kosen-ac.jp,aaaasdd@numazu.kosen-ac.jp,S科棟,16:00-16:10,12345,,,,ないあああ
-ba23f565-fe4b-4ce3-8444-56fe8d36496e,SEND,小物,鍵,NOT_ACCEPTED_YET,2023-12-22 10:55:10.886747,,Me@numazu.kosen-ac.jp,Target@numazu.kosen-ac.jp,D科棟,16:20-16:30,12345678,,,,動けえええ
-18d8c9ca-772d-4e1b-9023-53adaf549a2f,SEND,書類,doc,NOT_ACCEPTED_YET,2023-12-22 11:03:11.971353,,Me@numazu.kosen-ac.jp,Tg@numazu.kosen-ac.jp,S科棟,15:20-15:30,1234,,,,なし
-e4a0c915-96ee-4482-b411-b74b4b79261c,SEND,小物,鍵,NOT_ACCEPTED_YET,2023-12-22 11:14:01.153518,,mmmmma@numazu.kosen-ac.jp,tttege@numazu.kosen-ac.jp,C科棟,15:10-15:20,12465476,,,,ない
-1e5bfef2-1cd1-411a-80b6-0f1b4e4ec3f4,SEND,小物,ああああ,NOT_ACCEPTED_YET,2023-12-22 11:23:31.085105,,Mail@numazu.kosen-ac.jp,Target@numazu.kosen-ac.jp,C科棟,15:00-15:10,1234,,,,なんでやねん
-6d1f3324-2d75-4185-b3c3-509fc958f4e6,SEND,小物,qwd,NOT_ACCEPTED_YET,2023-12-22 11:28:49.030271,,aa@numazu.kosen-ac.jp,sfef@numazu.kosen-ac.jp,D科棟,15:10-15:20,1245,,,,afaas
-249ad667-5dda-4222-b36c-d5b9561aceaf,SEND,小物,qfqfqwd,NOT_ACCEPTED_YET,2023-12-22 11:32:44.669603,,sgidqw@numazu.kosen-ac.jp,qwdqwd@numazu.kosen-ac.jp,D科棟,15:10-15:20,12345,,,,アンばびg
-4d26628b-f45f-44aa-8281-dead06c0ac6e,SEND,小物,wegty,NOT_ACCEPTED_YET,2023-12-22 11:42:01.263815,,jdygiu@numazu.kosen-ac.jp,awegntewr@numazu.kosen-ac.jp,D科棟,16:10-16:20,1234567,,,,aefwev
-cf801787-a462-4119-9a5d-dcc66e728572,SEND,小物,鍵,NOT_ACCEPTED_YET,2023-12-22 14:30:53.431908,,manabe@numazu.kosen-ac.jp,yamamoto@numazu.kosen-ac.jp,S科棟,15:20-15:30,12345,,,,なし
-f9971f2a-6b1c-4cc1-9d19-6679d5ee4484,SEND,小物,kgff,NOT_ACCEPTED_YET,2023-12-25 10:41:08.260277,,ugyftds@numazu.kosen-ac.jp,yftd@numazu.kosen-ac.jp,D科棟,15:10-15:20,12324354,,,,hgf
-133906fc-b076-4661-b3a5-3a28a9508fcc,SEND,書類,gfd,NOT_ACCEPTED_YET,2023-12-25 14:47:42.439207,,gftds@numazu.kosen-ac.jp,iuyftd@numazu.kosen-ac.jp,D科棟,16:00-16:10,12324356,,,,
+63894e01-8be1-444e-a646-ca837f7e9bd5,SEND,小物,TESTITEM_KOMONO,NOT_ACCEPTED_YET,2023-12-27 18:18:52,,TEST2@numazu.kosen-ac.jp,TEST3@numazu.kosen-ac.jp,D科棟,2023-12-27 21:10:00,1234.0,,,,
+898c1c9a-b3d4-4079-b098-037c516426d1,SEND,小物,TESTITEM_KOMONO,NOT_ACCEPTED_YET,2023-12-27 18:19:42,,TEST11@numazu.kosen-ac.jp,TEST22@numazu.kosen-ac.jp,D科棟,2023-12-27 21:40:00,1234,,,,

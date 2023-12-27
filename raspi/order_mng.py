@@ -10,7 +10,11 @@ import warnings
 
 warnings.filterwarnings('ignore', category=pd.core.common.SettingWithCopyWarning)
 
-
+def option_to_datetime(opt):
+    strdt = opt.split("-")[-1]
+    hour = int(strdt.split(":")[0])
+    minute = int(strdt.split(":")[-1])
+    return datetime.datetime.combine(datetime.datetime.today(), datetime.time(hour, minute))
 
 class order_manager():
     """
@@ -33,7 +37,7 @@ class order_manager():
             path : csvファイルのパス（任意・デフォルト値あり）
         """            
         self.file_path = path
-        self.df = pd.read_csv(path)
+        self.df = pd.read_csv(path, parse_dates=["RECEIPT_TIME", "ACCEPTED_TIME", "PICKUP_TIME", "RECEIVE_TIME"])
         self.read = datetime.datetime.now()
 
     
@@ -42,7 +46,7 @@ class order_manager():
         【自動実行するため呼び出し不要】
         変更に応じてcsvを更新する関数
         """
-        self.df = pd.read_csv(self.file_path)
+        self.df = pd.read_csv(self.file_path, parse_dates=["RECEIPT_TIME", "ACCEPTED_TIME", "PICKUP_TIME", "RECEIVE_TIME"])
         self.read = datetime.datetime.now()
     
     
@@ -52,7 +56,7 @@ class order_manager():
             print("[WARN][order_mng.py] : ファイルの書き込みに失敗しました", file = sys.stderr)
             return -1
 
-        self.df.to_csv(self.file_path, index = None)
+        self.df.to_csv(self.file_path, index = None, date_format='%Y-%m-%d %H:%M:%S')
         return 1
     
     def get_order(self, label:str = None, value = None):
@@ -169,7 +173,17 @@ if __name__ == '__main__':
     コマンドライン(phpなど)から実行された時の処理
     """
     o = order_manager()
+    """
+    o.new_order(
+            ORDER_TYPE="RECEIVE",
+            ITEM_NAME="TEST2",
+            ITEM_TYPE="書類",
+            PICKUP_PLACE="PLACE2",
+            PICKUP_TIME=option_to_datetime("15:30-15:40"))
+
     
+    exit()
+    """
     # 追加のコマンドライン引数がある場合
     if(len(sys.argv) > 1):
         
@@ -189,7 +203,7 @@ if __name__ == '__main__':
                     SENDER = sys.argv[5],
                     RECEIVER = sys.argv[6],
                     PICKUP_PLACE = sys.argv[7],
-                    PICKUP_TIME = sys.argv[8],
+                    PICKUP_TIME = option_to_datetime(sys.argv[8]),
                     PICKUP_PIN = sys.argv[9],
                     NOTE = note
                 )
@@ -202,7 +216,7 @@ if __name__ == '__main__':
                     SENDER = sys.argv[5],
                     RECEIVER = sys.argv[6],
                     REVEIVE_PLACE = sys.argv[7],
-                    RECEIVE_TIME = sys.argv[8],
+                    RECEIVE_TIME = option_to_datetime(sys.argv[8]),
                     RECEIVE_PIN = sys.argv[9],
                     NOTE = note
                 )

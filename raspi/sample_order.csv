@@ -1,0 +1,8 @@
+ID,ORDER_TYPE,ITEM_TYPE,ITEM_NAME,STATUS,RECEIPT_TIME,ACCEPTED_TIME,SENDER,RECEIVER,PICKUP_PLACE,PICKUP_TIME,PICKUP_PIN,RECEIVE_PLACE,RECEIVE_TIME,RECEIVE_PIN,NOTE
+a0ae211d-59b4-4343-a266-48199c8967f3,SEND,小物,ペン,NOT_ACCEPTED_YET,2023/12/15 15:29,,pen@numazu.kosen-ac.jp,penpen@numazu.kosen-ac.jp,D科棟,2023/12/16 10:30,14258480,,,,ありがとうございました
+bee89926-40f2-4198-a579-12acfc35d2d6,RECEIVE,資料,歴史のプリント,ACCEPTED,2023/12/16 13:30,2023/12/16 15:23,suzuki@numazu-ct.ac.jp,history@numazu.kosen-ac.jp,学生課前,2023/12/17 12:53,76438931,S科棟,2023/12/17 14:13,96323254,のぼるんるん
+805d3054-acee-4433-abe4-0465e1d782f5,DELIVERY,食品(保冷),ジュース,MOVING_FOR_PICKUP,2023/12/17 15:28,2023/12/17 17:58,manager@numazu.kosen-ac.jp,kojiki@numazu.kosen-ac.jp,尚友会館,2023/12/17 16:35,74143458,C科棟,2023/12/17 18:00,11156740,うおおおおおお
+0a930bdc-a759-453f-ad1b-799ca8481df7,SEND,食品(保温),弁当,WAITING_FOR_PICKUP,2024/1/23 14:29,2024/1/23 16:12,pre@numazu.kosen-ac.jp,omg@numazu.kosen-ac.jp,M科棟,2024/1/24 8:30,58452439,E科棟,2024/1/24 12:00,99977376,重
+d4b0bda0-5e91-41ca-8049-b6f3fef74267,RECEIVE,小物,数学の教科書,PICKED_UP,2024/2/23 9:29,2024/2/23 10:53,yama@numazu.kosen-ac.jp,mnb@numazu.kosen-ac.jp,D科棟,2024/2/24 12:44,99557733,C科棟,2024/2/25 16:10,11111455,教科書返せや
+4c2b0a47-6931-4a3f-942a-9dd0ea692ee2,DELIVERY,食品(保冷),ゼリー,MOVING_FOR_RECEIVE,2024/2/26 10:55,2024/2/26 13:01,manager@numazu.kosen-ac.jp,zeeeeee@numazu.kosen-ac.jp,尚友会館,2024/2/27 10:11,88453837,M科棟,2024/3/3 12:56,87628833,
+c63c647a-cd7e-4b1a-9cf4-f57ffefd29f9,SEND,食品(保温),爆弾,DENIED,2024/2/28 7:00,,bomb@numazu-ct.ac.jp,student@numazu.kosen-ac.jp,C科棟,2024/4/4 4:44,18888438,,,,ピッピッピッ

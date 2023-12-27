@@ -1,6 +1,9 @@
 import sys
 import json
 
+with open("/home/pi/cmd.log", "w") as f:
+    print(sys.argv, file = f)
+
 if len(sys.argv) > 1:
     picking_time = sys.argv[1]
 else:

@@ -304,7 +304,7 @@ class module_controller():
         else:
             rot_dir = 1
         self.serial.send(10, [rot_dir])
-        print(f"[INFO][module_mng.py] : 解錠中...")
+        print(f"[INFO][module_mng.py] : {module_name}の{door_name}を解錠中...")
         time.sleep(3) # Arduino側のサーボを開けてから閉じるまでの時間が3s
         time.sleep(0.5) # 0.5s余裕を持たせておく
 
@@ -411,6 +411,7 @@ class airframe_controller():
         batt_vol = response[0][0]/10
         
         return batt_vol
+            
             
 if __name__ == '__main__':
     s = ser.arduino_serial()
