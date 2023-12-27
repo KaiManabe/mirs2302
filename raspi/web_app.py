@@ -28,33 +28,6 @@ def send_email(sender_email, app_password, receiver_email, subject, body):
         # メールの送信
         server.sendmail(sender_email, receiver_email, message.as_string())
 
-
-# 以下は、実際にメールを送信するための例です。
-if __name__ == "__main__":
-    sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
-    app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
-    receiver_email = "recipient_email@example.com"  # 送信先のメールアドレス
-    subject = "Test Subject"
-    
-    approval_link = "http://172.25.19.2"  # 承認リンク
-    approval_body = f"""
-    ※このメールは自動で送信されています。
-    
-    以下のリンクからメールの承認を行なってください。
-    
-    {approval_link}
-    """
-    
-    warning_body = f"""
-    TENQに異常が検知されました。直ちに確認作業を行なってください。
-    
-    ※このメールは自動で送信されています。
-    """
-    
-    body = approval_body
-
-    send_email(sender_email, app_password, receiver_email, subject, body)
-
 def approval(order_id, mail, order_type):
     """
     承認メールを送信する関数
@@ -154,3 +127,32 @@ def warning(warn_type: str, module: str = None, door: str = None):
     for receiver_email in manager_list:
         print([sender_email, app_password, receiver_email, subject, body]) # デバッグ用
         send_email(sender_email, app_password, receiver_email, subject, body)
+        
+
+"""
+コマンドラインから呼び出された時の処理
+"""
+if __name__ == "__main__":
+    sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
+    app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
+    receiver_email = "recipient_email@example.com"  # 送信先のメールアドレス
+    subject = "Test Subject"
+    
+    approval_link = "http://172.25.19.2"  # 承認リンク
+    approval_body = f"""
+    ※このメールは自動で送信されています。
+    
+    以下のリンクからメールの承認を行なってください。
+    
+    {approval_link}
+    """
+    
+    warning_body = f"""
+    TENQに異常が検知されました。直ちに確認作業を行なってください。
+    
+    ※このメールは自動で送信されています。
+    """
+    
+    body = approval_body
+
+    send_email(sender_email, app_password, receiver_email, subject, body)
