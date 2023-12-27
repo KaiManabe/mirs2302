@@ -12,7 +12,8 @@ import time
 
 IDEN_CYCLE = 1 # 搭載モジュール情報更新周期[s]
 AIR_CYCLE = 0.1 # 機体持ち去り検知周期[s]
-SURV_CYCLE = 1 # 監視周期[s]
+MODULE_SURV_CYCLE = 0.5 # モジュール監視周期[s]
+DOOR_SURV_CYCLE = 1 # 扉監視周期[s]
 RES_ERR_RATE = 10 # 抵抗値許容誤差範囲[%]
 """統合時こいつらは調整する"""
 
@@ -226,7 +227,7 @@ class module_controller():
                     # フラグを更新
                     name_module_previous = name_module_current
                     
-            time.sleep(SURV_CYCLE)
+            time.sleep(MODULE_SURV_CYCLE)
     
     def door_surv(self, module_num: str, door_num: str):
         """
@@ -275,7 +276,7 @@ class module_controller():
                     # フラグを更新
                     openFlag_door_previous = self.onb_module_info[module_num][door_num]["open"]
                     
-            time.sleep(SURV_CYCLE)
+            time.sleep(DOOR_SURV_CYCLE)
             
     def door_open(self, module_name: str, door_name: str):
         """
