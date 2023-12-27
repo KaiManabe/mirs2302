@@ -1,5 +1,37 @@
 /*
-送信ボタンに関する処理
+--------------- 要素の定義 ---------------
+*/
+const formElement = document.getElementById("form");
+const itemTypeElement = document.getElementById("item_type");
+const pickingTimeElement = document.getElementById("picking_time");
+
+/*
+--------------- イベントリスナー ---------------
+*/
+
+// ページが読み込まれた時に実行する処理
+document.addEventListener("DOMContentLoaded", function(event) {
+    itemTypeElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
+    pickingTimeElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
+    selectableItem();
+    selectableTime();
+});
+// ITEM_TYPEが選択された時の処理
+itemTypeElement.addEventListener('change', function(event) {
+    selectableTime(event.target.value);
+});
+// 集荷時間が選択された時の処理
+pickingTimeElement.addEventListener('change', function(event) {
+    selectableItem(event.target.value);
+});
+// データを送信するボタンが押された時の処理
+formElement.addEventListener('submit', function(event) {
+    event.preventDefault(); // ページのリロードを防ぐ
+    submitProcessing();
+});
+
+/*
+送信ボタンに関する処理を行う関数
 */
 function submitProcessing(){
     // formデータの読み込み
@@ -84,7 +116,7 @@ function sendDataToPhp(sendData) {
 引数(なしでもいける)：
     ITEM_TYPE: str
 
-***クライアントが集荷場所を選択した時に実行するやつ***
+***クライアントがITEM_TYPEを選択した時に実行するやつ***
 */
 function selectableTime(item_type) {
     // httpリクエストを送信して選択可能な時間を取得
@@ -94,11 +126,8 @@ function selectableTime(item_type) {
     xhr.send();
     var timeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
-    // 集荷時間の要素を取得
-    var selectElement = document.getElementById("picking_time");
-
     // 既存の選択肢の配列を作成
-    var existingOptions = Array.from(selectElement.options).map(option => option.value);
+    var existingOptions = Array.from(pickingTimeElement.options).map(option => option.value);
 
     // 既存の選択肢にない選択可能な集荷時間を追加
     timeList.forEach(function(time) {
@@ -106,17 +135,17 @@ function selectableTime(item_type) {
             var option = document.createElement("option");
             option.value = time;
             option.text = time;
-            selectElement.appendChild(option);
+            pickingTimeElement.appendChild(option);
         }
     });
     // 既存の選択肢にある選択可能な集荷時間ではないものを削除
     existingOptions.forEach(function(optionValue) {
         if (!timeList.includes(optionValue) && optionValue != 'init') {
-            selectElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
+            pickingTimeElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
         }
     });
     // 集荷時間の選択肢をソート
-    Array.from(selectElement.options)
+    Array.from(pickingTimeElement.options)
     .filter(option => option.value !== 'init')
     .sort((a, b) => {
         if (a.value < b.value) {
@@ -127,11 +156,11 @@ function selectableTime(item_type) {
         }
         return 0;
     })
-    .forEach(option => selectElement.appendChild(option));
+    .forEach(option => pickingTimeElement.appendChild(option));
 }
 
 /*
-時間が選択された時にITEM_TYPEを選択する関数
+選択可能なITEM_TYPEを制限する関数
 
 引数(なしでもいける)：
     時間: str
@@ -139,18 +168,15 @@ function selectableTime(item_type) {
 ***クライアントが集荷時間を選択した時に実行するやつ***
 */
 function selectableItem(time) {
-    // httpリクエストを送信して選択可能な集荷場所を取得
+    // httpリクエストを送信して選択可能なITEM_TYPEを取得
     var xhr = new XMLHttpRequest();
     var url = "get_available_selection.php"; // httpリクエスト先
     xhr.open("GET", url + "?time=" + encodeURIComponent(JSON.stringify(time)), false); // 同期通信GETメソッド
     xhr.send();
     var itemList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
-    // ITEM_TYPEの要素を取得
-    var selectElement = document.getElementById("item_type");
-
     // 既存の選択肢の配列を作成
-    var existingOptions = Array.from(selectElement.options).map(option => option.value);
+    var existingOptions = Array.from(itemTypeElement.options).map(option => option.value);
 
     // 既存の選択肢にない選択可能なITEM_TYPEを追加
     itemList.forEach(function(item) {
@@ -158,51 +184,21 @@ function selectableItem(time) {
             var option = document.createElement("option");
             option.value = item;
             option.text = item;
-            selectElement.appendChild(option);
+            itemTypeElement.appendChild(option);
         }
     });
     // 既存の選択肢にある選択可能なITEM_TYPEではないものを削除
     existingOptions.forEach(function(optionValue) {
-        if (!placeList.includes(optionValue) && optionValue != 'init') {
-            selectElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
+        if (!itemList.includes(optionValue) && optionValue != 'init') {
+            itemTypeElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
         }
     });
     // ITEM_TYPEの選択肢をソート
     const sortRule = ['小物', '資料', '食品(保冷)', '食品(保温)']; // 集荷場のソート規則（要素の早い順にソートされる）
-    Array.from(selectElement.options)
+    Array.from(itemTypeElement.options)
     .filter(option => option.value !== 'init')
     .sort(function(a, b) {
         return sortRule.indexOf(a.value) - sortRule.indexOf(b.value);
     })
-    .forEach(option => selectElement.appendChild(option));
+    .forEach(option => itemTypeElement.appendChild(option));
 }
-
-/*
----------- 以下イベントリスナー ----------
-*/
-
-// 要素の定義
-const formElement = document.getElementById("form");
-const itemTypeElement = document.getElementById("item_type");
-const pickingTimeElement = document.getElementById("picking_time");
-
-// ページが読み込まれた時に実行する処理
-document.addEventListener("DOMContentLoaded", function(event) {
-    itemTypeElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
-    pickingTimeElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
-    selectablePlace();
-    selectableTime();
-});
-// ITEM_TYPEが選択された時の処理
-itemTypeElement.addEventListener('change', function(event) {
-    selectableTime(event.target.value);
-});
-// 集荷時間が選択された時の処理
-pickingTimeElement.addEventListener('change', function(event) {
-    selectableItem(event.target.value);
-});
-// データを送信するボタンが押された時の処理
-formElement.addEventListener('submit', function(event) {
-    event.preventDefault(); // ページのリロードを防ぐ
-    submitProcessing();
-});

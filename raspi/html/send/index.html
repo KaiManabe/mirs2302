@@ -41,11 +41,7 @@
                 </th>
                 <td>
                     <select name="item_type" id="item_type" title="送りたいもののカテゴリを選択してください" required>
-                        <option value="" selected disabled>選択してください</option>
-                        <option value="小物">小物</option>
-                        <option value="書類">書類</option>
-                        <option value="食品(保冷)">食品(保冷)</option>
-                        <option value="食品(保温)">食品(保温)</option>
+                        <!-- jsでここに選択可能なカテゴリを追加する -->
                     </select>
                 </td>
             </tr>
@@ -63,7 +59,12 @@
                 </th>
                 <td>
                     <select name="picking_place" id="picking_place" title="集荷場所を選択してください" required>
-                        <!-- jsでここに選択可能な場所を追加する -->
+                        <option value="" selected disabled>選択してください</option>
+                        <option value="D科棟">D科棟</option>
+                        <option value="E科棟">E科棟</option>
+                        <option value="C科棟">C科棟</option>
+                        <option value="S科棟">S科棟</option>
+                        <option value="学生課前">学生課前</option>
                     </select>
                 </td>
             </tr>
