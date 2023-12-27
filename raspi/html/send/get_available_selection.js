@@ -1,6 +1,3 @@
-const itemTypeElement = document.getElementById("item_type");
-const itemSortRule = ['小物', '書類', '食品(保冷)', '食品(保温)']; // itemTypeのソート規則（要素の早い順にソートされる）
-
 /*
 送信ボタンに関する処理
 */
@@ -82,73 +79,18 @@ function sendDataToPhp(sendData) {
 }
 
 /*
-選択できるitemTypeを制限する関数
-
-引数(なしでもいける)：
-    場所: str
-    時間: str
-
-***クライアント選択した時に実行するやつ***
-*/
-function selectableItem(place, time) {
-    // httpリクエストを送信
-    var xhr = new XMLHttpRequest();
-    var url = "test.php"; // httpリクエスト先
-    xhr.open("POST", url, false); // 同期通信POSTメソッド
-    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8"); // ヘッダを設定(文字列も送れるjson形式を指定)
-    var selectData = { // 送信するデータを連想配列にする
-        "place": place,
-        "time": time
-    };
-    xhr.send(JSON.stringify(selectData)); // データを送信
-
-    // httpレスポンスを配列にして受け取る
-    var itemList = xhr.responseText.split(",").filter(Boolean); 
-
-    return itemList;
-
-    // // 既存の選択肢を取得
-    // var existingOptions = Array.from(itemTypeElement.options).map(option => option.value); // 既存の選択肢の配列を作成
-
-    // // 既存の選択肢にない選択可能なitemTypeを追加
-    // itemList.forEach(function(item) {
-    //     if (!existingOptions.includes(item)) {
-    //         var option = document.createElement("option");
-    //         option.value = item;
-    //         option.text = item;
-    //         itemTypeElement.appendChild(option);
-    //     }
-    // });
-
-    // // 既存の選択肢にある選択可能なitemTypeではないものを削除
-    // existingOptions.forEach(function(optionValue) {
-    //     if (!itemList.includes(optionValue) && optionValue != 'init') {
-    //         itemTypeElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
-    //     }
-    // });
-
-    // // itemTypeの選択肢をソート
-    // Array.from(itemTypeElement.options)
-    // .filter(option => option.value !== 'init') // 初期値(選択してください)は省く
-    // .sort(function(a, b) {
-    //     return itemSortRule.indexOf(a.value) - itemSortRule.indexOf(b.value);
-    // })
-    // .forEach(option => itemTypeElement.appendChild(option));
-}
-
-/*
 選択可能な時間を制限する関数
 
 引数(なしでもいける)：
-    場所: str
+    ITEM_TYPE: str
 
 ***クライアントが集荷場所を選択した時に実行するやつ***
 */
-function selectableTime(place) {
+function selectableTime(item_type) {
     // httpリクエストを送信して選択可能な時間を取得
     var xhr = new XMLHttpRequest();
     var url = "get_available_selection.php"; // httpリクエスト先
-    xhr.open("GET", url + "?place=" + encodeURIComponent(JSON.stringify(place)), false); // 同期通信GETメソッド
+    xhr.open("GET", url + "?item_type=" + encodeURIComponent(JSON.stringify(item_type)), false); // 同期通信GETメソッド
     xhr.send();
     var timeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
@@ -189,44 +131,44 @@ function selectableTime(place) {
 }
 
 /*
-時間が選択された時に場所を選択する関数
+時間が選択された時にITEM_TYPEを選択する関数
 
 引数(なしでもいける)：
     時間: str
 
 ***クライアントが集荷時間を選択した時に実行するやつ***
 */
-function selectablePlace(time) {
+function selectableItem(time) {
     // httpリクエストを送信して選択可能な集荷場所を取得
     var xhr = new XMLHttpRequest();
     var url = "get_available_selection.php"; // httpリクエスト先
     xhr.open("GET", url + "?time=" + encodeURIComponent(JSON.stringify(time)), false); // 同期通信GETメソッド
     xhr.send();
-    var placeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
+    var itemList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
-    // 集荷場所の要素を取得
-    var selectElement = document.getElementById("picking_place");
+    // ITEM_TYPEの要素を取得
+    var selectElement = document.getElementById("item_type");
 
     // 既存の選択肢の配列を作成
     var existingOptions = Array.from(selectElement.options).map(option => option.value);
 
-    // 既存の選択肢にない選択可能な集荷場所を追加
-    placeList.forEach(function(place) {
-        if (!existingOptions.includes(place)) {
+    // 既存の選択肢にない選択可能なITEM_TYPEを追加
+    itemList.forEach(function(item) {
+        if (!existingOptions.includes(item)) {
             var option = document.createElement("option");
-            option.value = place;
-            option.text = place;
+            option.value = item;
+            option.text = item;
             selectElement.appendChild(option);
         }
     });
-    // 既存の選択肢にある選択可能な集荷場所ではないものを削除
+    // 既存の選択肢にある選択可能なITEM_TYPEではないものを削除
     existingOptions.forEach(function(optionValue) {
         if (!placeList.includes(optionValue) && optionValue != 'init') {
             selectElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
         }
     });
-    // 集荷場所の選択肢をソート
-    const sortRule = ['共通棟', 'D科棟', 'E科棟', 'S科棟', 'M科棟', 'C科棟']; // 集荷場のソート規則（要素の早い順にソートされる）
+    // ITEM_TYPEの選択肢をソート
+    const sortRule = ['小物', '資料', '食品(保冷)', '食品(保温)']; // 集荷場のソート規則（要素の早い順にソートされる）
     Array.from(selectElement.options)
     .filter(option => option.value !== 'init')
     .sort(function(a, b) {
@@ -241,23 +183,23 @@ function selectablePlace(time) {
 
 // 要素の定義
 const formElement = document.getElementById("form");
-const pickingPlaceElement = document.getElementById("picking_place");
+const itemTypeElement = document.getElementById("item_type");
 const pickingTimeElement = document.getElementById("picking_time");
 
 // ページが読み込まれた時に実行する処理
 document.addEventListener("DOMContentLoaded", function(event) {
-    pickingPlaceElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
+    itemTypeElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
     pickingTimeElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
     selectablePlace();
     selectableTime();
 });
-// 集荷場所が選択された時の処理
-pickingPlaceElement.addEventListener('change', function(event) {
+// ITEM_TYPEが選択された時の処理
+itemTypeElement.addEventListener('change', function(event) {
     selectableTime(event.target.value);
 });
 // 集荷時間が選択された時の処理
 pickingTimeElement.addEventListener('change', function(event) {
-    selectablePlace(event.target.value);
+    selectableItem(event.target.value);
 });
 // データを送信するボタンが押された時の処理
 formElement.addEventListener('submit', function(event) {
