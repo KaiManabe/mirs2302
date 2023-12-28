@@ -8,7 +8,7 @@ import os
 import warnings
 
 
-warnings.filterwarnings('ignore', category=pd.core.common.SettingWithCopyWarning)
+#warnings.filterwarnings('ignore', category=pd.core.common.SettingWithCopyWarning)
 
 def option_to_datetime(opt):
     strdt = opt.split("-")[-1]
