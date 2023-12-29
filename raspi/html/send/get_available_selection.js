@@ -12,8 +12,15 @@ const pickingTimeElement = document.getElementById("picking_time");
 // ページが読み込まれた時に実行する処理
 document.addEventListener("DOMContentLoaded", function(event) {
     itemTypeElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
+    var labels = ["小物", "書類", "食品（保冷）", "食品（保温）"]
+    for(let i  = 0; i < 4; i++){
+        newele = document.createElement("option");
+        newele.setAttribute("value", labels[i]);
+        newele.innerHTML = labels[i]
+        itemTypeElement.appendChild(newele);
+    }
     pickingTimeElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
-    selectableItem();
+    //selectableItem();
     selectableTime();
 });
 // ITEM_TYPEが選択された時の処理

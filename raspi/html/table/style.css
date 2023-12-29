@@ -1,0 +1,37 @@
+/* ページ全体のスタイル */
+body{
+    font-family: 'Noto Sans JP', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* ページタイトルのスタイル */
+.title{
+    font-size: 28px;
+    font-weight: bold;
+    margin: 10px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+
+.using{
+    background-color: rgb(197, 255, 228);
+}
+
+
+.moving{
+    background-color:rgb(255, 140, 188);
+}
+
+
+.reserved{
+    background-color:rgb(255, 0, 170);
+}
+
+table{
+    table-layout: fixed;
+    width: 100%;
+    overflow-x: auto;
+}
+

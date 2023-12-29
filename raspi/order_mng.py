@@ -16,6 +16,26 @@ def option_to_datetime(opt):
     minute = int(strdt.split(":")[-1])
     return datetime.datetime.combine(datetime.datetime.today(), datetime.time(hour, minute))
 
+#移動時間の見積もり 10分単位
+TIME_MARGIN = 20
+
+STATUS_LABELS = ["NOT_ACCEPTED_YET",
+                "MAIL_SENT",
+                "DENIED",
+                "ACCEPT_DENIED",
+                "ACCEPTED",
+                "MOVING_FOR_PICKUP",
+                "WAITING_FOR_PICKUP",
+                "PICKUP_TIMEOUT",
+                "PICKED_UP",
+                "MOVING_FOR_RECEIVE",
+                "WAITING_FOR_RECEIVE",
+                "RECEIVE_TIMEOUT",
+                "RECEIVED"]
+
+
+
+
 class order_manager():
     """
     オーダーを管理するクラス
@@ -74,14 +94,18 @@ class order_manager():
             該当する注文情報(DataFrame)
             ない場合には-1を返す
         """
-        self.reflesh()
+        #self.reflesh()
         if type(label) == int:
             return self.df.iloc[label]
         elif label in self.df.columns and value != None:
             try:
-                return self.df.set_index(label, drop=False).loc[value]
+                ret = self.df.set_index(label, drop=False).loc[value]
+                if len(ret.shape) == 1:
+                    return pd.DataFrame(ret).T
+                else:
+                    return ret
             except KeyError:
-                print("[WARN][order_mng.py] : order_manager.get_order()の引数に該当するオーダーは見つかりませんでした", file = sys.stderr)
+                #print("[WARN][order_mng.py] : order_manager.get_order()の引数に該当するオーダーは見つかりませんでした", file = sys.stderr)
                 return -1
         else:
             print("[ERR][order_mng.py] : order_manager.get_order()の引数が不正です", file = sys.stderr)
@@ -152,20 +176,204 @@ class order_manager():
         return ID
 
     
-    def get_next_movement(self, debug_index):
+    def get_box_usage(self):
         """
-        【未完】
-        次の移動時刻と目的地を取得する
-        
-        戻り値：
-            time: 次の出発時刻
-            place_idx: 目的地の番号
+        箱ごとに、すでに入っている予約を抽出する関数
         """
+        usage = {"小物1" : {"begin": [], "end" : []},
+                "小物2" :  {"begin": [], "end" : []},
+                "書類1" :  {"begin": [], "end" : []},
+                "書類2" :  {"begin": [], "end" : []},
+                "食品（保冷）" :  {"begin": [], "end" : []},
+                "食品（保温）" :  {"begin": [], "end" : []}}
+
+        #すべての箱について抽出する
+        for box in usage.keys():
+            df = self.get_order("ITEM_TYPE", box)
+            #なければ無視
+            if type(df) == int and df == -1:
+                continue
+            
+            
+            for i in range(len(df)):
+                #箱が埋まっていないオーダーについては除外する
+                if df["STATUS"].iloc[i] in ["DENIED", "ACCEPT_DENIED", "PICKUP_TIMEOUT", "RECEIVED"]:
+                    continue
+                
+                if pd.isna(df["PICKUP_TIME"].iloc[i]):
+                    #積み込み時刻が未定ならば今から枠を確保しておく
+                    usage[box]["begin"].append(datetime.datetime.now())
+                else:
+                    #積み込み時刻がわかっているならその時間から枠を確保する
+                    usage[box]["begin"].append(df["PICKUP_TIME"].iloc[i])
+                
+                if pd.isna(df["RECEIVE_TIME"].iloc[i]):
+                    #受け取り時刻が未定ならばめちゃ未来まで枠を確保しておく
+                    usage[box]["end"].append(datetime.datetime(year = 2050, month = 12, day = 31, hour = 23, minute = 50))
+                else:
+                    #受け取り時刻がわかっているならそれまで枠を確保しておく
+                    usage[box]["end"].append(df["RECEIVE_TIME"].iloc[i])
+                
+        return usage
         
         
+    def get_moving_schedule(self):
+        """
+        移動の予定を取得する関数
+        """
+        movements = []
         
-        return self.TIME[debug_index], debug_index
+        
+        #すべてのオーダーに対して
+        for status in STATUS_LABELS:
+            #もう移動の必要がないオーダについては除外する
+            if status in ["DENIED", "ACCEPT_DENIED", "PICKUP_TIMEOUT", "RECEIVE_TIMEOUT", "RECEIVED"]:
+                continue
+            
+            df = self.get_order("STATUS", status)
+            if type(df) == int and df == -1:
+                continue
+            
+            for i in range(len(df)):
+                #積み込み時間・場所が未定でなければ
+                if not(pd.isna(df["PICKUP_TIME"].iloc[i])):
+                    movements.append({"begin": (df["PICKUP_TIME"].iloc[i] - datetime.timedelta(minutes = TIME_MARGIN + 1)),
+                                      "end": (df["PICKUP_TIME"].iloc[i] + datetime.timedelta(minutes = TIME_MARGIN + 1))})
+                    
+                
+                #受け取り時間・場所が未定でなければ
+                if not(pd.isna(df["RECEIVE_TIME"].iloc[i])):
+                    movements.append({"begin": (df["RECEIVE_TIME"].iloc[i] - datetime.timedelta(minutes = TIME_MARGIN + 1)),
+                                      "end": (df["RECEIVE_TIME"].iloc[i] + datetime.timedelta(minutes = TIME_MARGIN + 1))})
+        
+        return movements
     
+    
+    
+    def box_decider(self, box_type:str, PICKUP_TIME:datetime.datetime = None, RECEIVE_TIME:datetime.datetime = None):
+        """
+        箱を決める関数
+        引数：
+            box_type : {"小物", "書類", "食品（保冷）", "食品（保温）"} のどれかであること
+            PICKUP_TIME : 【任意】未定でない限り指定すること
+            RECEIVE_TIME : 【任意】未定でない限り指定すること
+        使える箱がないときは-1を返す
+        """
+        #移動時間の余裕があるかチェック
+        time_isok = True
+        movements = self.get_moving_schedule()
+        if PICKUP_TIME != None:
+            for m in movements:
+                if m["begin"] <= PICKUP_TIME <= m["end"]:
+                    time_isok = False
+                    break
+        
+        if RECEIVE_TIME != None:
+            for m in movements:
+                if m["begin"] <= RECEIVE_TIME <= m["end"]:
+                    time_isok = False
+                    break
+        
+        if not(time_isok):
+            return -1
+        
+        
+        
+        #箱が開いてるかチェック
+        box_usage = self.get_box_usage()
+        
+        if PICKUP_TIME == None:
+            begin = datetime.datetime.now()
+        else:
+            begin = PICKUP_TIME
+        
+        if RECEIVE_TIME == None:
+            end = datetime.datetime(year = 2050, month = 12, day = 31, hour = 23, minute = 50)
+        else:
+            end = RECEIVE_TIME
+        
+        if begin >= end:
+            return -1
+        if end - begin <= datetime.timedelta(minutes = TIME_MARGIN):
+            return -1
+        
+        if box_type == "小物":
+            for box in ["小物1", "小物2"]:
+                available = True
+                for i in range(len(box_usage[box]["begin"])):
+                    #箱の使用時間が被っているなら無効
+                    if box_usage[box]["begin"][i] <= begin <= box_usage[box]["end"][i]\
+                    or\
+                    box_usage[box]["begin"][i] <= end <= box_usage[box]["end"][i]\
+                    or\
+                    begin <= box_usage[box]["begin"][i] <= box_usage[box]["end"][i] <= end\
+                    :
+                        available = False
+                        break
+                #有効なら使える箱のラベルを返す
+                if available:
+                    return box
+        
+        elif box_type == "書類":
+            for box in ["書類1", "書類2"]:
+                available = True
+                for i in range(len(box_usage[box]["begin"])):
+                    #箱の使用時間が被っているなら無効
+                    if box_usage[box]["begin"][i] <= begin <= box_usage[box]["end"][i]\
+                    or\
+                    box_usage[box]["begin"][i] <= end <= box_usage[box]["end"][i]\
+                    or\
+                    begin <= box_usage[box]["begin"][i] <= box_usage[box]["end"][i] <= end\
+                    :
+                        available = False
+                        break
+                #有効なら使える箱のラベルを返す
+                if available:
+                    return box
+        
+        elif box_type == "食品（保冷）":
+            box = "食品（保冷）"
+            available = True
+            for i in range(len(box_usage[box]["begin"])):
+                #箱の使用時間が被っているなら無効
+                if box_usage[box]["begin"][i] <= begin <= box_usage[box]["end"][i]\
+                or\
+                box_usage[box]["begin"][i] <= end <= box_usage[box]["end"][i]\
+                or\
+                begin <= box_usage[box]["begin"][i] <= box_usage[box]["end"][i] <= end\
+                :
+                    available = False
+                    break
+            #有効なら使える箱のラベルを返す
+            if available:
+                return box
+        
+        elif box_type == "食品（保温）":
+            box = "食品（保温）"
+            available = True
+            for i in range(len(box_usage[box]["begin"])):
+                #箱の使用時間が被っているなら無効
+                if box_usage[box]["begin"][i] <= begin <= box_usage[box]["end"][i]\
+                or\
+                box_usage[box]["begin"][i] <= end <= box_usage[box]["end"][i]\
+                or\
+                begin <= box_usage[box]["begin"][i] <= box_usage[box]["end"][i] <= end\
+                :
+                    available = False
+                    break
+            #有効なら使える箱のラベルを返す
+            if available:
+                return box
+            
+        return -1
+        
+        
+        
+        
+        
+        
+        
+                
     
 
 if __name__ == '__main__':
@@ -196,30 +404,32 @@ if __name__ == '__main__':
                 note = ""
             # "送る"の場合
             if(sys.argv[2] == 'SEND'):
-                o.new_order(
-                    ORDER_TYPE = sys.argv[2],
-                    ITEM_TYPE = sys.argv[3],
-                    ITEM_NAME = sys.argv[4],
-                    SENDER = sys.argv[5],
-                    RECEIVER = sys.argv[6],
-                    PICKUP_PLACE = sys.argv[7],
-                    PICKUP_TIME = option_to_datetime(sys.argv[8]),
-                    PICKUP_PIN = sys.argv[9],
-                    NOTE = note
-                )
+                if o.box_decider(sys.argv[3]) != -1:
+                    o.new_order(
+                        ORDER_TYPE = sys.argv[2],
+                        ITEM_TYPE = o.box_decider(sys.argv[3]),
+                        ITEM_NAME = sys.argv[4],
+                        SENDER = sys.argv[5],
+                        RECEIVER = sys.argv[6],
+                        PICKUP_PLACE = sys.argv[7],
+                        PICKUP_TIME = option_to_datetime(sys.argv[8]),
+                        PICKUP_PIN = sys.argv[9],
+                        NOTE = note
+                    )
             # "送ってもらう"の場合
             if(sys.argv[2] == 'RECEIVE'):
-                o.new_order(
-                    ORDER_TYPE = sys.argv[2],
-                    ITEM_TYPE = sys.argv[3],
-                    ITEM_NAME = sys.argv[4],
-                    SENDER = sys.argv[5],
-                    RECEIVER = sys.argv[6],
-                    REVEIVE_PLACE = sys.argv[7],
-                    RECEIVE_TIME = option_to_datetime(sys.argv[8]),
-                    RECEIVE_PIN = sys.argv[9],
-                    NOTE = note
-                )
+                if o.box_decider(sys.argv[3]) != -1:
+                    o.new_order(
+                        ORDER_TYPE = sys.argv[2],
+                        ITEM_TYPE = o.box_decider(sys.argv[3]),
+                        ITEM_NAME = sys.argv[4],
+                        SENDER = sys.argv[5],
+                        RECEIVER = sys.argv[6],
+                        REVEIVE_PLACE = sys.argv[7],
+                        RECEIVE_TIME = option_to_datetime(sys.argv[8]),
+                        RECEIVE_PIN = sys.argv[9],
+                        NOTE = note
+                    )
                 
         # 指定のIDのオーダー情報(DataFrame)を入手する
         if(sys.argv[1] == 'get_order'):

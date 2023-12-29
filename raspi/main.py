@@ -82,9 +82,9 @@ if __name__ == "__main__":
 #状態    MAIL_SENT
 #*****************************************************************************************************        
             elif status == "MAIL_SENT":
-#条件文↓
+#条件文                     ↓
                 if """メールのレスポンスがあったか？""":
-#条件文↓
+#条件文                     ↓
                     if """承認されたか？""":
                         order_manager.modify_order(id, "STAUTS", "ACCEPTED")
                         order_manager.modify_order(id, "ACCEPTED_TIME", datetime.datetime.now())
@@ -93,7 +93,7 @@ if __name__ == "__main__":
                         order_manager.modify_order(id, "STAUTS", "DENIED")
 #拒否されましたメール送信
                 else:#レスポンスなし
-#条件文↓
+#条件文                     ↓
                     if """タイムアウトしてるか？""":
                         order_manager.modify_order(id, "STAUTS", "ACCEPT_TIMEOUT")
 #タイムアウトしたので拒否しますメール送信
@@ -146,7 +146,7 @@ if __name__ == "__main__":
 #状態    WAITING_FOR_PICKUP
 #***************************************************************************************************** 
             elif status == "WAITING_FOR_PICKUP":
-#条件文↓
+#条件文                     ↓
                 if """ユーザきたか？""":
                     order_manager.modify_order(id, "STAUTS", "PICKED_UP")
                 else:#きてない
@@ -204,7 +204,7 @@ if __name__ == "__main__":
 #状態    WAITING_FOR_RECEIVE
 #***************************************************************************************************** 
             elif status == "WAITING_FOR_RECEIVE":
-#条件文↓
+#条件文                     ↓
                 if """ユーザきたか？""":
                     order_manager.modify_order(id, "STAUTS", "RECEIVED")
                 else:#きてない
