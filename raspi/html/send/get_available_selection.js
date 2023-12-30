@@ -46,12 +46,23 @@ function submitProcessing(){
     var couplingIds = [['client_address', 'client_address_type'], ['target_address', 'target_address_type']]; // 結合する要素のID
     var sendData = readFormData(formIds, couplingIds);
 
+    // formデータを送信
+    var result = sendDataToPhp(sendData);
+
+    if (result == 0){
+        window.alert("依頼を承りました\n依頼相手が依頼を承認するまでお待ちください。");
+    }else{
+        window.alert("エラーが発生しました。\nもう一度お試しください。");
+    }
+
+    
+
+
+    /*   2023-12-31  alertに変更
+
     // 送信中の画面を表示（なぜかできねえ！！！！！！！！！！！！！！）
     var formElement = document.getElementById("form");
     formElement.innerHTML = "<div id='sending'>取引情報を送信中です...</div>";
-
-    // formデータを送信
-    var result = sendDataToPhp(sendData);
 
     // 送信結果の画面を表示
     var sendingElement = document.getElementById("sending");
@@ -63,6 +74,7 @@ function submitProcessing(){
     else{
         sendingElement.innerHTML = "<div id='error'>ERROR : 取引を承れませんでした</div>";
     }
+    */
 }
 
 /*
