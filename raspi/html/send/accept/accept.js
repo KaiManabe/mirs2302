@@ -10,50 +10,36 @@ function onLoad(){
     var url = "get_order_data.php"; //リクエスト先のphpのurl
     request.open("GET", url + "?id=" + encodeURIComponent(JSON.stringify(order_id)), false);
     request.send();
-    var dataList = request.responseText.split(/\s+/); //連想配列をコンマで区切った普通の配列に変換
 
-    /*
-    依頼者の設定した時間に基づき選択できる時間を制限する処理↓
-    */
-    var order_time = dataList.slice(22,23);
-    var timelist_available; //制限後の選択可能な時間
-    var timelist_base = { //最初のとりあえずの時間
-        1:"15:00-15:10",
-        2:"15:10-15:20",
-        3:"15:20-15:30",
-        4:"15:30-15:40",
-        5:"15:40-15:50",
-        6:"16:00-16:10",
-        7:"16:10-16:20",
-        8:"16:20-16:30"
+    var order_info = JSON.parse(request.responseText);
+
+    var sender_ele = document.querySelectorAll(".sender");
+    var item_name_ele = document.querySelectorAll(".item_name");
+    sender_ele.forEach(function(ele){
+        ele.innerHTML = order_info.SENDER;
+    })
+    item_name_ele.forEach(function(ele){
+        ele.innerHTML = order_info.ITEM_NAME;
+    })
+    if ("NOTE" in order_info){
+        var note_ele = document.querySelectorAll(".note");
+        note_ele.forEach(function(ele){
+            ele.innerHTML = order_info.NOTE;
+        })
     }
 
-    var limit_key;
-    for(let key in timelist_base){
-        if(timelist_base[key] == order_time){
-            limit_time = timelist_base[key-1];
-            limit_key = key-1;
-            break;
-        }
-    }
-    timelist_available = Object.values(timelist_base);
-    timelist_available.splice(limit_key, Object.keys(timelist_base).length - limit_key);
 
-    //ページの最初の文を更新する処理↓
-    var mail = dataList.slice(16,17); //dataList配列のうち、16番目の要素をmailに代入
-    var thing = dataList.slice(7,8); //dataList配列のうち、8番目の要素をthingに代入
-    //var ans = readFormData('yes','no','picking_time', 'picking_place');
-    //var yes = ans.slice(0,1);
-    document.querySelector('#text').textContent = `${mail}さんから${thing}を${limit_time}までに集荷するように依頼が来ています`; //テキスト差し替え
+    var form_ele = document.querySelector("#form_ele");
+    var id_ele = document.createElement("input");
+    id_ele.setAttribute("checked", "checked");
+    id_ele.setAttribute("style", "display:none;");
+    id_ele.setAttribute("name", "id");
+    id_ele.setAttribute("value", order_id);
+    
+    form_ele.appendChild(id_ele);
 
-    //既存の選択肢にない選択可能な集荷時間を追加
-    timelist_available.forEach(function(time) {
-        var select = document.getElementById("picking_time");
-        var option = document.createElement("option");
-        option.value = time;
-        option.text = time;
-        select.appendChild(option);
-    });
+    selectableTime();
+
 }
 
 /*
@@ -109,52 +95,60 @@ function selectableTime(place) {
     .forEach(option => selectElement.appendChild(option));
 }
 
+
 /*
-時間が選択された時に場所を選択する関数
+選択可能な時間を制限する関数
 
 引数(なしでもいける)：
-    時間: str
+    ITEM_TYPE: str
 
-***クライアントが集荷時間を選択した時に実行するやつ***
+***クライアントがITEM_TYPEを選択した時に実行するやつ***
 */
-function selectablePlace(time) {
-    // httpリクエストを送信して選択可能な集荷場所を取得
+function selectableTime() {
+    let current_url = new URL(window.location.href);
+    let params = current_url.searchParams;
+    var order_id = params.get('id');
+    // httpリクエストを送信して選択可能な時間を取得
     var xhr = new XMLHttpRequest();
     var url = "get_available_selection.php"; // httpリクエスト先
-    xhr.open("GET", url + "?time=" + encodeURIComponent(JSON.stringify(time)), false); // 同期通信GETメソッド
+    xhr.open("GET", url + "?id=" + encodeURIComponent(order_id), false); // 同期通信GETメソッド
     xhr.send();
-    var placeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
-    // 集荷場所の要素を取得
-    var selectElement = document.getElementById("picking_place");
+    var timeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
     // 既存の選択肢の配列を作成
-    var existingOptions = Array.from(selectElement.options).map(option => option.value);
+    var existingOptions = Array.from(pickingTimeElement.options).map(option => option.value);
 
-    // 既存の選択肢にない選択可能な集荷場所を追加
-    placeList.forEach(function(place) {
-        if (!existingOptions.includes(place)) {
+    // 既存の選択肢にない選択可能な集荷時間を追加
+    timeList.forEach(function(time) {
+        if (!existingOptions.includes(time)) {
             var option = document.createElement("option");
-            option.value = place;
-            option.text = place;
-            selectElement.appendChild(option);
+            option.value = time;
+            option.text = time;
+            pickingTimeElement.appendChild(option);
         }
     });
-    // 既存の選択肢にある選択可能な集荷場所ではないものを削除
+    // 既存の選択肢にある選択可能な集荷時間ではないものを削除
     existingOptions.forEach(function(optionValue) {
-        if (!placeList.includes(optionValue) && optionValue != 'init') {
-            selectElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
+        if (!timeList.includes(optionValue) && optionValue != 'init') {
+            pickingTimeElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
         }
     });
-    // 集荷場所の選択肢をソート
-    const sortRule = ['共通棟', 'D科棟', 'E科棟', 'S科棟', 'M科棟', 'C科棟']; // 集荷場のソート規則（要素の早い順にソートされる）
-    Array.from(selectElement.options)
+    // 集荷時間の選択肢をソート
+    Array.from(pickingTimeElement.options)
     .filter(option => option.value !== 'init')
-    .sort(function(a, b) {
-        return sortRule.indexOf(a.value) - sortRule.indexOf(b.value);
+    .sort((a, b) => {
+        if (a.value < b.value) {
+            return -1;
+        }
+        if (a.value > b.value) {
+            return 1;
+        }
+        return 0;
     })
-    .forEach(option => selectElement.appendChild(option));
+    .forEach(option => pickingTimeElement.appendChild(option));
 }
+
 
 
 /*
@@ -162,26 +156,30 @@ function selectablePlace(time) {
 */
 
 function chbox(obj){
-    let that = obj;
-    if (document.getElementById(that.id).checked == true) {
-        let boxes = document.querySelectorAll('input[type="checkbox"]');
-
-        for (let i = 0; i < boxes.length; i++) {
-            boxes[i].checked = false;
-        }
-        document.getElementById(that.id).checked = true;
+    var form_label = document.querySelector("#input_form");
+    var forms = document.querySelectorAll("#input_form select, #input_form input");
+    var label = document.querySelector("#checkbox_label");
+    if(obj.checked){
+        forms.forEach(function(ele){
+            ele.removeAttribute("disabled");
+        })
+        form_label.classList.remove("unchosen");
+        form_label.classList.add("chosen");
+        label.classList.add("checked_label");
+        label.classList.remove("unchecked_label");
+        obj.value = "accept";
+    }else{
+        forms.forEach(function(ele){
+            ele.setAttribute("disabled","disabled");
+        })
+        form_label.classList.add("unchosen");
+        form_label.classList.remove("chosen");
+        label.classList.remove("checked_label");
+        label.classList.add("unchecked_label");
+        obj.value = "denied";
     }
 }
 
-function view(){
-    var target = document.getElementById('target')
-	target.classList.replace('hide' , 'view');
-}
-function notview(){
-    var target = document.getElementById('target')
-	target.classList.replace('view' , 'hide');
-    
-}
 
 /*
 formデータ読み込む関数
@@ -198,6 +196,12 @@ function readFormData(formIds) {
     formIds.forEach(function (id) {
         formData[id] = document.getElementById(id).value;
     });
+
+    let current_url = new URL(window.location.href);
+    let params = current_url.searchParams;
+    var order_id = params.get('id'); //order_idを取得
+
+    formData["id"] = order_id;
     return formData;
 }
 
@@ -206,16 +210,12 @@ function readFormData(formIds) {
 */
 function submitProcessing(){
     // formデータの読み込み
-    var formIds = ['yes','no','picking_time', 'picking_place']; // formのID
+    var formIds = ['accept', 'receive_pincode','receive_time', 'receive_place']; // formのID
     var sendData = readFormData(formIds);
-
-    // 送信中の画面を表示（なぜかできねえ！！！！！！！！！！！！！！）
-    var formElement = document.getElementById("form");
-    formElement.innerHTML = "<div id='sending'>取引情報を送信中です...</div>";
 
     // formデータを送信
     var result = sendDataToPhp(sendData);
-
+    return result
     // 送信結果の画面を表示
     var sendingElement = document.getElementById("sending");
     // 正常終了
@@ -248,23 +248,17 @@ function sendDataToPhp(sendData) {
 
 //イベントリスナー
 const formElement = document.getElementById("form");
-const pickingPlaceElement = document.getElementById("picking_place");
-const pickingTimeElement = document.getElementById("picking_time");
+const pickingTimeElement = document.getElementById("receive_time");
 
 // ページが読み込まれた時に実行する処理
 document.addEventListener("DOMContentLoaded", function(event) {
-    pickingPlaceElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
     pickingTimeElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
     onLoad();
 });
 
-// 集荷場所が選択された時の処理
-pickingPlaceElement.addEventListener('change', function(event) {
-    selectableTime(event.target.value);
-});
 // 集荷時間が選択された時の処理
 pickingTimeElement.addEventListener('change', function(event) {
-    selectablePlace(event.target.value);
+    selectableTime();
 });
 // データを送信するボタンが押された時の処理
 formElement.addEventListener('submit', function(event) {

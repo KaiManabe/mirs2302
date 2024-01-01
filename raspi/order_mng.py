@@ -437,12 +437,24 @@ if __name__ == '__main__':
                 "ID",
                 sys.argv[2]
             )
-            print(result)
+            out = f"\"SENDER\":\"{result.iloc[0]['SENDER']}\",\
+                   \"ITEM_NAME\":\"{result.iloc[0]['ITEM_NAME']}\""
+            if not(pd.isna(result.iloc[0]['NOTE'])):
+                out += f",\"NOTE\":\"{result.iloc[0]['NOTE']}\""
+            
+            print("{" + out.replace(" ","") + "}", end = "")
 
         #承認されたデータでcsvを更新する
         if(sys.argv[1] == 'modify_order'):
-            result = o.modify_order(
-                "ID",
-                sys.arg[2],
-                sys.arg[3]
-            )
+            if "TIME" in sys.argv[3]:
+                result = o.modify_order(
+                    ID = sys.argv[2],
+                    key = sys.argv[3],
+                    value = option_to_datetime(sys.argv[4])
+                    )
+            else:
+                result = o.modify_order(
+                    ID = sys.argv[2],
+                    key = sys.argv[3],
+                    value = sys.argv[4]
+                    )

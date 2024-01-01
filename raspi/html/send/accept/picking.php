@@ -1,23 +1,32 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $pythonScript = "/home/pi/git/mirs2302/raspi/order_mng.py";
-    $orderData = json_decode(file_get_contents('php://input'), true); // 受け取ったデータをJSONから連想配列に変換
+//var_dump($_POST);
+$ID = $_POST["id"];
 
-    // 注文情報を要素ごと取得
-    $ORDER_TYPE = 'SEND';
-    $SENDER = $orderData['client_address'];
-    $RECEIVER = $orderData['target_address'];
-    $ITEM_TYPE = $orderData['item_type'];
-    $ITEM_NAME = $orderData['item_name'];
-    $PICKING_PLACE = $orderData['picking_place'];
-    $PICKING_TIME = $orderData['picking_time'];
-    $PICKING_PINCODE = $orderData['picking_pincode'];
-    $NOTE = $orderData['note'];
+if(isset($_POST["accept"]) && $_POST["accept"] == "accept"){
+    if(isset($_POST["receive_pincode"])){
+        $cmd = "sudo -u pi python3 /home/pi/git/mirs2302/raspi/order_mng.py modify_order " . $ID . " RECEIVE_PIN " . $_POST['receive_pincode'];
+        $result = shell_exec($cmd);
+    }
+    if(isset($_POST["receive_time"])){
+        $cmd = "sudo -u pi python3 /home/pi/git/mirs2302/raspi/order_mng.py modify_order " . $ID . " RECEIVE_TIME " . $_POST['receive_time'];
+        $result = shell_exec($cmd);
+    }
+    if(isset($_POST["receive_place"])){
+        $cmd = "sudo -u pi python3 /home/pi/git/mirs2302/raspi/order_mng.py modify_order " . $ID . " RECEIVE_PLACE " . $_POST['receive_place'];
+        $result = shell_exec($cmd);
+    }
 
-    // 注文情報を書き込み
-    $command = "sudo -u pi python3 $pythonScript new_order '$ORDER_TYPE' '$ITEM_TYPE' '$ITEM_NAME' '$SENDER' '$RECEIVER' '$PICKING_PLACE' '$PICKING_TIME' '$PICKING_PINCODE' '$NOTE'";
-    $result = exec($command, $output, $return_var);
 
-    echo $return_var; // 正常終了:0 異常終了:0以外
+    $cmd = "sudo -u pi python3 /home/pi/git/mirs2302/raspi/order_mng.py modify_order " . $ID . " STATUS ACCEPTED";
+    $result = shell_exec($cmd);
+
+
+}else{
+    $cmd = "sudo -u pi python3 /home/pi/git/mirs2302/raspi/order_mng.py modify_order $ID STATUS DENIED";
+    $result = shell_exec($cmd);
 }
+
+header("Location: ../../main");
+exit(); 
+
 ?>
