@@ -6,12 +6,19 @@ body{
 }
 
 /* ページタイトルのスタイル */
-.title{
-    font-size: 28px;
+.title {
+    display: flex;
+    font-size: 4vw;
     font-weight: bold;
     margin: 10px;
-    text-align: center;
+    align-items: center;
+    justify-content: center;
     white-space: nowrap;
+}
+.title img {
+    width: 10%;
+    height: auto;
+    margin-right: 20px;
 }
 
 /* ナビゲーションメニューのスタイル */
@@ -32,7 +39,7 @@ nav li{
     list-style: none;
     display: inline-block;
     width: 24%;
-    min-width: 150px;
+    min-width: 130px;
 }
 nav li:not(:last-child){
     border-right:2px solid #ddd;
@@ -56,26 +63,23 @@ nav .menu.selected:not(:active){
 }
 
 /* iframeに関するスタイル */
-iframe{
-    margin: 0 50px;
-    position: absolute;
-    top: 0;
-    align-content: center;
-    width: 100%;
-    height: 100%;
-    border: none;
-}
 .iframe-container{
     position: relative;
     overflow: hidden;
     padding-top: 100%;
 }
-.view{
+iframe{
+    margin: 0 50px;
+    position: absolute;
+    top: 0;
+    align-content: center;
+    width: 100%; /* スタイルのフレームがはみ出す問題はこいつ */
+    height: 100%;
+    border: none;
+}
+iframe.view{
 	visibility : visible;
 }
-.hide{
+iframe.hide{
 	display : none;
-}
-.container{
-    overflow-x: hidden;
 }

@@ -13,13 +13,16 @@
 
 <body>
     <div class="container">
-        <div class="title">MIRS2302 TENQ Project Demo Page</div>
+        <div class="title">
+            <img src="logo.png" alt="TENQロゴ" id="title_logo" onclick="select_view_html('iframe_about')">
+            MIRS2302 TENQ Project Demo Page
+        </div>
         <nav>
             <ul>
-                <li onclick = "select_view_html('iframe_about')" class="contact"><div class="menu selected">TENQとは？</div></li>
-                <li onclick = "select_view_html('iframe_send')" class="contact"><div class="menu">荷物を送る</div></li>
-                <li onclick = "select_view_html('iframe_receive')" class="contact"><div class="menu">荷物を受け取る</div></li>
-                <li onclick = "select_view_html('iframe_order')" class="contact"><div class="menu">注文する</div></li>
+                <li onclick = "select_view_html('iframe_about')"><div class="menu selected" id="about">TENQとは？</div></li>
+                <li onclick = "select_view_html('iframe_send')"><div class="menu">荷物を送る</div></li>
+                <li onclick = "select_view_html('iframe_receive')"><div class="menu">荷物を受け取る</div></li>
+                <li onclick = "select_view_html('iframe_order')"><div class="menu">商品を注文する</div></li>
             </ul>
         </nav>
         <div class="iframe-container">
