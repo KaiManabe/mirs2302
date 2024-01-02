@@ -1,0 +1,11 @@
+.keypad_num{
+    text-align : center;
+    font-size:5vw;
+    width: 33%;
+    cursor: pointer;
+}
+
+#number_display{
+    font-size: 4vw;
+    text-align: center;
+}

@@ -27,3 +27,28 @@ body{
     text-align:center;
     color: red;
 }
+
+.hidden{
+    display: none;
+}
+
+
+.modal{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5);
+    overflow: auto;
+    transition: .3s ease-out;
+    z-index: 100;
+}
+
+.modal_body {
+    background: rgb(255, 255, 255);
+    z-index: 101;
+    text-align: center;
+  }
+

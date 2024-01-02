@@ -10,6 +10,8 @@ import config
 import datetime
 import time
 import sys
+import robot_state_publisher as rsp
+
 
 #デバッグ用
 def set_goal():

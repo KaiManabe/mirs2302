@@ -66,7 +66,7 @@ class order_manager():
         【自動実行するため呼び出し不要】
         変更に応じてcsvを更新する関数
         """
-        self.df = pd.read_csv(self.file_path, parse_dates=["RECEIPT_TIME", "ACCEPTED_TIME", "PICKUP_TIME", "RECEIVE_TIME"])
+        self.df = pd.read_csv(self.file_path, parse_dates=["RECEIPT_TIME", "ACCEPTED_TIME", "PICKUP_TIME", "RECEIVE_TIME"] )
         self.read = datetime.datetime.now()
     
     

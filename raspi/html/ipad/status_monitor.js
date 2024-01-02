@@ -11,6 +11,7 @@ function read_status(){
 
 function monitor(){
     robot_status = read_status();
+    iframe_ele.contentWindow.robot_status = robot_status;
     if (robot_status["ROBOT_STATUS"] !== current_status){
         current_status = robot_status["ROBOT_STATUS"];
         switch (current_status){
