@@ -1,0 +1,29 @@
+body{
+    font-family: 'Zen Kaku Gothic Antique';
+}
+
+
+.title{
+    display: inline-block; /* テキストを１行に抑える */
+    width: 100%; /* 親要素内に収まるようにする */
+    white-space: nowrap; /* テキストを１行に抑える */
+    margin : 50px auto;
+    text-align:center;
+}
+
+.description{
+    display: inline-block; /* テキストを１行に抑える */
+    width: 100%; /* 親要素内に収まるようにする */
+    white-space: nowrap; /* テキストを１行に抑える */
+    margin : 50px auto;
+    text-align:center;
+}
+
+.warn{
+    display: inline-block; /* テキストを１行に抑える */
+    width: 100%; /* 親要素内に収まるようにする */
+    white-space: nowrap; /* テキストを１行に抑える */
+    margin : 50px auto;
+    text-align:center;
+    color: red;
+}
