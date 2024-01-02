@@ -117,6 +117,9 @@ if __name__ == "__main__":
                         if ros_controller.status == "ACTIVE":
                             print(f"[INFO][main.py][ID:{id}] : ロボットが走行中です...")
                             order_manager.modify_order(id, "STAUTS", "MOVING_FOR_PICKUP")
+                            rsp.update("ROBOT_STATUS", "MOVING")
+                            rsp.update("GOAL", current_order['PICKUP_PLACE'])
+                            rsp.update("DOOR_NUM", current_order['ITEM_TYPE'])
 #今向かってますてきなメールあれば◎  やらないなら無視
                             break
                         else:
@@ -133,6 +136,7 @@ if __name__ == "__main__":
                 if ros_controller.stauts == "SUCCEEDED":
                     print(f"[INFO][main.py][ID:{id}]  : ロボットが{current_order['PICKUP_PLACE']}に到着")
                     order_manager.modify_order(id, "STAUTS", "WAITING_FOR_PICKUP")
+                    rsp.update("ROBOT_STATUS", "WAITING_FOR_PICKUP")
 #到着しましたてきなメールあれば◎  やらないなら無視
                 else:
                     if ros_controller.stauts == "ACTIVE":#まだ動いているなら
@@ -173,6 +177,9 @@ if __name__ == "__main__":
                         if ros_controller.status == "ACTIVE":
                             print(f"[INFO][main.py][ID:{id}] : ロボットが走行中です...")
                             order_manager.modify_order(id, "STAUTS", "MOVING_FOR_PICKUP")
+                            rsp.update("ROBOT_STATUS", "MOVING")
+                            rsp.update("GOAL", current_order['RECEIVE_PLACE'])
+                            rsp.update("DOOR_NUM", current_order['ITEM_TYPE'])
 #今向かってますてきなメールあれば◎  やらないなら無視
                             break
                         else:
@@ -190,6 +197,7 @@ if __name__ == "__main__":
                 if ros_controller.stauts == "SUCCEEDED":
                     print(f"[INFO][main.py][ID:{id}]  : ロボットが{current_order['RECEIVE_PLACE']}に到着")
                     order_manager.modify_order(id, "STAUTS", "WAITING_FOR_RECEIVE")
+                    rsp.update("ROBOT_STATUS", "WAITING_FOR_RECEIVE")
 #到着しましたてきなメールあれば◎  やらないなら無視
                 else:
                     if ros_controller.stauts == "ACTIVE":#まだ動いているなら

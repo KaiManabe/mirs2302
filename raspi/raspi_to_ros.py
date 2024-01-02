@@ -54,17 +54,3 @@ class raspi_to_ros():
             time.sleep(1)
     
     
-    def movement_monitor(self):
-        while(1):
-            time.sleep(0.2)
-            if self.status == "ACTIVE":
-                break
-        print(f"[INFO][raspi_to_ros] : ロボットが走行中です... ROSステータス : {self.status}")
-        while(1):
-            time.sleep(0.2)
-            if self.status == "SUCCEEDED":
-                print(f"[INFO][raspi_to_ros] : 目的地{idx}に到着しました ROSステータス : {self.status}")
-                break
-            elif self.status != "ACTIVE":
-                print(f"[INFO][raspi_to_ros] : 目的地{idx}に到着できませんでした ROSステータス : {self.status}")
-                sys.exit(1)
