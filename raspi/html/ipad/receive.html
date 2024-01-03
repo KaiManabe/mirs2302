@@ -1,23 +1,150 @@
 <!DOCTYPE html>
 <head>
-    <link rel="stylesheet" type="text/css" href="receive.css">
-    <title>receive</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+Antique:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="keypad.css">
+    <link rel="stylesheet" type="text/css" href="button.css">
+    <link rel="stylesheet" type="text/css" href="loading_animation.css">
 </head>
 <body>
-    <h1>xxさんからの荷物</h1>
-    <form method="GET">
-        <div>
-            <label for="pincode">設定したPINコード</label>
-            <input name="pincode" id="pincode"/>
+    <!-- モーダル背景 -->
+    <div id = "auth_modal" class = "modal hidden">
+        <div style = "width: 70%; height: 15%"></div>
+
+        <!-- 認証中モーダル -->
+        <div style = "margin-left: 15%; width: 70%; height: 60%" class = "modal_body hidden" id = "auth_prog">
+            <div style = "height: 12vh;"></div>
+            <p style = "font-size: 4vw;">認証しています...</p>
+            <div class="load_animation">
+                <div class="pulse-container">  
+                  <div class="pulse-bubble pulse-bubble-1"></div>
+                  <div class="pulse-bubble pulse-bubble-2"></div>
+                  <div class="pulse-bubble pulse-bubble-3"></div>
+                </div>
+            </div>
         </div>
-    </form>
-    <br>
-    <button onclick="check()">認証する</button>
 
-    <div class="hide">
-        <h1>品物：xxをo収納部から取り出してください</h1>
-        <button onclick="key()">取り出した</button>
+
+        <!-- 認証失敗モーダル -->
+        <div style = "margin-left: 15%; width: 70%; height: 60%" class = "modal_body" id = "auth_failed">
+            <div style = "height: 7vh;"></div>
+            <p style = "font-size: 4vw; color:red;">認証に失敗</p>
+            <p style = "font-size: 2vw;">正しいPINコードを入力してください。</p>
+            <p class = "button" style = "width:50%; display: inline-block;" onclick = "close_modal();"> 閉じる </p>
+        </div>
+
+
+        <!-- ドアあいてるモーダル -->
+        <div style = "margin-left: 15%; width: 70%; height: 60%" class = "modal_body" id = "door_failed">
+            <div style = "height: 7vh;"></div>
+            <p style = "font-size: 4vw; color:red;">ドアが空いています</p>
+            <p style = "font-size: 2vw;">ドアを閉めてください。</p>
+            <p class = "button" style = "width:50%; display: inline-block;" onclick = "door_closed();"> 閉めた </p>
+        </div>
+
+
+        <!-- 認証成功モーダル -->
+        <div style = "margin-left: 15%; width: 70%; height: 60%" class = "modal_body" id = "auth_success">
+            <div style = "height: 1vh;"></div>
+            <p style = "font-size: 3vw;">認証に成功</p>
+            <p style = "font-size: 3vw;"><span id = "door_number"></span>の扉から</p>
+            <p style = "font-size: 3vw;">荷物を取り出して扉を閉めてください。</p>
+            <p class = "button" style = "width:50%; display: inline-block;" onclick = "door_closed();"> 閉めた </p>
+        </div>
+
+
+        <!-- エラー確認モーダル -->
+        <div style = "margin-left: 15%; width: 70%; height: 60%" class = "modal_body" id = "error">
+            <div style = "height: 3vh;"></div>
+            <p style = "font-size: 3.5vw; color:red;">サーバとの通信中にエラーが発生しました</p>
+            <p style = "font-size: 2vw;">お手数おかけしますが、もう一度お試しください。</p>
+            <p class = "button" style = "width:50%; display: inline-block;" onclick = "close_modal();"> 閉じる </p>
+        </div>
+        
+
+        <!-- 入れ忘れモーダル -->
+        <div style = "margin-left: 15%; width: 70%; height: 60%" class = "modal_body" id = "confirm_confirm">
+            <div style = "height: 3vh;"></div>
+            <p style = "font-size: 4vw; color:red;">取り忘れはありませんか？</p>
+            <p style = "font-size: 2vw;">受け取りを確定する場合は、ボタンを押してください。</p>
+            <p class = "button" style = "margin-right: 30px; width:25%; display: inline-block;" onclick = "close_modal();"> もどる </p>
+            <p class = "button" style = "width:25%; display: inline-block;" onclick = "confirm();"> 受け取った </p>
+        </div>
+
     </div>
+    <div style = "width:99vw;">
+       <p class = "title">荷物を受け取ってください</p> 
 
-    <script type = "text/javascript" src="pickup.js"></script>    
+
+       <table style = "width:100%;">
+        <tr>
+            <td style = "width:45%;">
+                <table style = "width: 100%" border = "1">
+                    <tr style = "height: 10vh;">
+                        <td id = "number_display" style = "width: 100%"></td>
+                    </tr>
+                    <tr>
+                        <td style = "width: 100%">
+                            <table class = "keypad" style = "width: 100%">
+                                <tr>
+                                    <td id = "7" onclick = "keypad_pressed(this);" class = "keypad_num">7</td>
+                                    <td id = "8" onclick = "keypad_pressed(this);" class = "keypad_num">8</td>
+                                    <td id = "9" onclick = "keypad_pressed(this);" class = "keypad_num">9</td>
+                                </tr>
+                                <tr>
+                                    <td id = "4" onclick = "keypad_pressed(this);" class = "keypad_num">4</td>
+                                    <td id = "5" onclick = "keypad_pressed(this);" class = "keypad_num">5</td>
+                                    <td id = "6" onclick = "keypad_pressed(this);" class = "keypad_num">6</td>
+                                </tr>
+                                <tr>
+                                    <td id = "1" onclick = "keypad_pressed(this);" class = "keypad_num">1</td>
+                                    <td id = "2" onclick = "keypad_pressed(this);" class = "keypad_num">2</td>
+                                    <td id = "3" onclick = "keypad_pressed(this);" class = "keypad_num">3</td>
+                                </tr>
+                                <tr>
+                                    <td id = "0" onclick = "keypad_pressed(this);" class = "keypad_num">0</td>
+                                    <td colspan = "2" id = "clear" onclick = "keypad_clear(this);" class = "keypad_num">Clear</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                   </table>
+            </td>
+
+            <td id = "margin" style = "width:10%;"></td>
+
+            <td style = "width:45%;">
+                <table style = "width: 100%;">
+                    <tr style = "height: 5vh;">
+                        <td style = "width: 100%;">
+                            <p style = "font-size: 1.5vw;">１．手配時に設定したPINコードを入力し、認証してください</p>
+                        </td>
+                    </tr>
+                    <tr style = "height: 15vh;">
+                        <td style = "width: 100%" id = "picked_button"><p class = "button" onclick = "auth_button_pressed();">認証する</p></td>
+                    </tr>
+                    <tr style = "height: 3vh;"><td></td></tr>
+                    <tr style = "height: 5vh;" class = "confirm_button">
+                        <td style = "width: 100%;">
+                            <p style = "font-size: 1.5vw;">２．荷物を取り出したら、ボタンを押して受け取りを完了してください</p>
+                            <p style = "font-size: 1vw;"> 取り忘れた荷物がある場合は、もう一度 [認証する] ボタンを押してください</p>
+                        </td>
+                    </tr>
+                    <tr style = "height: 15vh;" class = "confirm_button">
+                        <td style = "width: 100%" id = "picked_button"><p class = "button" onclick = "open_modal('confirm_confirm');">受け取った</p></td>
+                    </tr>
+                   </table>
+            </td>
+        </tr>
+       
+       
+    </div>
+    
+    <script type = "text/javascript" src="font-size.js"></script>
+    <script type = "text/javascript" src="keypad.js"></script>
+    <script type = "text/javascript" src="auth.js"></script>
 </body>

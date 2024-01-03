@@ -6,6 +6,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+Antique:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="button.css">
     <title>send_acceptform</title>
 </head>
 <body>
@@ -26,7 +27,7 @@
     </table>
     <br><br>
     <form method = "POST" action = "picking.php" id = "form_ele">
-        <input onclick="chbox(this);" type="checkbox" name="accept" id="accept" value="accept"/>
+        <input onclick="chbox(this);" type="checkbox" name="accept" id="accept" value="denied"/>
         <label class = "unchecked_label" for="accept" id="checkbox_label"><span id = "yes">受け取ります</span> | <span id = "no">受け取りません</span></label>
 
         <table id = "input_form" class = "unchosen">
@@ -61,11 +62,12 @@
                     <label for="receive_pincode">受け取る際のPINコード</label>
                 </th>
                 <td>
-                    <input disabled = "disabled" type="password" name="receive_pincode" id="receive_pincode"/><br>
+                    <input disabled = "disabled" type="password" name="receive_pincode" id="receive_pincode" required /><br>
                 </td>
             </tr>
         </table>
-        <input type="submit" value="送信">
+        <br>
+        <input type = "button" value = "送信する" class = "button" id = "submit_button">
     </form>
 
     <script type="text/javascript" src="accept.js"></script>

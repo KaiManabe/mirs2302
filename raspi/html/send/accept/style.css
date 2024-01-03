@@ -2,6 +2,14 @@ body{
     font-family: 'Zen Kaku Gothic Antique';
 }
 
+select{
+    font-family: 'Zen Kaku Gothic Antique';
+}
+
+input{
+    font-family: 'Zen Kaku Gothic Antique';
+}
+
 .chosen{
     color:black;
 }
