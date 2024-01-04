@@ -1,6 +1,7 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import order_mng as om
 
 # 承認メール送信用関数
 def send_email(sender_email, app_password, receiver_email, subject, body):
@@ -27,132 +28,129 @@ def send_email(sender_email, app_password, receiver_email, subject, body):
 
         # メールの送信
         server.sendmail(sender_email, receiver_email, message.as_string())
-
-def approval(order_id, mail, order_type):
-    """
-    承認メールを送信する関数
-    引数：
-        依頼のID,被依頼者のメールアドレス,依頼の種類,依頼物
-
-    戻り値：
-        なし
-    """
-    sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
-    app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
-    receiver_email = mail #送信先のメールアドレス
-    subject = "学内配達ロボットTENQ-依頼が来ています"
-
-    approval_link = 'http://172.25.19.2/raspi/html/${order_type}/accept/index.html?id=${order_id}'
-    body = f"""
-    ※このメールは自動で送信されています。
-    D科4年のプロジェクト,「学内配達TENQ」です。
-
-    以下のリンクからメールの承認を行なってください。
-    
-    {approval_link}
-    """
-    send_email(sender_email, app_password, receiver_email, subject, body)
-
-def denied(order_mail, order_type, ordered_mail, item_type):
-    """
-    依頼が拒否されたというメールを送信する関数
-    引数：
-        依頼者のメールアドレス,依頼の種類,被依頼者のメールアドレス,依頼物
-    戻り値：
-        なし
-    """
-    sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
-    app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
-    receiver_email = order_mail
-    subject = "学内配達ロボットTENQ-依頼が非承認されました"
-
-    body = f"""
-    ※このメールは自動で送信されています。
-    D科4年のプロジェクト,  「学内配達ロボットTENQ」です。
-
-    お相手の承認をとることができなかったため、以下の依頼はキャンセルされます。
-    再度依頼をする際は、お相手のメールアドレスに間違いが無いことをご確認ください。
-
-    <依頼内容>
-    依頼の種類：${order_type}
-    相手：${ordered_mail}
-    商品：${item_type}
-    """
-
-    send_email(sender_email, app_password, receiver_email, subject, body)
-
-def warning(warn_type: str, module: str = None, door: str = None):
-    """
-    異常検知メールを送信する関数
-
-    引数：
-        異常の種類、モジュール番号、扉番号
-        異常の種類 "module":モジュール持ち去り "door":扉こじ開け "airframe":機体持ち去り
-
-    戻り値:
-        なし
-    """
-    sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
-    app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
-    # 管理者のメールアドレスリスト
-    manager_list = [
-        "d20139@numazu.kosen-ac.jp"
-        ]
-    # "d20102@numazu.kosen-ac.jp",
-    # "d20136@numazu.kosen-ac.jp",
-    subject = "TENQ error"
-    
-    if warn_type == "module":
-        body = f"""
-        TENQの異常を検知しました。
-        {module}モジュールが持ち去られた可能性があります。
-        直ちに確認作業を行ってください。
-        ※このメールは自動で送信されています。
-        """
-    elif warn_type == "door":
-        body = f"""
-        TENQの異常を検知しました。
-        {module}モジュールの扉{door}がこじ開けられた可能性があります。
-        直ちに確認作業を行ってください。
-        ※このメールは自動で送信されています。
-        """
-    elif warn_type == "airframe":
-        body = f"""
-        TENQの異常を検知しました。
-        機体が持ち去られた可能性があります。
-        直ちに確認作業を行ってください。
-        ※このメールは自動で送信されています。
-        """
-    # 各管理者に送信
-    for receiver_email in manager_list:
-        print([sender_email, app_password, receiver_email, subject, body]) # デバッグ用
-        send_email(sender_email, app_password, receiver_email, subject, body)
         
-
-"""
-コマンドラインから呼び出された時の処理
-"""
-if __name__ == "__main__":
-    sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
-    app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
-    receiver_email = "recipient_email@example.com"  # 送信先のメールアドレス
-    subject = "Test Subject"
-    
-    approval_link = "http://172.25.19.2"  # 承認リンク
-    approval_body = f"""
-    ※このメールは自動で送信されています。
-    
-    以下のリンクからメールの承認を行なってください。
-    
-    {approval_link}
+        
+        
+        
+        
+class mail():
     """
-    
-    warning_body = f"""
-    TENQに異常が検知されました。直ちに確認作業を行なってください。
-    
-    ※このメールは自動で送信されています。
+    メール送信用クラス
     """
+    def __init__(self, order_manager: om.order_manager):
+        self.order_manager = order_manager
+        
+        # 管理者のメールアドレスリスト
+        self.manager_list = [
+            "d20139@numazu.kosen-ac.jp"
+            ]
+        # "d20102@numazu.kosen-ac.jp",
+        # "d20136@numazu.kosen-ac.jp",
     
-    body = approval_body
+    def approval(self, order_id):
+        """
+        承認メールを送信する関数(多分完成)
+        
+        引数：
+            オーダーID
+        """
+        sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
+        app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
+        
+        # 送信先のメールアドレス（オーダーIDからオーダータイプ、送信先を引っ張ってくる）
+        order_info = self.order_manager.get_order("ID", order_id)
+        order_type = order_info["ORDER_TYPE"][0]
+        if order_type == "SEND":
+            receiver_list = [order_info["RECEIVER"][0]]
+        elif order_type == "RECEIVE":
+            receiver_list = [order_info["SENDER"][0]]
+        else:
+            receiver_list = self.manager_list # order/accept/も必要じゃねこれ
+            
+        subject = "学内配達ロボットTENQ - 依頼が来ています"
 
-    send_email(sender_email, app_password, receiver_email, subject, body)
+        approval_link = f"http://172.25.60.44/{order_type.lower()}/accept/index.html?id={order_id}"
+        body = f"""
+        ※このメールは自動で送信されています。
+        D科4年のプロジェクト,「学内配達TENQ」です。
+
+        以下のリンクからメールの承認を行なってください。
+        
+        {approval_link}
+        """
+        
+        for receiver_email in receiver_list:
+            print(f"メールを送信します\n\n 送信元 : {sender_email}\n 送信先 : {receiver_email}\n 件名 : {subject}\n 内容 : {body}") # デバッグ用
+            send_email(sender_email, app_password, receiver_email, subject, body)
+        
+        send_email(sender_email, app_password, receiver_email, subject, body)
+
+    # 明日はここから↓
+    def denied(self, order_mail, order_type, ordered_mail, item_type):
+        """
+        依頼が拒否されたというメールを送信する関数
+        引数：
+            依頼者のメールアドレス,依頼の種類,被依頼者のメールアドレス,依頼物
+        戻り値：
+            なし
+        """
+        sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
+        app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
+        receiver_email = order_mail
+        subject = "学内配達ロボットTENQ - 依頼が拒否されました"
+
+        body = f"""
+        ※このメールは自動で送信されています。
+        D科4年のプロジェクト,  「学内配達ロボットTENQ」です。
+
+        お相手の承認をとることができなかったため、以下の依頼はキャンセルされます。
+        再度依頼をする際は、お相手のメールアドレスに間違いが無いことをご確認ください。
+
+        <依頼内容>
+        依頼の種類：${order_type}
+        相手：${ordered_mail}
+        商品：${item_type}
+        """
+
+        print(f"メールを送信します\n\n 送信元 : {sender_email}\n 送信先 : {receiver_email}\n 件名 : {subject}\n 内容 : {body}") # デバッグ用
+        send_email(sender_email, app_password, receiver_email, subject, body)
+
+    def warning(self, warn_type: str, module: str = None, door: str = None):
+        """
+        異常検知メールを送信する関数
+
+        引数：
+            異常の種類、モジュール番号、扉番号
+            異常の種類 "module":モジュール持ち去り "door":扉こじ開け "airframe":機体持ち去り
+
+        戻り値:
+            なし
+        """
+        sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
+        app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
+        subject = "TENQ error"
+        
+        if warn_type == "module":
+            body = f"""
+            TENQの異常を検知しました。
+            {module}モジュールが持ち去られた可能性があります。
+            直ちに確認作業を行ってください。
+            ※このメールは自動で送信されています。
+            """
+        elif warn_type == "door":
+            body = f"""
+            TENQの異常を検知しました。
+            {module}モジュールの扉{door}がこじ開けられた可能性があります。
+            直ちに確認作業を行ってください。
+            ※このメールは自動で送信されています。
+            """
+        elif warn_type == "airframe":
+            body = f"""
+            TENQの異常を検知しました。
+            機体が持ち去られた可能性があります。
+            直ちに確認作業を行ってください。
+            ※このメールは自動で送信されています。
+            """
+        # 各管理者に送信
+        for receiver_email in self.manager_list:
+            send_email(sender_email, app_password, receiver_email, subject, body)

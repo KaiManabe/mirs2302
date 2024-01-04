@@ -60,7 +60,14 @@ if __name__ == "__main__":
     #オーダー管理用クラス
     order_manager = order_mng.order_manager()
     
-#モジュール管理用云々を初期化しておくこと
+    #モジュール管理用クラス
+    module_manager = module_mng.module_controller(serial_port)
+    
+    #機体管理用クラス
+    airframe_manager = module_mng.airframe_controller(serial_port)
+    
+    #メール送信用クラス
+    mail = web_app.mail(order_manager)
     
     
     print(f"[INFO][main.py] : 初期化終了 メインループを開始します")
@@ -77,6 +84,7 @@ if __name__ == "__main__":
 #*****************************************************************************************************
             if status == "NOT_ACCEPTED_YET":
 #メールを送る処理
+                # web_app.approval(id)
                 order_manager.modify_order(id, "STAUTS", "MAIL_SENT")
             
             

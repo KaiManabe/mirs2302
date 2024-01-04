@@ -161,7 +161,8 @@ class module_controller():
         
     def sock_surv(self):
         """
-        ソケット通信の監視をする関数
+        *** module_controller()をオブジェクト化した際に、自動でスレッドが立ち上げられるので使用しないこと ***
+        ソケット通信を行うやつ
         """
         door_info = {
             "小物1": [
