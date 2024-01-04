@@ -3,6 +3,7 @@ import sys
 import hashlib
 import robot_state_publisher
 import time
+import sock
 
 
 USEHASH = False
@@ -61,11 +62,14 @@ def tostr(raw):
 if __name__ == "__main__":
     if len(sys.argv) >= 2:
         if auth(sys.argv[1]) == True:
-            #ドアを開ける処理
-            #ドアがあいたか？
-            if True:
-                time.sleep(2)
-                print(True,end = "")
-                sys.exit(0)
             
-        print(False, end = "")
+            # モジュール用サーバに接続
+            client = sock.sock_client("127.0.0.1", 56674)
+            client.send([1])
+            
+            # ドアが開くまで待機
+            while True:
+                if client.read() == [1]:
+                    robot_state_publisher.update("DOOR", "OPEN")
+                    break
+                time.sleep(1)

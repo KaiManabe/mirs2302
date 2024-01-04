@@ -9,11 +9,14 @@ import web_app
 import RPi.GPIO as GPIO
 import threading
 import time
+import sock
+import order_mng as om
 
 IDEN_CYCLE = 1 # 搭載モジュール情報更新周期[s]
 AIR_CYCLE = 0.1 # 機体持ち去り検知周期[s]
 MODULE_SURV_CYCLE = 0.5 # モジュール監視周期[s]
 DOOR_SURV_CYCLE = 1 # 扉監視周期[s]
+SOCK_SURV = 1 # ソケット通信監視周期[s]
 RES_ERR_RATE = 10 # 抵抗値許容誤差範囲[%]
 """統合時こいつらは調整する"""
 
@@ -148,6 +151,72 @@ class module_controller():
                     door_surv_thread[module_num][door_num].setDaemon(True)
                     door_surv_thread[module_num][door_num].start()
         print("[INFO][module_mng.py] : モジュールと扉の状態の監視を開始しました")
+        
+        # ソケット通信のサーバーを立てる
+        self.order_mng = om.order_manager()
+        self.server = sock.sock_server("127.0.0.1", 56674)
+        door_surv_thread[module_num][door_num] = threading.Thread(target = self.sock_surv)
+        door_surv_thread[module_num][door_num].setDaemon(True)
+        door_surv_thread[module_num][door_num].start()
+        
+    def sock_surv(self):
+        """
+        ソケット通信の監視をする関数
+        """
+        door_info = {
+            "小物1": [
+                "accessories",
+                "right"
+                ],
+            "小物2": [
+                "accessories",
+                "left"
+                ],
+            "書類1": [
+                "document",
+                "under"
+                ],
+            "書類2": [
+                "document",
+                "upper"
+                ],
+            "食品（保冷）": [
+                "insulation",
+                "right"
+                ],
+            "食品（保温）": [
+                "insulation",
+                "left"
+                ]
+        }
+        flag = False
+        
+        while True:
+            # 解錠の指示が来た場合
+            if self.server.isconnected() > 0 and self.server.read() == [1]:
+                MODE = "PICKUP"
+                order = self.order_mng.get_order("STATUS", "WAITING_FOR_" + MODE)
+                if type(order) == int and order == -1:
+                    MODE = "RECEIVE"
+                    order = self.order_mng.get_order("STATUS", "WAITING_FOR_" + MODE)
+                    
+                if type(order) == int and order == -1:
+                    continue
+                
+                door = order["ITEM_TYPE"][0]
+                
+                module_name = door_info[door][0]
+                door_name = door_info[door][1]
+                self.door_open(module_name, door_name)
+                # print(module_name, door_name) # デバッグ用
+                flag = True
+            
+            # いずれかのドアが開いている場合にクライアントサイドにデータを送信
+            if flag and self.onb_module_info["module1"]["name"] != "unconnected" and ( self.onb_module_info["module1"]["door1"]["open"] or self.onb_module_info["module1"]["door2"]["open"] ) or self.onb_module_info["module2"]["name"] != "unconnected" and ( self.onb_module_info["module2"]["door1"]["open"] or self.onb_module_info["module2"]["door2"]["open"] ) or self.onb_module_info["module3"]["name"] != "unconnected" and ( self.onb_module_info["module3"]["door1"]["open"] or self.onb_module_info["module3"]["door2"]["open"] ):
+                self.server.send([1])
+                flag = False
+                
+            time.sleep(SOCK_SURV)
         
     def identify_module(self):
         """
