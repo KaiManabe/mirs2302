@@ -62,12 +62,11 @@ if __name__ == "__main__":
     
     #モジュール管理用クラス
     module_manager = module_mng.module_controller(serial_port)
-    
     #機体管理用クラス
     airframe_manager = module_mng.airframe_controller(serial_port)
     
     #メール送信用クラス
-    mail = web_app.mails(order_manager)
+    mail_sender = web_app.mails(order_manager)
     
     
     print(f"[INFO][main.py] : 初期化終了 メインループを開始します")
@@ -83,8 +82,8 @@ if __name__ == "__main__":
 #状態    NOT_ACCEPTED_YET
 #*****************************************************************************************************
             if status == "NOT_ACCEPTED_YET":
-#メールを送る処理
-                # web_app.approval(id)
+                #メールを送信
+                mail_sender.request(id)
                 order_manager.modify_order(id, "STAUTS", "MAIL_SENT")
             
             

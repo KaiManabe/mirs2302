@@ -48,7 +48,7 @@
                 </th>
                 <td>
                     <select disabled = "disabled" name="receive_place" id="receive_place" title = "受け取り場所を選択してください" required>
-                        <option value='init' selected disabled>選択してください</option>
+                        <option value="init" selected disabled>選択してください</option>
                         <option value="D科棟">D科棟</option>
                         <option value="E科棟">E科棟</option>
                         <option value="C科棟">C科棟</option>
@@ -62,7 +62,7 @@
                     <label for="receive_pincode">受け取る際のPINコード</label>
                 </th>
                 <td>
-                    <input disabled = "disabled" type="password" name="receive_pincode" id="receive_pincode" required /><br>
+                    <input disabled = "disabled" type="password" name="receive_pincode" id="receive_pincode" pattern="[0-9]{4,8}" maxlength="8" required><br>
                 </td>
             </tr>
         </table>

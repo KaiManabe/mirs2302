@@ -9,7 +9,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import order_mng as om
 
-# 承認メール送信用関数
+# メール送信用関数
 def send_email(sender_name, sender_email, app_password, receiver_email, subject, body):
     # メールの設定
     message = MIMEMultipart()
@@ -54,9 +54,9 @@ class mails():
         
         self.order_manager = order_manager
     
-    def approval(self, order_id):
+    def request(self, order_id):
         """
-        承認メールを送信する
+        取引依頼メールを送信する
         
         引数：
             オーダーID
@@ -72,10 +72,10 @@ class mails():
             receiver_list = self.manager_list # order/accept/も必要じゃねこれ
             
         subject = "依頼が来ています"
-        approval_link = f"http://172.25.60.44/{order_type.lower()}/accept/index.html?id={order_id}"
+        transactions_link = f"http://172.25.60.44/{order_type.lower()}/accept/index.html?id={order_id}"
         usage_rules_link = "http://172.25.60.44/main/"
         
-        body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  取引の依頼が来ています。以下のリンクから取引の承認・拒否を行なってください。\n  {approval_link}\n\n  また、TENQの概要・使い方については以下のTENQホームページをご覧ください。\n  {usage_rules_link}\n\n※このメールは自動で送信されています。"""
+        body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  取引の依頼が来ています。以下のリンクから取引の承認・拒否を行なってください。\n  {transactions_link}\n\n  また、TENQの概要・使い方については以下のTENQホームページをご覧ください。\n  {usage_rules_link}\n\n※このメールは自動で送信されています。"""
         
         for receiver_email in receiver_list:
             # print(f"メールを送信します\n\n 送信元 : {self.sender_email}\n 送信先 : {receiver_email}\n 件名 : {subject}\n 内容 : {body}") # デバッグ用
