@@ -15,3 +15,10 @@ jetson/src/rplidar_ros
 jetson/src/rviz_cinematographer
 jetson/src/slam_gmapping
 jetson/src/teleop_tools
+raspi/__pycache__/authentication.cpython-37.pyc
+raspi/__pycache__/order_mng.cpython-37.pyc
+raspi/__pycache__/robot_state_publisher.cpython-37.pyc
+raspi/__pycache__/select_option_api.cpython-37.pyc
+raspi/__pycache__/web_app.cpython-37.pyc
+raspi/__pycache__/order_mng.cpython-37.pyc
+raspi/__pycache__/web_app.cpython-37.pyc
