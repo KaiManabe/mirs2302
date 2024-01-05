@@ -81,35 +81,49 @@ class mails():
             # print(f"メールを送信します\n\n 送信元 : {self.sender_email}\n 送信先 : {receiver_email}\n 件名 : {subject}\n 内容 : {body}") # デバッグ用
             send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
 
-    def denied(self, order_id):
+    def request_result(self, order_id, result: str):
         """
-        依頼が拒否されたというメールを送信する
+        依頼結果メールを送信する
         
         引数：
             オーダーID
+            依頼結果 -> 承認 : "accepted" / 拒否 : "denied" / タイムアウト : "timeout"
         """
-        # 送信先のメールアドレス（オーダーIDからオーダータイプ、送信先を引っ張ってくる）
+        # 送信情報をオーダーリストから取得する
         order_info = self.order_manager.get_order("ID", order_id)
         order_type = order_info["ORDER_TYPE"][0]
         if order_type == "SEND":
-            receiver_list = [order_info["SENDER"][0]]
+            order_type_name = "荷物を送る"
+            receiver_email = order_info["SENDER"][0]
             opponent_email = order_info["RECEIVER"][0]
+            if result == "accepted":
+                pickup_place = order_info["PICKUP_PLACE"][0]
+                pickup_time = order_info["PICKUP_TIME"][0]
         elif order_type == "RECEIVE":
-            receiver_list = [order_info["RECEIVER"][0]]
+            order_type_name = "荷物を受け取る"
+            receiver_email = order_info["RECEIVER"][0]
             opponent_email = order_info["SENDER"][0]
-        else:
-            receiver_list = [order_info["RECEIVER"][0]] # order/accept/も必要じゃねこれ
+        elif order_type == "ORDER":
+            order_type_name = "商品を注文する"
+            receiver_email = order_info["RECEIVER"][0] # order/accept/も必要じゃねこれ
             opponent_email = "TENQ管理者"
             
         item_type = order_info["ITEM_TYPE"][0]
+        item_name = order_info["ITEM_NAME"][0]
         
-        subject = "依頼が拒否されました"
+        # 依頼結果に応じて内容を変更する
+        if result == "accepted":
+            subject = "依頼が承認されました"
+            body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  お相手の承認をとることができたため、以下の取引が成立しました。\n\n< 取引内容 >\n   依頼の種類 : {order_type_name}\n   依頼相手 : {opponent_email}\n   荷物の種類 : {item_type}\n   荷物の名称 : {item_name}\n   集荷場所 : {pickup_time}\n   集荷時間 : {pickup_place}\n\n  上記の通りに取引を行ってください。また、その際に設定していただいたPINコードを使いますので、お忘れないようお願いいたします。\n\n※このメールは自動で送信されています。"""
+        elif result == "denied":
+            subject = "依頼が拒否されました"
+            body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  お相手の承認をとることができなかったため、以下の取引はキャンセルされます。\n\n< 取引内容 >\n   依頼の種類 : {order_type_name}\n   依頼相手 : {opponent_email}\n   荷物の種類 : {item_type}\n   荷物の名称 : {item_name}\n\n  再度取引の依頼を行う際は、お相手のメールアドレスに間違いが無いことをご確認ください。\n\n※このメールは自動で送信されています。"""
+        elif result == "timeout":
+            subject = "依頼がタイムアウトしました"
+            body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  お相手の承認/拒否を一定時間以内に確認できなかったため、以下の取引はキャンセルされます。\n\n< 取引内容 >\n   依頼の種類 : {order_type_name}\n   依頼相手 : {opponent_email}\n   荷物の種類 : {item_type}\n   荷物の名称 : {item_name}\n\n  再度取引の依頼を行う際は、お相手のメールアドレスに間違いが無いことをご確認ください。\n\n※このメールは自動で送信されています。"""
 
-        body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  お相手の承認をとることができなかったため、以下の依頼はキャンセルされます。\n  再度依頼をする際は、お相手のメールアドレスに間違いが無いことをご確認ください。\n\n< 依頼内容 >\n   依頼の種類 : {order_type}\n   相手 : {opponent_email}\n   商品 : {item_type}\n\n※このメールは自動で送信されています。"""
-
-        for receiver_email in receiver_list:
-            # print(f"メールを送信します\n\n 送信元 : {self.sender_email}\n 送信先 : {receiver_email}\n 件名 : {subject}\n 内容 : {body}") # デバッグ用
-            send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
+        # print(f"メールを送信します\n\n 送信元 : {self.sender_email}\n 送信先 : {receiver_email}\n 件名 : {subject}\n 内容 : {body}") # デバッグ用
+        send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
 
     def warning(self, warn_type: str, module: str = None, door: str = None):
         """

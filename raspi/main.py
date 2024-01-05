@@ -82,7 +82,7 @@ if __name__ == "__main__":
 #状態    NOT_ACCEPTED_YET
 #*****************************************************************************************************
             if status == "NOT_ACCEPTED_YET":
-                #メールを送信
+                #取引依頼メールを送信
                 mail_sender.request(id)
                 order_manager.modify_order(id, "STAUTS", "MAIL_SENT")
             
