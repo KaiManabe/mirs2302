@@ -20,7 +20,6 @@ SOCK_SURV = 1 # ソケット通信監視周期[s]
 RES_ERR_RATE = 10 # 抵抗値許容誤差範囲[%]
 """統合時こいつらは調整する"""
 
-# 詳細設計書には書いてあるけど、モジュール空き状況はweb_app.pyでやった方がいいかも
 class module_controller():
     """
     モジュールを制御するクラス
@@ -465,7 +464,7 @@ class airframe_controller():
             # 持ち去りを検知した時（1回のみ実行される）
             if self.airframe_taken:
                 print("[INFO][module_mng.py] : 機体の持ち去りを検知しました")
-                web_app.warning(warn_type="airframe") # 異常検知メールを送信
+                # web_app.warning(warn_type="airframe") # 異常検知メールを送信
                 break
             
             time.sleep(AIR_CYCLE)

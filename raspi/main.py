@@ -67,7 +67,7 @@ if __name__ == "__main__":
     airframe_manager = module_mng.airframe_controller(serial_port)
     
     #メール送信用クラス
-    mail = web_app.mail(order_manager)
+    mail = web_app.mails(order_manager)
     
     
     print(f"[INFO][main.py] : 初期化終了 メインループを開始します")
