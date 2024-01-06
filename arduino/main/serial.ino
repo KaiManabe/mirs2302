@@ -333,7 +333,7 @@ void send_photo(){
     Serial.write((byte)255);
     Serial.write((byte)16);
 
-    int value = photo();
+    int value = photo_state;
     Serial.write(value);
 
     Serial.write(254);

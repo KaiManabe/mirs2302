@@ -140,31 +140,29 @@ void peltier(int p){
 /*
 フォトリフレクタの監視
 この関数を定期的に繰り返す。10回以上車体が浮いたら異常判定
+photo_stateに常に値を代入　1：持ち去り、0：問題なし
 
 引数：なし
 
 戻り値：
-      持ち去られてるor転倒してる：1
-      問題なし：0
+      なし
 */
 int photo(){
   int p;
-  int state = 0;
   
-  p = digitalRead(PHOTO);
-  if(p == 0){
+  p = digitalRead(5);
+  if(p == 1){
     photo_curr = 0;
   }else{
-    photo_curr ++;
+    photo_curr = photo_curr + 1;
   }
 
-  if(photo_curr >= 10){
-    state = photo_flg_err;
+  if(photo_curr >= 50){
+    photo_state = photo_flg_err;
   }else{
-    state = photo_flg_ok;
+    photo_state = photo_flg_ok;
   }
   delay(10);
-  //Serial.println(p);
   
-  return(state);
+  return(0);
 }
