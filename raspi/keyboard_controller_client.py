@@ -50,7 +50,7 @@ if __name__ == "__main__":
     
     while(1):
         l, r = calcspeed()
-        print(f"\r {l:3},  {r:3}")
+        print(f"\r {l:3},  {r:3}", end = "         ")
         l += 1270
         l = int(l / 10)
         r += 1270
