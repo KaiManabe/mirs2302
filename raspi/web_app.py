@@ -54,7 +54,7 @@ class mails():
         
         self.order_manager = order_manager
     
-    def request(self, order_id):
+    def request(self, order_id: str):
         """
         取引依頼メールを送信する
         
@@ -81,7 +81,7 @@ class mails():
         for receiver_email in receiver_list:
             send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
 
-    def accepted(self, order_id):
+    def accepted(self, order_id: str):
         """
         確認メールを送信（依頼された側に送る）
         
@@ -116,7 +116,7 @@ class mails():
         
         send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
 
-    def request_result(self, order_id, result: str):
+    def request_result(self, order_id: str, result: str):
         """
         依頼結果メールを送信する
         
@@ -169,7 +169,7 @@ class mails():
 
         send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
         
-    def notice(self, order_id, type, movement):
+    def notice(self, order_id: str, type: str, movement: str):
         """
         お知らせメールを送信
         
