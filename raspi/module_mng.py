@@ -192,29 +192,30 @@ class module_controller():
         flag = False
         
         while True:
-            # 解錠の指示が来た場合
-            if self.server.isconnected() > 0 and self.server.read() == [1]:
-                MODE = "PICKUP"
-                order = self.order_mng.get_order("STATUS", "WAITING_FOR_" + MODE)
-                if type(order) == int and order == -1:
-                    MODE = "RECEIVE"
+            # サーバーにクライアントからの接続がある場合
+            if self.server.isconnected() > 0:
+                # 解錠の指示が来た場合
+                if  self.server.read() == [1]:
+                    MODE = "PICKUP"
                     order = self.order_mng.get_order("STATUS", "WAITING_FOR_" + MODE)
+                    if type(order) == int and order == -1:
+                        MODE = "RECEIVE"
+                        order = self.order_mng.get_order("STATUS", "WAITING_FOR_" + MODE)
+                        
+                    if type(order) == int and order == -1:
+                        continue
                     
-                if type(order) == int and order == -1:
-                    continue
+                    door = order["ITEM_TYPE"][0]
+                    
+                    module_name = door_info[door][0]
+                    door_name = door_info[door][1]
+                    self.door_open(module_name, door_name)
+                    flag = True
                 
-                door = order["ITEM_TYPE"][0]
-                
-                module_name = door_info[door][0]
-                door_name = door_info[door][1]
-                self.door_open(module_name, door_name)
-                # print(module_name, door_name) # デバッグ用
-                flag = True
-            
-            # いずれかのドアが開いている場合にクライアントサイドにデータを送信
-            if flag and self.onb_module_info["module1"]["name"] != "unconnected" and ( self.onb_module_info["module1"]["door1"]["open"] or self.onb_module_info["module1"]["door2"]["open"] ) or self.onb_module_info["module2"]["name"] != "unconnected" and ( self.onb_module_info["module2"]["door1"]["open"] or self.onb_module_info["module2"]["door2"]["open"] ) or self.onb_module_info["module3"]["name"] != "unconnected" and ( self.onb_module_info["module3"]["door1"]["open"] or self.onb_module_info["module3"]["door2"]["open"] ):
-                self.server.send([1])
-                flag = False
+                # 過去に解錠の指示が来た かつ いずれかのドアが開いている場合にクライアントサイドにデータを送信
+                if flag and self.onb_module_info["module1"]["name"] != "unconnected" and ( self.onb_module_info["module1"]["door1"]["open"] or self.onb_module_info["module1"]["door2"]["open"] ) or self.onb_module_info["module2"]["name"] != "unconnected" and ( self.onb_module_info["module2"]["door1"]["open"] or self.onb_module_info["module2"]["door2"]["open"] ) or self.onb_module_info["module3"]["name"] != "unconnected" and ( self.onb_module_info["module3"]["door1"]["open"] or self.onb_module_info["module3"]["door2"]["open"] ):
+                    self.server.send([1])
+                    flag = False
                 
             time.sleep(SOCK_SURV)
         
