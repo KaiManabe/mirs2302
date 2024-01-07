@@ -20,6 +20,10 @@ body{
   padding: 0;
 }
 
+.haikei{
+  width: 100%;
+}
+
 /* タイトルのスタイル */
 .title{
   font-size: 25px;

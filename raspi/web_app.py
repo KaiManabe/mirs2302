@@ -172,13 +172,13 @@ class mails():
 
         send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
         
-    def notice(self, order_id, action, movement):
+    def notice(self, order_id, type, movement):
         """
         お知らせメールを送信
         
         引数：
             オーダーID
-            アクション picking / receive
+            種類 picking / receive
             動作 moving / arrived
         """
         pass
