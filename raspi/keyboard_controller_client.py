@@ -56,6 +56,6 @@ if __name__ == "__main__":
         r += 1270
         r = int(r / 10)
         
-        c.send([l, r, 255])
+        c.send([r, l, 255])
         
         time.sleep(0.05)

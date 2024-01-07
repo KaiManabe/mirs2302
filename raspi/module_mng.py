@@ -404,7 +404,7 @@ class module_controller():
     
     def reverse_lookup(self, module_name: str, door_name: str):
         """
-        モジュールの名前・扉の名前からモジュール番号・扉番号を逆算する関数（動作未確認）
+        モジュールの名前・扉の名前からモジュール番号・扉番号を逆算する関数
         
         引数：
             module_name : モジュールの名前

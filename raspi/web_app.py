@@ -68,7 +68,7 @@ class mails():
             receiver_list = [order_info["RECEIVER"][0]]
         elif order_type == "RECEIVE":
             receiver_list = [order_info["SENDER"][0]]
-        else:
+        elif order_type == "ORDER":
             receiver_list = self.manager_list # order/accept/も必要じゃねこれ
             
         subject = "依頼が来ています"
@@ -78,7 +78,45 @@ class mails():
         body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  取引の依頼が来ています。以下のリンクから取引の承認・拒否を行なってください。\n  {transactions_link}\n\n  また、TENQの概要・使い方については以下のTENQホームページをご覧ください。\n  {usage_rules_link}\n\n※このメールは自動で送信されています。"""
         
         for receiver_email in receiver_list:
-            # print(f"メールを送信します\n\n 送信元 : {self.sender_email}\n 送信先 : {receiver_email}\n 件名 : {subject}\n 内容 : {body}") # デバッグ用
+            send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
+
+    def accepted(self, order_id):
+        """
+        確認メールを送信（依頼された側に送る）
+        
+        引数：
+            オーダーID
+        """
+        # 送信情報をオーダーリストから取得する
+        order_info = self.order_manager.get_order("ID", order_id)
+        order_type = order_info["ORDER_TYPE"][0]
+        
+        if order_type == "SEND":
+            order_type_name = "荷物を受け取る"
+            receiver_list = [order_info["RECEIVER"][0]]
+            opponent_email = order_info["SENDER"][0]
+            place = order_info["RECEIVE_PLACE"][0]
+            time = order_info["RECEIVE_TIME"][0]
+        elif order_type == "RECEIVE":
+            order_type_name = "荷物を送る"
+            receiver_list = [order_info["SENDER"][0]]
+            opponent_email = order_info["RECEIVER"][0]
+            place = order_info["PICKUP_PLACE"][0]
+            time = order_info["PICKUP_TIME"][0]
+        elif order_type == "ORDER":
+            order_type_name = "商品を発送する"
+            receiver_list = self.manager_list # order/accept/も必要じゃねこれ
+            opponent_email = order_info["RECEIVER"][0]
+            place = order_info["PICKUP_PLACE"][0]
+            time = order_info["PICKUP_TIME"][0]
+            
+        item_type = order_info["ITEM_TYPE"][0]
+        item_name = order_info["ITEM_NAME"][0]
+        
+        subject = "あなたが依頼を承認しました"
+        body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  あなたが依頼を承認したため、以下の取引が成立しました。\n\n< 取引内容 >\n   あなたの行動 : {order_type_name}\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n   場所 : {place}\n   時間 : {time}\n\n  上記の通りに取引を行ってください。また、その際に設定していただいたPINコードを使いますので、お忘れないようお願いいたします。\n\n※このメールは自動で送信されています"""
+        
+        for receiver_email in receiver_list:
             send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
 
     def request_result(self, order_id, result: str):
@@ -92,13 +130,11 @@ class mails():
         # 送信情報をオーダーリストから取得する
         order_info = self.order_manager.get_order("ID", order_id)
         order_type = order_info["ORDER_TYPE"][0]
+        
         if order_type == "SEND":
             order_type_name = "荷物を送る"
             receiver_email = order_info["SENDER"][0]
             opponent_email = order_info["RECEIVER"][0]
-            if result == "accepted":
-                pickup_place = order_info["PICKUP_PLACE"][0]
-                pickup_time = order_info["PICKUP_TIME"][0]
         elif order_type == "RECEIVE":
             order_type_name = "荷物を受け取る"
             receiver_email = order_info["RECEIVER"][0]
@@ -113,17 +149,39 @@ class mails():
         
         # 依頼結果に応じて内容を変更する
         if result == "accepted":
+            if order_type == "SEND":
+                your_action = order_type_name
+                place = order_info["PICKUP_PLACE"][0]
+                time = order_info["PICKUP_TIME"][0]
+            elif order_type == "RECEIVE":
+                your_action = order_type_name
+                place = order_info["RECEIVE_PLACE"][0]
+                time = order_info["RECEIVE_TIME"][0]
+            elif order_type == "ORDER":
+                your_action = "商品を受け取る"
+                place = order_info["RECEIVE_PLACE"][0]
+                time = order_info["RECEIVE_TIME"][0]
             subject = "依頼が承認されました"
-            body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  お相手の承認をとることができたため、以下の取引が成立しました。\n\n< 取引内容 >\n   依頼の種類 : {order_type_name}\n   依頼相手 : {opponent_email}\n   荷物の種類 : {item_type}\n   荷物の名称 : {item_name}\n   集荷場所 : {pickup_time}\n   集荷時間 : {pickup_place}\n\n  上記の通りに取引を行ってください。また、その際に設定していただいたPINコードを使いますので、お忘れないようお願いいたします。\n\n※このメールは自動で送信されています。"""
+            body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  お相手の承認をとることができたため、以下の取引が成立しました。\n\n< 取引内容 >\n   あなたの行動 : {your_action}\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n   場所 : {place}\n   時間 : {time}\n\n  上記の通りに取引を行ってください。また、その際に設定していただいたPINコードを使いますので、お忘れないようお願いいたします。\n\n※このメールは自動で送信されています"""
         elif result == "denied":
             subject = "依頼が拒否されました"
-            body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  お相手の承認をとることができなかったため、以下の取引はキャンセルされます。\n\n< 取引内容 >\n   依頼の種類 : {order_type_name}\n   依頼相手 : {opponent_email}\n   荷物の種類 : {item_type}\n   荷物の名称 : {item_name}\n\n  再度取引の依頼を行う際は、お相手のメールアドレスに間違いが無いことをご確認ください。\n\n※このメールは自動で送信されています。"""
+            body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  お相手の承認をとることができなかったため、以下の取引はキャンセルされます。\n\n< 取引内容 >\n   依頼内容 : {order_type_name}\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n\n  再度取引の依頼を行う際は、お相手のメールアドレスに間違いが無いことをご確認ください。\n\n※このメールは自動で送信されています"""
         elif result == "timeout":
             subject = "依頼がタイムアウトしました"
-            body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  お相手の承認/拒否を一定時間以内に確認できなかったため、以下の取引はキャンセルされます。\n\n< 取引内容 >\n   依頼の種類 : {order_type_name}\n   依頼相手 : {opponent_email}\n   荷物の種類 : {item_type}\n   荷物の名称 : {item_name}\n\n  再度取引の依頼を行う際は、お相手のメールアドレスに間違いが無いことをご確認ください。\n\n※このメールは自動で送信されています。"""
+            body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  お相手の承認/拒否を一定時間以内に確認できなかったため、以下の取引はキャンセルされます。\n\n< 取引内容 >\n   依頼内容 : {order_type_name}\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n\n  再度取引の依頼を行う際は、お相手のメールアドレスに間違いが無いことをご確認ください。\n\n※このメールは自動で送信されています"""
 
-        # print(f"メールを送信します\n\n 送信元 : {self.sender_email}\n 送信先 : {receiver_email}\n 件名 : {subject}\n 内容 : {body}") # デバッグ用
         send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
+        
+    def notice(self, order_id, action, movement):
+        """
+        お知らせメールを送信
+        
+        引数：
+            オーダーID
+            アクション picking / receive
+            動作 moving / arrived
+        """
+        pass
 
     def warning(self, warn_type: str, module: str = None, door: str = None):
         """
