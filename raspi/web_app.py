@@ -69,13 +69,14 @@ class mails():
         elif order_type == "RECEIVE":
             receiver_list = [order_info["SENDER"][0]]
         elif order_type == "ORDER":
-            receiver_list = self.manager_list # order/accept/も必要じゃねこれ
+            # 依頼メールを各管理者に送信し、承認した人をオーダーリストに書き込むようにしたい
+            receiver_list = self.manager_list # order/accept/も必要だなこれ
             
         subject = "依頼が来ています"
         transactions_link = f"http://172.25.60.44/{order_type.lower()}/accept/index.html?id={order_id}"
         usage_rules_link = "http://172.25.60.44/main/"
         
-        body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  取引の依頼が来ています。以下のリンクから取引の承認・拒否を行なってください。\n  {transactions_link}\n\n  また、TENQの概要・使い方については以下のTENQホームページをご覧ください。\n  {usage_rules_link}\n\n※このメールは自動で送信されています。"""
+        body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n  取引の依頼が来ています。以下のリンクから取引の承認・拒否を行なってください。\n\n▼承認用ページ\n  {transactions_link}\n\n  また、TENQの概要・使い方については以下のTENQホームページをご覧ください。\n\n▼TENQホームページ\n  {usage_rules_link}\n\n※このメールは自動で送信されています。"""
         
         for receiver_email in receiver_list:
             send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
@@ -93,19 +94,16 @@ class mails():
         
         if order_type == "SEND":
             order_type_name = "荷物を受け取る"
-            receiver_list = [order_info["RECEIVER"][0]]
+            receiver_email = order_info["RECEIVER"][0]
             opponent_email = order_info["SENDER"][0]
             place = order_info["RECEIVE_PLACE"][0]
             time = order_info["RECEIVE_TIME"][0]
-        elif order_type == "RECEIVE":
-            order_type_name = "荷物を送る"
-            receiver_list = [order_info["SENDER"][0]]
-            opponent_email = order_info["RECEIVER"][0]
-            place = order_info["PICKUP_PLACE"][0]
-            time = order_info["PICKUP_TIME"][0]
-        elif order_type == "ORDER":
-            order_type_name = "商品を発送する"
-            receiver_list = self.manager_list # order/accept/も必要じゃねこれ
+        elif order_type == "RECEIVE" or order_type == "ORDER":
+            if order_type == "RECEIVE":
+                order_type_name = "荷物を送る"
+            elif order_type == "ORDER":
+                order_type_name = "商品を発送する"
+            receiver_email = order_info["SENDER"][0]
             opponent_email = order_info["RECEIVER"][0]
             place = order_info["PICKUP_PLACE"][0]
             time = order_info["PICKUP_TIME"][0]
@@ -114,10 +112,9 @@ class mails():
         item_name = order_info["ITEM_NAME"][0]
         
         subject = "あなたが依頼を承認しました"
-        body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  あなたが依頼を承認したため、以下の取引が成立しました。\n\n< 取引内容 >\n   あなたの行動 : {order_type_name}\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n   場所 : {place}\n   時間 : {time}\n\n  上記の通りに取引を行ってください。また、その際に設定していただいたPINコードを使いますので、お忘れないようお願いいたします。\n\n※このメールは自動で送信されています"""
+        body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n  あなたが依頼を承認したため、以下の取引が成立しました。\n\n< 取引内容 >\n   あなたの行動 : {order_type_name}\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n   場所 : {place}\n   時間 : {time}\n\n  上記の通りに取引を行ってください。また、その際に設定していただいたPINコードを使いますので、お忘れないようお願いいたします。\n\n※このメールは自動で送信されています"""
         
-        for receiver_email in receiver_list:
-            send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
+        send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
 
     def request_result(self, order_id, result: str):
         """
@@ -141,7 +138,7 @@ class mails():
             opponent_email = order_info["SENDER"][0]
         elif order_type == "ORDER":
             order_type_name = "商品を注文する"
-            receiver_email = order_info["RECEIVER"][0] # order/accept/も必要じゃねこれ
+            receiver_email = order_info["RECEIVER"][0]
             opponent_email = "TENQ管理者"
             
         item_type = order_info["ITEM_TYPE"][0]
@@ -162,13 +159,13 @@ class mails():
                 place = order_info["RECEIVE_PLACE"][0]
                 time = order_info["RECEIVE_TIME"][0]
             subject = "依頼が承認されました"
-            body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  お相手の承認をとることができたため、以下の取引が成立しました。\n\n< 取引内容 >\n   あなたの行動 : {your_action}\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n   場所 : {place}\n   時間 : {time}\n\n  上記の通りに取引を行ってください。また、その際に設定していただいたPINコードを使いますので、お忘れないようお願いいたします。\n\n※このメールは自動で送信されています"""
+            body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n  お相手の承認をとることができたため、以下の取引が成立しました。\n\n< 取引内容 >\n   あなたの行動 : {your_action}\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n   場所 : {place}\n   時間 : {time}\n\n  上記の通りに取引を行ってください。また、その際に設定していただいたPINコードを使いますので、お忘れないようお願いいたします。\n\n※このメールは自動で送信されています"""
         elif result == "denied":
             subject = "依頼が拒否されました"
-            body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  お相手の承認をとることができなかったため、以下の取引はキャンセルされます。\n\n< 取引内容 >\n   依頼内容 : {order_type_name}\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n\n  再度取引の依頼を行う際は、お相手のメールアドレスに間違いが無いことをご確認ください。\n\n※このメールは自動で送信されています"""
+            body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n  お相手の承認をとることができなかったため、以下の取引はキャンセルされます。\n\n< 取引内容 >\n   依頼内容 : {order_type_name}\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n\n  再度取引の依頼を行う際は、お相手のメールアドレスに間違いが無いことをご確認ください。\n\n※このメールは自動で送信されています"""
         elif result == "timeout":
             subject = "依頼がタイムアウトしました"
-            body = f"""  D科4年のプロジェクト,「学内配達ロボットTENQ」です。\n\n  お相手の承認/拒否を一定時間以内に確認できなかったため、以下の取引はキャンセルされます。\n\n< 取引内容 >\n   依頼内容 : {order_type_name}\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n\n  再度取引の依頼を行う際は、お相手のメールアドレスに間違いが無いことをご確認ください。\n\n※このメールは自動で送信されています"""
+            body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n  お相手の承認/拒否を一定時間以内に確認できなかったため、以下の取引はキャンセルされます。\n\n< 取引内容 >\n   依頼内容 : {order_type_name}\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n\n  再度取引の依頼を行う際は、お相手のメールアドレスに間違いが無いことをご確認ください。\n\n※このメールは自動で送信されています"""
 
         send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
         
@@ -181,7 +178,32 @@ class mails():
             種類 picking / receive
             動作 moving / arrived
         """
-        pass
+        # 送信情報をオーダーリストから取得する
+        order_info = self.order_manager.get_order("ID", order_id)
+        
+        if type == "picking":
+            receiver_email = order_info["SENDER"][0]
+            place = order_info["PICKUP_PLACE"][0]
+            if movement == "moving":
+                time = order_info["PICKUP_TIME"][0]
+            elif movement == "arrived":
+                text = "荷物を積みに早めにお越しください。"
+        elif type == "receive":
+            receiver_email = order_info["RECEIVER"][0]
+            place = order_info["RECEIVE_PLACE"][0]
+            if movement == "moving":
+                time = order_info["RECEIVE_TIME"][0]
+            elif movement == "arrived":
+                text = "荷物を受け取りに早めにお越しください。"
+        
+        if movement == "moving":
+            subject = "今向かってます"
+            body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n------- 以下の場所に向かっています -------\n\n   場所 : {place}\n   到着予定時刻 : {time}\n\n------------------------------------------\n\n※このメールは自動で送信されています"""
+        elif movement == "arrived":
+            subject = "到着しました"
+            body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n------- 以下の場所に到着しました -------\n\n   場所 : {place}\n\n----------------------------------------\n\n  {text}\n\n※このメールは自動で送信されています"""
+            
+        send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
 
     def warning(self, warn_type: str, module: str = None, door: str = None):
         """
