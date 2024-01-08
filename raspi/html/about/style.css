@@ -1,34 +1,27 @@
-.flex{
-  display: flex; /*横並び*/
-}
-.flex .image{
-  width: 640px; /*画像サイズ指定*/
-  margin: 0;
-  padding: 0;
-}
-.flex .image img{
-  width: 100%;
-  height: auto;
-}
-.flex .text{
-  margin: 0 0 0 20px;
-  padding: 0;
-}
-
-body{
+/* body{
   margin: 20px;
   padding: 0;
-}
+} */
 
-.haikei{
-  width: 100%;
+img{
+  width: 100vw;
 }
 
 /* タイトルのスタイル */
 .title{
   font-size: 25px;
   font-weight: bold;
+  height: 40px;
+  margin-left: auto;
+  margin-right: auto;
   margin: 0;
+  text-align: center;
+}
+
+h4 {
+  border-bottom: solid 2px rgb(96, 96, 96);
+  width: 170px;
+  margin: auto;
 }
 
 
@@ -42,26 +35,6 @@ ol li{
   text-indent: -1.3em;
 }
 
-.box17{
-  margin:2em 0;
-  position: relative;
-  padding: 0.5em 1.5em;
-  border-top: solid 2px black;
-  border-bottom: solid 2px black;
-}
-/* 横の線のスタイル */
-.box17:before, .box17:after{
-  content: '';
-  position: absolute;
-  top: -10px;
-  width: 2px;
-  height: -webkit-calc(100% + 20px);
-  height: calc(100% + 20px);
-  background-color: black;
-}
-.box17:before {left: 10px;}
-.box17:after {right: 10px;}
-.box17 p {
-  margin: 0; 
-  padding: 0;
+.cell1{
+  line-height: 30px;
 }
