@@ -24,7 +24,7 @@ class module_controller():
     """
     モジュールを制御するクラス
     """
-    def __init__(self, serial_port: ser.arduino_serial):
+    def __init__(self, serial_port: ser.arduino_serial, order_manager: om.order_manager, mail_sender: web_app.mails):
         """
         コンストラクタ
         
@@ -33,6 +33,8 @@ class module_controller():
         """
         print("[INFO][module_mng.py] : モジュール情報初期化中...")
         self.serial = serial_port
+        self.order_mng = order_manager
+        self.mail_sender = mail_sender
         time.sleep(1) # インスタンスを渡し切るまでキープ ※必須なので消さないこと！！！！！
         
         # 排他制御：リソースに同時にアクセスするのを防ぐ
@@ -152,7 +154,6 @@ class module_controller():
         print("[INFO][module_mng.py] : モジュールと扉の状態の監視を開始しました")
         
         # ソケット通信のサーバーを立てる
-        self.order_mng = om.order_manager()
         self.server = sock.sock_server("127.0.0.1", 56674)
         door_surv_thread[module_num][door_num] = threading.Thread(target = self.sock_surv)
         door_surv_thread[module_num][door_num].setDaemon(True)
@@ -174,11 +175,11 @@ class module_controller():
                 ],
             "書類1": [
                 "document",
-                "under"
+                "upper"
                 ],
             "書類2": [
                 "document",
-                "upper"
+                "under"
                 ],
             "食品（保冷）": [
                 "insulation",
@@ -290,7 +291,7 @@ class module_controller():
                     # 未接続の場合
                     if name_module_current == "unconnected":
                         print(f"[INFO][module_mng.py] : {name_module_previous}が取り外されました")
-                        # web_app.warning(warn_type="door", module=name_module_current) # 異常検知メールを送信
+                        # self.mail_sender.warning(warn_type="module", module=name_module_current) # 異常検知メールを送信
                     # 取り付けられた場合
                     else:
                         print(f"[INFO][module_mng.py] : {name_module_current}が取り付けられました")
@@ -338,7 +339,7 @@ class module_controller():
                         # サーボで解錠していない場合
                         else:
                             print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}のこじ開けを検知しました")
-                            # web_app.warning(warn_type="door", module=name_module_current, door=name_door_current) # 異常検知メールを送信
+                            # self.mail_sender.warning(warn_type="door", module=name_module_current, door=name_door_current) # 異常検知メールを送信
                     # 扉が閉じた場合
                     else:
                         self.onb_module_info[module_num][door_num]["unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
@@ -433,7 +434,7 @@ class airframe_controller():
     """
     機体を制御するクラス
     """
-    def __init__(self, serial_port: ser.arduino_serial):
+    def __init__(self, serial_port: ser.arduino_serial, mail_sender: web_app.mails):
         """
         コンストラクタ
         
@@ -441,6 +442,7 @@ class airframe_controller():
             serial_port -> serial object : serial_com.pyのarduino_serialクラスのオブジェクトを渡す
         """
         self.serial = serial_port
+        self.mail_sender = mail_sender
         time.sleep(1) # インスタンスを渡し切るまでキープ ※必須なので消さないこと！！！！！
         
         self.airframe_taken: bool = False # 機体持ち去り検知フラグ
@@ -462,10 +464,10 @@ class airframe_controller():
             response = self.serial.send_and_read_response(11, [], 16)
             self.airframe_taken = response[0][0]
             
-            # 持ち去りを検知した時（1回のみ実行される）
+            # 持ち去りを検知した時
             if self.airframe_taken:
                 print("[INFO][module_mng.py] : 機体の持ち去りを検知しました")
-                # web_app.warning(warn_type="airframe") # 異常検知メールを送信
+                # self.mail_sender.warning(warn_type="airframe") # 異常検知メールを送信
                 break
             
             time.sleep(AIR_CYCLE)
@@ -485,6 +487,9 @@ class airframe_controller():
             
             
 if __name__ == '__main__':
-    s = ser.arduino_serial()
-    m = module_controller(s)
-    a = airframe_controller(s)
+    serial = ser.arduino_serial()
+    ord = om.order_manager()
+    mails = web_app.mails(ord)
+    
+    m = module_controller(serial, ord, mails)
+    a = airframe_controller(serial, mails)
