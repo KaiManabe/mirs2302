@@ -1,0 +1,44 @@
+body{
+    font-family: 'Zen Kaku Gothic Antique';
+}
+
+
+.center{
+    width: fit-content;
+    margin: auto;
+}
+
+td{
+    padding : 0.6em;
+}
+
+th{
+    text-align: left;
+    vertical-align: top;
+    padding : 0.6em;
+}
+label{
+    font-size: 20px;
+}
+input{
+    width: 100px;
+    height: 20px;
+    font-size: 15px;
+}
+.form input[type="submit"]{
+    width: auto;
+    height: auto;
+}
+select{
+    width: auto;
+    height: auto;
+    border: 2px solid rgb(0, 0, 0);
+    padding : 0.5em;
+}
+select .address_type{
+    width: auto;
+    height: auto;
+}
+sup{
+    font-size: 10px;
+}
