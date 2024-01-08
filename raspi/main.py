@@ -60,13 +60,13 @@ if __name__ == "__main__":
     #オーダー管理用クラス
     order_manager = order_mng.order_manager()
     
-    #モジュール管理用クラス
-    module_manager = module_mng.module_controller(serial_port)
-    #機体管理用クラス
-    airframe_manager = module_mng.airframe_controller(serial_port)
-    
     #メール送信用クラス
     mail_sender = web_app.mails(order_manager)
+    
+    #モジュール管理用クラス
+    module_manager = module_mng.module_controller(serial_port, order_manager, mail_sender)
+    #機体管理用クラス
+    airframe_manager = module_mng.airframe_controller(serial_port, mail_sender)
     
     
     print(f"[INFO][main.py] : 初期化終了 メインループを開始します")
@@ -97,15 +97,16 @@ if __name__ == "__main__":
                     if """承認されたか？""":
                         order_manager.modify_order(id, "STAUTS", "ACCEPTED")
                         order_manager.modify_order(id, "ACCEPTED_TIME", datetime.datetime.now())
-#承認されましたメール送信
+                        mail_sender.request_result(id, "accepted")
+                        mail_sender.accepted(id)
                     else:#拒否された
                         order_manager.modify_order(id, "STAUTS", "DENIED")
-#拒否されましたメール送信
+                        mail_sender.request_result(id, "denied")
                 else:#レスポンスなし
 #条件文                     ↓
                     if """タイムアウトしてるか？""":
                         order_manager.modify_order(id, "STAUTS", "ACCEPT_TIMEOUT")
-#タイムアウトしたので拒否しますメール送信
+                        mail_sender.request_result(id, "timeout")
             
             
             
@@ -127,7 +128,7 @@ if __name__ == "__main__":
                             rsp.update("ROBOT_STATUS", "MOVING")
                             rsp.update("GOAL", current_order['PICKUP_PLACE'])
                             rsp.update("DOOR_NUM", current_order['ITEM_TYPE'])
-#今向かってますてきなメールあれば◎  やらないなら無視
+                            mail_sender.notice(id, "pickup", "moving")
                             break
                         else:
                             time.sleep(5)
@@ -144,7 +145,7 @@ if __name__ == "__main__":
                     print(f"[INFO][main.py][ID:{id}]  : ロボットが{current_order['PICKUP_PLACE']}に到着")
                     order_manager.modify_order(id, "STAUTS", "WAITING_FOR_PICKUP")
                     rsp.update("ROBOT_STATUS", "WAITING_FOR_PICKUP")
-#到着しましたてきなメールあれば◎  やらないなら無視
+                    mail_sender.notice(id, "pickup", "arrived")
                 else:
                     if ros_controller.stauts == "ACTIVE":#まだ動いているなら
                         if datetime.datetime.now() >= current_order["PICKUP_TIME"] + datetime.timedelta(minutes = 5):
@@ -165,7 +166,7 @@ if __name__ == "__main__":
                 else:#きてない
                     if datetime.datetime.now() >= current_order["PICKUP_TIME"] + datetime.timedelta(minutes = 15):
                         order_manager.modify_order(id, "STAUTS", "PICKUP_TIMEOUT")
-#タイムアウトしたので拒否しますメール送信
+                        mail_sender.notice(id, "pickup", "timeout")
             
             
 #*****************************************************************************************************
@@ -187,7 +188,7 @@ if __name__ == "__main__":
                             rsp.update("ROBOT_STATUS", "MOVING")
                             rsp.update("GOAL", current_order['RECEIVE_PLACE'])
                             rsp.update("DOOR_NUM", current_order['ITEM_TYPE'])
-#今向かってますてきなメールあれば◎  やらないなら無視
+                            mail_sender.notice(id, "receive", "moving")
                             break
                         else:
                             time.sleep(5)
@@ -205,7 +206,7 @@ if __name__ == "__main__":
                     print(f"[INFO][main.py][ID:{id}]  : ロボットが{current_order['RECEIVE_PLACE']}に到着")
                     order_manager.modify_order(id, "STAUTS", "WAITING_FOR_RECEIVE")
                     rsp.update("ROBOT_STATUS", "WAITING_FOR_RECEIVE")
-#到着しましたてきなメールあれば◎  やらないなら無視
+                    mail_sender.notice(id, "receive", "arrived")
                 else:
                     if ros_controller.stauts == "ACTIVE":#まだ動いているなら
                         if datetime.datetime.now() >= current_order["RECEIVE_TIME"] + datetime.timedelta(minutes = 5):
@@ -227,5 +228,5 @@ if __name__ == "__main__":
                 else:#きてない
                     if datetime.datetime.now() >= current_order["RECEIVE_TIME"] + datetime.timedelta(minutes = 15):
                         order_manager.modify_order(id, "STAUTS", "RECEIVE_TIMEOUT")
-#タイムアウトしたので拒否しますメール送信
+                        mail_sender.notice(id, "receive", "timeout")
 
