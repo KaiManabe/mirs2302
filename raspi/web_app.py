@@ -175,13 +175,13 @@ class mails():
         
         引数：
             オーダーID
-            種類 picking / receive
-            動作 moving / arrived
+            種類 pickup / receive
+            動作 moving / arrived / timeout
         """
         # 送信情報をオーダーリストから取得する
         order_info = self.order_manager.get_order("ID", order_id)
         
-        if type == "picking":
+        if type == "pickup":
             receiver_email = order_info["SENDER"][0]
             place = order_info["PICKUP_PLACE"][0]
             if movement == "moving":
@@ -195,15 +195,40 @@ class mails():
                 time = order_info["RECEIVE_TIME"][0]
             elif movement == "arrived":
                 text = "荷物を受け取りに早めにお越しください。"
-        
+                
         if movement == "moving":
-            subject = "今向かってます"
+            subject = "今向かっています"
             body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n------- 以下の場所に向かっています -------\n\n   場所 : {place}\n   到着予定時刻 : {time}\n\n------------------------------------------\n\n※このメールは自動で送信されています"""
         elif movement == "arrived":
             subject = "到着しました"
             body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n------- 以下の場所に到着しました -------\n\n   場所 : {place}\n\n----------------------------------------\n\n  {text}\n\n※このメールは自動で送信されています"""
-            
-        send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
+        elif movement == "timeout":
+            subject = "タイムアウトしました"
+            item_type = order_info["ITEM_TYPE"][0]
+            item_name = order_info["ITEM_NAME"][0]
+            if type == "pickup":
+                receiver_email = order_info["SENDER"][0]
+                opponent_email = order_info["RECEIVER"][0]
+                body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n  あなたの荷物の積み込みを一定時間以内に確認できなかったため、以下の取引はキャンセルされます。\n\n< 取引内容 >\n   あなたの行動 : 荷物を送る\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n\n※このメールは自動で送信されています"""
+                send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
+                
+                receiver_email = order_info["RECEIVER"][0]
+                opponent_email = order_info["SENDER"][0]
+                body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n  お相手の荷物の積み込みを一定時間以内に確認できなかったため、以下の取引はキャンセルされます。\n\n< 取引内容 >\n   あなたの行動 : 荷物を受け取る\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n\n※このメールは自動で送信されています"""
+                send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
+            elif type == "receive":
+                receiver_email = order_info["SENDER"][0]
+                opponent_email = order_info["RECEIVER"][0]
+                body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n  お相手の荷物の受け取りを一定時間以内に確認できなかったため、以下の取引はキャンセルされます。\n\n< 取引内容 >\n   あなたの行動 : 荷物を送る\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n\n  受け取りを確認できなかった荷物に関しては、TENQ管理者が回収いたしますので以下のメールアドレスにお問い合わせください。\n\n▼TENQ管理者\n  mirs2302tenq@gmail.com\n\n※このメールは自動で送信されています"""
+                send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
+                
+                receiver_email = order_info["RECEIVER"][0]
+                opponent_email = order_info["SENDER"][0]
+                body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n  あなたの荷物の受け取りを一定時間以内に確認できなかったため、以下の取引はキャンセルされます。\n\n< 取引内容 >\n   あなたの行動 : 荷物を受け取る\n   取引相手 : {opponent_email}\n   荷物の種類 : {''.join(c for c in item_type if not c.isnumeric())}\n   荷物の名称 : {item_name}\n\n  受け取りを確認できなかった荷物に関しては、TENQ管理者が回収いたしますので以下のメールアドレスにお問い合わせください。\n\n▼TENQ管理者\n  mirs2302tenq@gmail.com\n\n※このメールは自動で送信されています"""
+                send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
+                
+        if movement != "timeout":
+            send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
 
     def warning(self, warn_type: str, module: str = None, door: str = None):
         """
