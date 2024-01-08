@@ -1,0 +1,12 @@
+.button{
+    font-family: 'Zen Kaku Gothic Antique';
+    display:inline-block;
+    width:15vw;
+    font-size: 3vw;
+    text-align: center;
+    border: 2px solid black;
+    background-color: rgba(255, 255, 255, 0);
+    padding: 0.6vh;
+    cursor:pointer;
+}
+

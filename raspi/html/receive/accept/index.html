@@ -1,49 +1,74 @@
 <!DOCTYPE html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+Antique:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="style.css">
-    <title>mailcheck</title>
+    <link rel="stylesheet" type="text/css" href="button.css">
+    <title>send_acceptform</title>
 </head>
 <body>
-    <h1>aaさんからbbをcc時に集荷するよう依頼が来ています</h1>
-    <input onclick="chbox(this);view()" type="checkbox" name="mailcheck" id="yes" value="yes"/>
-    <label for="yes" >受け入れる</label>
-    <input onclick="chbox(this);notview()" type="checkbox" name="mailcheck" id="no" value="no"/>
-    <label for="yes" >拒否する</label>
+    <h1>ロボットで <span class = "item_name"></span> を配達します。送ってください！</h1>
+    <table>
+        <tr>
+            <th>依頼主（送り先）</th>
+            <td><span class = "sender"></span></td>
+        </tr>
+        <tr>
+            <th>内容物</th>
+            <td><span class = "item_name"></span></td>
+        </tr>
+        <tr>
+            <th>備考</th>
+            <td><span class = "note"></span></td>
+        </tr>
+    </table>
+    <br><br>
+    <form method = "POST" action = "picking.php" id = "form_ele">
+        <input onclick="chbox(this);" type="checkbox" name="accept" id="accept" value="denied"/>
+        <label class = "unchecked_label" for="accept" id="checkbox_label"><span id = "yes">送ります</span> | <span id = "no">送りません</span></label>
 
-    <div id="target" class="hide">
-        <form>
-            <th>
-                <label for="picking_place">集荷する場所</label>
-            </th>
-            <td>
-                <select name="picking_place" id="picking_place">
-                    <option value="共通棟">共通棟</option>
-                    <option value="D科棟">D科棟</option>
-                    <option value="E科棟">E科棟</option>
-        
-                    <!-- 外をやらない場合は削除 -->
-                    <option value="M科棟">M科棟</option>
-                    <option value="C科棟">C科棟</option>
-                    <option value="専攻科棟">専攻科棟</option>
-                    <option value="講義棟">講義棟</option>
-                    <option value="尚友会館">尚友会館</option>
-                </select><br>
-            </td>
-            <th>
-                <label for="picking_time">集荷する時間</label>
-            </th>
-            <td>
-                <input type="select" name="picking_time" id="picking_time"/><br>
-            </td>
-            <th>
-                <label for="picking_pincode">集荷時のPINコード</label>
-            </th>
-            <td>
-                <input type="password" name="picking_pincode" id="picking_pincode"/><br>
-            </td>
-            <input type="submit"/>
-        </form>
-    </div>
+        <table id = "input_form" class = "unchosen">
+            <tr>
+                <th>
+                    <label for="receive_time" id="time_select">集荷時間</label>
+                </th>
+                <td>
+                    <select disabled = "disabled" name = "receive_time" id = "receive_time" title = "受取時間を選択してください" required>
+                        <option></option>
+                        <!-- jsでここに選択可能な時間を追加する -->
+                    </select><br>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <label for="receive_place">集荷場所</label>
+                </th>
+                <td>
+                    <select disabled = "disabled" name="receive_place" id="receive_place" title = "受け取り場所を選択してください" required>
+                        <option value="init" selected disabled>選択してください</option>
+                        <option value="D科棟">D科棟</option>
+                        <option value="E科棟">E科棟</option>
+                        <option value="C科棟">C科棟</option>
+                        <option value="S科棟">S科棟</option>
+                        <option value="学生課前">学生課前</option>
+                    </select><br>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <label for="receive_pincode">集荷時のPINコード</label>
+                </th>
+                <td>
+                    <input disabled = "disabled" type="password" name="receive_pincode" id="receive_pincode" pattern="[0-9]{4,8}" maxlength="8" required><br>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <input type = "button" value = "送信する" class = "button" id = "submit_button">
+    </form>
 
     <script type="text/javascript" src="accept.js"></script>
 </body>
