@@ -6,7 +6,7 @@ import sys
 
 #稼働可能な時間帯
 open_hour = [{"begin" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(8, 0)),
-              "end" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(23, 0))}
+              "end" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(23, 59))}
             ]
 
 

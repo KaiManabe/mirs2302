@@ -7,10 +7,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="modal.css">
+    <link rel="stylesheet" type="text/css" href="loading.css">
     <title>荷物をおくる</title>
 </head>
 <body>
+    <br>
 	<h1 class = "subtitle">荷物をおくる</h1>
+    <br>
+    <div id = "modal" class = "modal hidden">
+        <div id = "modal_loading" class = "modal_body hidden">
+            <div style = "height: 15%;"></div>
+            <p style = "font-size: 4vw;">Loading...</p>
+            <div class="load_animation">
+                <div class="pulse-container">  
+                  <div class="pulse-bubble pulse-bubble-1"></div>
+                  <div class="pulse-bubble pulse-bubble-2"></div>
+                  <div class="pulse-bubble pulse-bubble-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <form name="form" id="form" class="center">
         <table name="formTable">
@@ -103,6 +120,7 @@
     </form>
     <br><br>
     <iframe width = "90%" height = "210px" src = "../table/"></iframe>
+    <script src="modal.js"></script>
     <script src="get_available_selection.js"></script>
 </body>
 </html>

@@ -3,11 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+Antique:wght@700&display=swap" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" type="text/css" href="loading.css">
+  <link rel="stylesheet" type="text/css" href="modal.css">
   <title>TENQとは？</title>
 </head>
 <body>
-  <img src = "TENQ_mozi.png">
+  <div id = "modal" class = "modal hidden">
+      <div id = "modal_loading" class = "modal_body hidden">
+          <div style = "height: 15%;"></div>
+          <p style = "font-size: 4vw;">Loading...</p>
+          <div class="load_animation">
+              <div class="pulse-container">  
+              <div class="pulse-bubble pulse-bubble-1"></div>
+              <div class="pulse-bubble pulse-bubble-2"></div>
+              <div class="pulse-bubble pulse-bubble-3"></div>
+              </div>
+          </div>
+      </div>
+  </div>
+  <img src = "TENQ_mozi.png" id = "main_pic">
 
   <div class="title">
     <h4>TENQとは？</h4>
@@ -121,5 +139,7 @@
     </ol>
   </details>
 
+  <script type="text/javascript" src="modal.js"></script>
+  <script type="text/javascript" src="init.js"></script>
 </body>
 </html>

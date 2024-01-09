@@ -1,20 +1,21 @@
 /* ページ全体のスタイル */
 body{
-    font-family: 'Noto Sans JP', sans-serif;
+    font-family: 'Zen Kaku Gothic Antique';
     margin: 0;
     padding: 0;
+    font-weight: 500;
 }
 
 /* ページタイトルのスタイル */
 .title {
     display: flex;
-    font-size: 4vw;
-    font-weight: bold;
+    font-size: min(7vh, 4vw);
+    font-weight: 900;
     margin: 10px;
     align-items: center;
     justify-content: center;
     white-space: nowrap;
-    max-height: 60px;
+    max-height: 10vh;
 }
 .title img {
     width: 10%;
@@ -50,6 +51,7 @@ nav .menu{
     text-decoration: none;
     color: #333;
     white-space: nowrap;
+    cursor: pointer;
 }
 nav .menu:hover:not(:active){
     text-decoration: underline;
@@ -57,10 +59,11 @@ nav .menu:hover:not(:active){
 }
 nav .menu:active{
     font-size: 15px;
+    font-weight: 900;
 }
 nav .menu.selected:not(:active){
     color: black;
-    font-weight: bold;
+    font-weight: 900;
 }
 
 /* iframeに関するスタイル */
@@ -70,11 +73,11 @@ nav .menu.selected:not(:active){
     padding-top: 100%;
 }
 iframe{
-    margin: 0 50px;
+    /*margin: 0 50px;*/
     position: absolute;
     top: 0;
     align-content: center;
-    width: 100%; /* スタイルのフレームがはみ出す問題はこいつ */
+    width: 100vw; /* スタイルのフレームがはみ出す問題はこいつ */
     height: 100%;
     border: none;
 }

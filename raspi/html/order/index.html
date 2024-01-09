@@ -7,10 +7,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="modal.css">
+    <link rel="stylesheet" type="text/css" href="loading.css">
     <title>商品を注文する</title>
 </head>
 <body>
 	<h1 class = "subtitle">商品を注文する</h1>
+
+    <div id = "modal" class = "modal hidden">
+        <div id = "loading" class = "modal_body">
+            <div style = "height: 15%;"></div>
+            <p style = "font-size: 4vw;">Loading...</p>
+            <div class="load_animation">
+                <div class="pulse-container">  
+                  <div class="pulse-bubble pulse-bubble-1"></div>
+                  <div class="pulse-bubble pulse-bubble-2"></div>
+                  <div class="pulse-bubble pulse-bubble-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <form name="form" id="form" class="center">
         <table name="formTable">
@@ -31,6 +48,7 @@
                     <label for="item_name">注文したい商品</label>
                 </th>
                 <td>
+                    
                     <select name="item_name" id="item_name" title="送りたいもののカテゴリを選択してください" required>
                         <!-- jsでここに選択可能なカテゴリを追加する -->
                     </select>
