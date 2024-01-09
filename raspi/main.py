@@ -64,7 +64,8 @@ if __name__ == "__main__":
     mail_sender = web_app.mails(order_manager)
     
     #モジュール管理用クラス
-    module_manager = module_mng.module_controller(serial_port, order_manager, mail_sender)
+    sock_server_mdl = sock.sock_server("127.0.0.1", 56674)
+    module_manager = module_mng.module_controller(serial_port, order_manager, mail_sender, sock_server_mdl)
     #機体管理用クラス
     airframe_manager = module_mng.airframe_controller(serial_port, mail_sender)
     

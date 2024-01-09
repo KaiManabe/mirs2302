@@ -8,6 +8,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import order_mng as om
+import config
 
 # メール送信用関数
 def send_email(sender_name, sender_email, app_password, receiver_email, subject, body):
@@ -73,8 +74,8 @@ class mails():
             receiver_list = self.manager_list # order/accept/も必要だなこれ
             
         subject = "依頼が来ています"
-        transactions_link = f"http://172.25.60.44/{order_type.lower()}/accept/index.html?id={order_id}"
-        usage_rules_link = "http://172.25.60.44/main/"
+        transactions_link = f"http://{config.RASPI_IP_NCT}/{order_type.lower()}/accept/index.html?id={order_id}"
+        usage_rules_link = "http://{config.RASPI_IP_NCT}/main/"
         
         body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n  取引の依頼が来ています。以下のリンクから取引の承認・拒否を行なってください。\n\n▼承認用ページ\n  {transactions_link}\n\n  また、TENQの概要・使い方については以下のTENQホームページをご覧ください。\n\n▼TENQホームページ\n  {usage_rules_link}\n\n※このメールは自動で送信されています。"""
         

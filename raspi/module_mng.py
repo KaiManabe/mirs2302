@@ -24,7 +24,7 @@ class module_controller():
     """
     モジュールを制御するクラス
     """
-    def __init__(self, serial_port: ser.arduino_serial, order_manager: om.order_manager, mail_sender: web_app.mails):
+    def __init__(self, serial_port: ser.arduino_serial, order_manager: om.order_manager, mail_sender: web_app.mails, serv: sock.sock_server):
         """
         コンストラクタ
         
@@ -154,7 +154,7 @@ class module_controller():
         print("[INFO][module_mng.py] : モジュールと扉の状態の監視を開始しました")
         
         # ソケット通信のサーバーを立てる
-        self.server = sock.sock_server("127.0.0.1", 56674)
+        self.server = serv
         door_surv_thread[module_num][door_num] = threading.Thread(target = self.sock_surv)
         door_surv_thread[module_num][door_num].setDaemon(True)
         door_surv_thread[module_num][door_num].start()
