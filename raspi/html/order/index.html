@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="modal.css">
     <link rel="stylesheet" type="text/css" href="loading.css">
+    <link rel="stylesheet" type="text/css" href="item.css">
     <title>商品を注文する</title>
 </head>
 <body>
@@ -45,13 +46,49 @@
             </tr>
             <tr>
                 <th>
-                    <label for="item_name">注文したい商品</label>
+                    <label for = "item_selector" required>商品</label>
+                    <br>
+                    <div style="position: relative;">
+                        <div id = "item_selector_hide"></div>
+                        <select name="item" id="item_selector" required>
+                            <option id = "" value="" selected disabled>none</option>
+                            <option id = "item_1" value="inゼリー">1</option>
+                            <option id = "item_2" value="トロピカーナ">2</option>
+                            <option id = "item_3" value="カフェオレアイス">3</option>
+                            <option id = "item_4" value="カフェオレホット">4</option>
+                        </select>
+                    </div>
                 </th>
                 <td>
-                    
-                    <select name="item_name" id="item_name" title="送りたいもののカテゴリを選択してください" required>
-                        <!-- jsでここに選択可能なカテゴリを追加する -->
-                    </select>
+                    <div id = "item_selector_gui">
+                        
+                        <div class = "item_icon" id = "item_1_icon">
+                            <img src = "./img/in_jelly_multivitamin.png">
+                            
+                            <p>inゼリー<br>マルチビタミン</p>
+                        </div>
+
+                        
+                        <div class = "item_icon" id = "item_2_icon">
+                            <img src = "./img/tropicana_multivitamin.jpg">
+                            
+                            <p>トロピカーナ<br>マルチビタミン</p>
+                        </div>
+
+                        
+                        <div class = "item_icon" id = "item_3_icon">
+                            <img src = "./img/blended_coffee_cafe-o-le.jpg">
+                            
+                            <p>カフェオレ<br>(アイス)</p>
+                        </div>
+
+                        
+                        <div class = "item_icon" id = "item_4_icon">
+                            <img src = "./img/blended_coffee_cafe-o-le.jpg">
+                            
+                            <p>カフェオレ<br>(ホット)</p>
+                        </div>
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -102,5 +139,6 @@
     <br><br>
     <iframe width = "90%" height = "210px" src = "../table/"></iframe>
     <script src="get_available_selection.js"></script>
+    <script src="item_selector.js"></script>
 </body>
 </html>
