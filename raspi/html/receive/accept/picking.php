@@ -3,16 +3,16 @@
 $ID = $_POST["id"];
 
 if(isset($_POST["accept"]) && $_POST["accept"] == "accept"){
-    if(isset($_POST["receive_pincode"])){
-        $cmd = "sudo -u pi python3 /home/pi/git/mirs2302/raspi/order_mng.py modify_order " . $ID . " RECEIVE_PIN " . $_POST['receive_pincode'];
+    if(isset($_POST["pickup_pincode"])){
+        $cmd = "sudo -u pi python3 /home/pi/git/mirs2302/raspi/order_mng.py modify_order " . $ID . " PICKUP_PIN " . $_POST['pickup_pincode'];
         $result = shell_exec($cmd);
     }
-    if(isset($_POST["receive_time"])){
-        $cmd = "sudo -u pi python3 /home/pi/git/mirs2302/raspi/order_mng.py modify_order " . $ID . " RECEIVE_TIME " . $_POST['receive_time'];
+    if(isset($_POST["pickup_time"])){
+        $cmd = "sudo -u pi python3 /home/pi/git/mirs2302/raspi/order_mng.py modify_order " . $ID . " PICKUP_TIME " . $_POST['pickup_time'];
         $result = shell_exec($cmd);
     }
-    if(isset($_POST["receive_place"])){
-        $cmd = "sudo -u pi python3 /home/pi/git/mirs2302/raspi/order_mng.py modify_order " . $ID . " RECEIVE_PLACE " . $_POST['receive_place'];
+    if(isset($_POST["pickup_place"])){
+        $cmd = "sudo -u pi python3 /home/pi/git/mirs2302/raspi/order_mng.py modify_order " . $ID . " PICKUP_PLACE " . $_POST['pickup_place'];
         $result = shell_exec($cmd);
     }
 

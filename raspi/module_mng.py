@@ -467,7 +467,8 @@ class airframe_controller():
             # 持ち去りを検知した時
             if self.airframe_taken:
                 print("[INFO][module_mng.py] : 機体の持ち去りを検知しました")
-                # self.mail_sender.warning(warn_type="airframe") # 異常検知メールを送信
+                # MailThread = threading.Thread(target=self.mail_sender.warning, args=(warn_type="airframe",)) # 異常検知メールを送信
+                # MailThread.start()
                 break
             
             time.sleep(AIR_CYCLE)

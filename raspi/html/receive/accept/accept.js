@@ -130,7 +130,7 @@ function chbox(obj){
 
 
 
-const pickingTimeElement = document.getElementById("receive_time");
+const pickingTimeElement = document.getElementById("pickup_time");
 const submit_button = document.getElementById("submit_button");
 
 // ページが読み込まれた時に実行する処理
