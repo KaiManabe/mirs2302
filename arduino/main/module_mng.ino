@@ -149,20 +149,27 @@ photo_stateに常に値を代入　1：持ち去り、0：問題なし
 */
 int photo(){
   int p;
+  int state = 0;
+  int photo_dist = 0;
   
-  p = digitalRead(5);
-  if(p == 1){
-    photo_curr = 0;
+  p = analogRead(PHOTO);
+  photo_dist = photo_curr - p;
+  photo_dist = abs(photo_dist);
+  
+  if(photo_dist < 50){
+    photo_count = 0;
   }else{
-    photo_curr = photo_curr + 1;
+    photo_count = photo_count + 1;
   }
 
-  if(photo_curr >= 50){
+  if(photo_count >= 8){
     photo_state = photo_flg_err;
   }else{
     photo_state = photo_flg_ok;
   }
   delay(10);
   
-  return(0);
+  photo_curr = p;
+  
+  return(state);
 }

@@ -10,7 +10,8 @@ long r_spd_target = 0L;
 //フォトリフレクタ状態フラグ
 const int photo_flg_err = 1;
 const int photo_flg_ok = 0;
-int photo_curr = 0; //現在の車体が浮いた回数
+int photo_curr = 0; //現在の値
+int photo_count = 0; //現在の車体が浮いた回数
 int photo_state = 0; //車体の状態　1：持ち去り,0：問題なし
 
 void init_pin(){
