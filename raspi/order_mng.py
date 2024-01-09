@@ -417,7 +417,7 @@ if __name__ == '__main__':
                         NOTE = note
                     )
             # "送ってもらう"の場合
-            if(sys.argv[2] == 'RECEIVE'):
+            elif(sys.argv[2] == 'RECEIVE'):
                 if o.box_decider(sys.argv[3]) != -1:
                     o.new_order(
                         ORDER_TYPE = sys.argv[2],
@@ -425,9 +425,22 @@ if __name__ == '__main__':
                         ITEM_NAME = sys.argv[4],
                         SENDER = sys.argv[5],
                         RECEIVER = sys.argv[6],
-                        REVEIVE_PLACE = sys.argv[7],
+                        RECEIVE_PLACE = sys.argv[7],
                         RECEIVE_TIME = option_to_datetime(sys.argv[8]),
                         RECEIVE_PIN = sys.argv[9],
+                        NOTE = note
+                    )
+            # "注文する"の場合
+            elif(sys.argv[2] == 'ORDER'):
+                if o.box_decider(sys.argv[3]) != -1:
+                    o.new_order(
+                        ORDER_TYPE = sys.argv[2],
+                        ITEM_TYPE = o.box_decider(sys.argv[3]),
+                        ITEM_NAME = sys.argv[4],
+                        RECEIVER = sys.argv[5],
+                        RECEIVE_PLACE = sys.argv[6],
+                        RECEIVE_TIME = option_to_datetime(sys.argv[7]),
+                        RECEIVE_PIN = sys.argv[8],
                         NOTE = note
                     )
                 

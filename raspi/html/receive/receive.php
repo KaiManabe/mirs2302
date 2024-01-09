@@ -5,8 +5,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // 注文情報を要素ごと取得
     $ORDER_TYPE = 'RECEIVE';
-    $SENDER = $orderData['client_address'];
-    $RECEIVER = $orderData['target_address'];
+    $SENDER = $orderData['target_address'];
+    $RECEIVER = $orderData['client_address'];
     $ITEM_TYPE = $orderData['item_type'];
     $ITEM_NAME = $orderData['item_name'];
     $PICKING_PLACE = $orderData['picking_place'];
