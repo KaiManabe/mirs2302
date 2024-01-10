@@ -6,8 +6,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 注文情報を要素ごと取得
     $ORDER_TYPE = 'ORDER';
     $RECEIVER = $orderData['client_address'];
-    $ITEM_TYPE = $orderData['item_type'];
-    $ITEM_NAME = $orderData['item_name'];
+    if ($orderData['item_selector'] === 'カフェオレホット'){
+        $ITEM_TYPE = '食品（保温）';
+    }
+    else{
+        $ITEM_TYPE = '食品（保冷）';
+    }
+    $ITEM_NAME = $orderData['item_selector'];
     $PICKING_PLACE = $orderData['picking_place'];
     $PICKING_TIME = $orderData['picking_time'];
     $PICKING_PINCODE = $orderData['picking_pincode'];

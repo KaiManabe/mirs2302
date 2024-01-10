@@ -33,16 +33,16 @@ item.addEventListener('click', function() {
 });
 });
 
-/* ロゴの画像を押された時の処理 */
-var logoElement = document.getElementById('title_logo');
-var aboutElement = document.getElementById('about');
+// /* ロゴの画像を押された時の処理 */
+// var logoElement = document.getElementById('title_logo');
+// var aboutElement = document.getElementById('about');
 
-logoElement.addEventListener('click', function() {
-// すべてのリストアイテムからクラスを削除
-navItems.forEach(function(item) {
-  item.classList.remove('selected');
-});
+// logoElement.addEventListener('click', function() {
+// // すべてのリストアイテムからクラスを削除
+// navItems.forEach(function(item) {
+//   item.classList.remove('selected');
+// });
 
-// aboutのリストアイテムにクラスを追加
-aboutElement.classList.add('selected');
-});
+// // aboutのリストアイテムにクラスを追加
+// aboutElement.classList.add('selected');
+// });

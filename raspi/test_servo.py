@@ -57,7 +57,7 @@ if __name__ == "__main__":
             t = threading.Thread(target = open_servo, args = (pin, "right",))
         else:
             t = threading.Thread(target = open_servo, args = (pin, "left",))
-        time.sleep(0.5)
+        time.sleep(1)
         t.start()
 
 

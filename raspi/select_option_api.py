@@ -547,7 +547,7 @@ def api(args):
             #受け取る　の承認
             time_printer(simulator8(option["id"]))
     
-    elif option["mode"] == "DELIVERY":
+    elif option["mode"] == "ORDER":
         time_printer(simulator6(option["selected_box"]))
     
             

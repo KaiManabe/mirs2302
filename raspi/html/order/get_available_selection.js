@@ -3,6 +3,7 @@
 */
 const formElement = document.getElementById("form");
 const itemTypeElement = document.getElementById("item_type");
+const itemSelectorElement = document.getElementById("item_selector");
 const pickingTimeElement = document.getElementById("picking_time");
 
 /*
@@ -11,21 +12,12 @@ const pickingTimeElement = document.getElementById("picking_time");
 
 // ページが読み込まれた時に実行する処理
 document.addEventListener("DOMContentLoaded", function(event) {
-    itemTypeElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
-    var labels = ["小物", "書類", "食品（保冷）", "食品（保温）"]
-    for(let i  = 0; i < 4; i++){
-        newele = document.createElement("option");
-        newele.setAttribute("value", labels[i]);
-        newele.innerHTML = labels[i]
-        itemTypeElement.appendChild(newele);
-    }
     pickingTimeElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
-    //selectableItem();
     selectableTime();
 });
-// ITEM_TYPEが選択された時の処理
-itemTypeElement.addEventListener('change', function(event) {
-    selectableTime(event.target.value);
+// 商品が選択された時の処理
+itemSelectorElement.addEventListener('change', function(event) {
+    selectableItem(event.target.value);
 });
 // 集荷時間が選択された時の処理
 pickingTimeElement.addEventListener('change', function(event) {
@@ -42,8 +34,8 @@ formElement.addEventListener('submit', function(event) {
 */
 function submitProcessing(){
     // formデータの読み込み
-    var formIds = ['client_address', 'client_address_type', 'target_address', 'target_address_type', 'item_type', 'item_name', 'picking_place', 'picking_time', 'picking_pincode', 'note']; // formのID
-    var couplingIds = [['client_address', 'client_address_type'], ['target_address', 'target_address_type']]; // 結合する要素のID
+    var formIds = ['client_address', 'client_address_type', 'item_selector', 'picking_place', 'picking_time', 'picking_pincode', 'note']; // formのID
+    var couplingIds = [['client_address', 'client_address_type']]; // 結合する要素のID
     var sendData = readFormData(formIds, couplingIds);
 
     // formデータを送信
@@ -221,5 +213,3 @@ function selectableItem(time) {
     })
     .forEach(option => itemTypeElement.appendChild(option));
 }
-
-//  SENDコピーしたまま
