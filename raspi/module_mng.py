@@ -11,6 +11,7 @@ import threading
 import time
 import sock
 import order_mng as om
+import test_servo
 
 IDEN_CYCLE = 1 # 搭載モジュール情報更新周期[s]
 AIR_CYCLE = 0.1 # 機体持ち去り検知周期[s]
@@ -367,22 +368,28 @@ class module_controller():
         
         # 対応するリレーのピンにHIGHを出力
         self.onb_module_info[module_num][door_num]["unlocked"]: bool = True # こじ開け検知用フラグを"解錠した"に設定
-        GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], True)
-        time.sleep(0.5) # なぜか待たないと動かない
+        # GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], True)
+        # time.sleep(0.5) # なぜか待たないと動かない
         
-        # ArduinoにPWM出力指令を出す
-        if door_name == "right":
-            rot_dir = 0
-        else:
-            rot_dir = 1
-        self.serial.send(10, [rot_dir])
+        # # ArduinoにPWM出力指令を出す
+        # if door_name == "right":
+        #     rot_dir = 0
+        # else:
+        #     rot_dir = 1
+        # self.serial.send(10, [rot_dir])
         print(f"[INFO][module_mng.py] : {module_name}の{door_name}を解錠中...")
-        time.sleep(3) # Arduino側のサーボを開けてから閉じるまでの時間が3s
-        time.sleep(0.5) # 0.5s余裕を持たせておく
+        # time.sleep(3) # Arduino側のサーボを開けてから閉じるまでの時間が3s
+        # time.sleep(0.5) # 0.5s余裕を持たせておく
 
-        # ピンにLOWを出力
-        GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], False)
-        time.sleep(0.5) # 0.5s余裕を持たせておく
+        # # ピンにLOWを出力
+        # GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], False)
+        # time.sleep(0.5) # 0.5s余裕を持たせておく
+        
+        # 2024-1-11変更
+        if door_name == "right":
+            test_servo.open_servo(pin=self.onb_module_info[module_num][door_num]["pin"]["SERVO"], side="right")
+        else:
+            test_servo.open_servo(pin=self.onb_module_info[module_num][door_num]["pin"]["SERVO"])
         
         # GPIOピンを解放
         GPIO.cleanup(self.onb_module_info[module_num][door_num]["pin"]["SERVO"])

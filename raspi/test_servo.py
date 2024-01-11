@@ -53,7 +53,7 @@ def open_servo(pin, side = "left"):
 if __name__ == "__main__":
     init()
     for pin in PINS:
-        if pin in [19, 29]:
+        if pin in [13, 29]:
             t = threading.Thread(target = open_servo, args = (pin, "right",))
         else:
             t = threading.Thread(target = open_servo, args = (pin, "left",))
