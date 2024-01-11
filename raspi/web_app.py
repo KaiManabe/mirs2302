@@ -73,11 +73,15 @@ class mails():
             # 依頼メールを各管理者に送信し、承認した人をオーダーリストに書き込むようにしたい
             receiver_list = self.manager_list # order/accept/も必要だなこれ
             
-        subject = "依頼が来ています"
         transactions_link = f"http://{config.RASPI_IP_NCT}/{order_type.lower()}/accept/index.html?id={order_id}"
-        usage_rules_link = "http://{config.RASPI_IP_NCT}/main/"
+        tenq_hp_link = f"http://{config.RASPI_IP_NCT}/main/"
         
-        body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n  取引の依頼が来ています。以下のリンクから取引の承認・拒否を行なってください。\n\n▼承認用ページ\n  {transactions_link}\n\n  また、TENQの概要・使い方については以下のTENQホームページをご覧ください。\n\n▼TENQホームページ\n  {usage_rules_link}\n\n※このメールは自動で送信されています。"""
+        if order_type == 'ORDER':
+            subject = "管理者用通知 - 依頼"
+            body = f"""  商品発送の依頼が来ています。以下のリンクから取引の承認・拒否を行なってください。\n\n▼承認用ページ\n  {transactions_link}\n\n※このメールは自動で送信されています。"""
+        else:
+            subject = "依頼が来ています"
+            body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n  取引の依頼が来ています。以下のリンクから取引の承認・拒否を行なってください。\n\n▼承認用ページ\n  {transactions_link}\n\n  また、TENQの概要・使い方については以下のTENQホームページをご覧ください。\n\n▼TENQホームページ\n  {tenq_hp_link}\n\n※このメールは自動で送信されています。"""
         
         for receiver_email in receiver_list:
             send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
@@ -253,3 +257,8 @@ class mails():
         # 各管理者に送信
         for receiver_email in self.manager_list:
             send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
+            
+            
+if __name__ == "__main__":
+    order = om.order_manager()
+    mail_sender = mails(order)
