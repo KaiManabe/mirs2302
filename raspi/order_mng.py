@@ -6,6 +6,7 @@ import datetime
 import sys
 import os
 import warnings
+import web_app
 
 
 #warnings.filterwarnings('ignore', category=pd.core.common.SettingWithCopyWarning)
@@ -476,3 +477,12 @@ if __name__ == '__main__':
                     key = sys.argv[3],
                     value = sys.argv[4]
                     )
+                
+                # 依頼結果メール送信の処理
+                if sys.argv[3] == 'STATUS':
+                    mail_sender = web_app.mails(o)
+                    if sys.argv[4] == 'ACCEPTED':
+                        mail_sender.request_result(order_id=sys.argv[2], result="accepted")
+                        mail_sender.accepted(order_id=sys.argv[2])
+                    elif sys.argv[4] == 'DENIED':
+                        mail_sender.request_result(order_id=sys.argv[2], result="denied")

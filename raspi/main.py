@@ -92,22 +92,9 @@ if __name__ == "__main__":
 #状態    MAIL_SENT
 #*****************************************************************************************************        
             elif status == "MAIL_SENT":
-#条件文                     ↓
-                if """メールのレスポンスがあったか？""":
-#条件文                     ↓
-                    if """承認されたか？""":
-                        order_manager.modify_order(id, "STAUTS", "ACCEPTED")
-                        order_manager.modify_order(id, "ACCEPTED_TIME", datetime.datetime.now())
-                        mail_sender.request_result(id, "accepted")
-                        mail_sender.accepted(id)
-                    else:#拒否された
-                        order_manager.modify_order(id, "STAUTS", "DENIED")
-                        mail_sender.request_result(id, "denied")
-                else:#レスポンスなし
-#条件文                     ↓
-                    if """タイムアウトしてるか？""":
-                        order_manager.modify_order(id, "STAUTS", "ACCEPT_TIMEOUT")
-                        mail_sender.request_result(id, "timeout")
+                if datetime.datetime.now() > current_order["RECEIPT_TIME"] + datetime.timedelta(hours = 2):
+                    order_manager.modify_order(id, "STAUTS", "ACCEPT_TIMEOUT")
+                    mail_sender.request_result(id, "timeout")
             
             
             
@@ -161,13 +148,9 @@ if __name__ == "__main__":
 #状態    WAITING_FOR_PICKUP
 #***************************************************************************************************** 
             elif status == "WAITING_FOR_PICKUP":
-#条件文                     ↓
-                if """ユーザきたか？""":
-                    order_manager.modify_order(id, "STAUTS", "PICKED_UP")
-                else:#きてない
-                    if datetime.datetime.now() >= current_order["PICKUP_TIME"] + datetime.timedelta(minutes = 15):
-                        order_manager.modify_order(id, "STAUTS", "PICKUP_TIMEOUT")
-                        mail_sender.notice(id, "pickup", "timeout")
+                if datetime.datetime.now() >= current_order["PICKUP_TIME"] + datetime.timedelta(minutes = 15):
+                    order_manager.modify_order(id, "STAUTS", "PICKUP_TIMEOUT")
+                    mail_sender.notice(id, "pickup", "timeout")
             
             
 #*****************************************************************************************************
@@ -223,11 +206,7 @@ if __name__ == "__main__":
 #状態    WAITING_FOR_RECEIVE
 #***************************************************************************************************** 
             elif status == "WAITING_FOR_RECEIVE":
-#条件文                     ↓
-                if """ユーザきたか？""":
-                    order_manager.modify_order(id, "STAUTS", "RECEIVED")
-                else:#きてない
-                    if datetime.datetime.now() >= current_order["RECEIVE_TIME"] + datetime.timedelta(minutes = 15):
-                        order_manager.modify_order(id, "STAUTS", "RECEIVE_TIMEOUT")
-                        mail_sender.notice(id, "receive", "timeout")
+                if datetime.datetime.now() >= current_order["RECEIVE_TIME"] + datetime.timedelta(minutes = 15):
+                    order_manager.modify_order(id, "STAUTS", "RECEIVE_TIMEOUT")
+                    mail_sender.notice(id, "receive", "timeout")
 
