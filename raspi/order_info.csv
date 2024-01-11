@@ -3,5 +3,5 @@ e229d3f0-3a47-4333-b6cd-e78f68c1da01,SEND,小物1,test,DENIED,2023-12-30 13:35:3
 5785f303-32bc-4621-856e-f74ea5fee404,SEND,書類1,test2,DENIED,2023-12-30 13:36:31,,test3@numazu.kosen-ac.jp,test4@numazu.kosen-ac.jp,C科棟,2024-01-10 14:50:00,1234.0,,,2345.0,
 dd96f6c1-54de-4101-a4a8-380bb467d47a,RECEIVE,食品（保冷）,123,DENIED,2023-12-31 00:41:13,,asddd@numazu.kosen-ac.jp,wddd@numazu.kosen-ac.jp,,,,D科棟,2024-01-11 15:00:00,12345.0,
 a633cbce-64d6-46de-869d-94303533c7be,SEND,小物1,awwww,DENIED,2024-01-03 01:45:25,,test@numazu.kosen-ac.jp,testt@numazu.kosen-ac.jp,C科棟,2024-01-10 10:40:00,5678.0,,,,notetet
-48c9ff7c-d9c3-43c3-9691-958aec2d62ee,ORDER,食品（保冷）,トロピカーナ,DENIED,2024-01-11 15:17:02,,,d20139@numazu.kosen-ac.jp,,,,D科棟,2024-01-11 16:40:00,1283961.0,あああ
-3dce7854-e624-43a7-9fcd-c16c128a1fb9,ORDER,食品（保冷）,inゼリー,NOT_ACCEPT_YET,2024-01-11 15:54:15,,,d20139@numazu.kosen-ac.jp,,,,E科棟,2024-01-11 18:50:00,12796857,
+90f72c64-77a7-4ec7-a14f-e76464558001,ORDER,食品（保冷）,inゼリー,ACCEPTED,2024-01-11 20:08:33,,d20136@numazu.kosen-ac.jp,d20139@numazu.kosen-ac.jp,C科棟,2024-01-11 23:00:00,86675323.0,D科棟,2024-01-11 21:40:00,12978657.0,ないよん
+5c4d9927-0338-4c1b-90fc-735ae2f04f7e,ORDER,食品（保冷）,トロピカーナ,ACCEPTED,2024-01-11 20:26:38,,d20139@numazu.kosen-ac.jp,d20139@numazu.kosen-ac.jp,D科棟,2024-01-11 22:20:00,56733132.0,C科棟,2024-01-11 23:50:00,76781567.0,あいう

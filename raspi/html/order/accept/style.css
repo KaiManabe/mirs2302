@@ -1,0 +1,52 @@
+body{
+    font-family: 'Zen Kaku Gothic Antique';
+}
+
+select{
+    font-family: 'Zen Kaku Gothic Antique';
+}
+
+input{
+    font-family: 'Zen Kaku Gothic Antique';
+}
+
+.chosen{
+    color:black;
+}
+
+.unchosen{
+    color:rgb(146, 146, 146);
+}
+
+input[type=checkbox]{
+    display:none;
+}
+
+#checkbox_label{
+    border: solid;
+    padding : 0.2em;
+}
+
+.checked_label #yes{
+    background-color:rgb(156, 255, 116);
+    color:black;
+}
+.checked_label #no{
+    color:rgb(146, 146, 146);
+}
+.unchecked_label #yes{
+    color:rgb(146, 146, 146);
+}
+.unchecked_label #no{
+    background-color:rgb(255, 134, 134);
+    color:black;
+}
+
+
+label{
+    font-size : 20px;
+}
+
+form{
+    line-height : 50px;
+}
