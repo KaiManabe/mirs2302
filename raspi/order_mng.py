@@ -398,10 +398,11 @@ if __name__ == '__main__':
         # 新しい注文情報を書き込む
         if(sys.argv[1] == 'new_order'):
             # 備考の有無判別
-            if(len(sys.argv) > 10):
-                note = sys.argv[10]
-            else:
-                note = ""
+            if sys.argv[2] != 'ORDER':
+                if(len(sys.argv) > 10):
+                    note = sys.argv[10]
+                else:
+                    note = ""
             # "送る"の場合
             if(sys.argv[2] == 'SEND'):
                 if o.box_decider(sys.argv[3]) != -1:
@@ -432,6 +433,10 @@ if __name__ == '__main__':
                     )
             # "注文する"の場合
             elif(sys.argv[2] == 'ORDER'):
+                if(len(sys.argv) > 9):
+                    note = sys.argv[9]
+                else:
+                    note = ""
                 if o.box_decider(sys.argv[3]) != -1:
                     o.new_order(
                         ORDER_TYPE = sys.argv[2],
