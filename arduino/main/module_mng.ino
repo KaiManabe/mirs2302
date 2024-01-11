@@ -105,16 +105,16 @@ void module_temp(){
   //保温用モジュール
   
   if(temp_h <= target_temp_h){
-    digitalWrite(PELTIER,HIGH);
-  }else{
     digitalWrite(PELTIER,LOW);
+  }else{
+    digitalWrite(PELTIER,HIGH);
   }
 
   //保冷用モジュール
   if(temp_c >= target_temp_c){
-    digitalWrite(PELTIER,HIGH);
-  }else{
     digitalWrite(PELTIER,LOW);
+  }else{
+    digitalWrite(PELTIER,HIGH);
   }
 }
 
