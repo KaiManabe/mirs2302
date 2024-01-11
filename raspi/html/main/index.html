@@ -18,19 +18,30 @@
             <!-- <img src="logo.png" alt="TENQロゴ" id="title_logo" onclick="select_view_html('iframe_about')"> -->
             MIRS2302 TENQ Project Demo Page
         </div>
-        <nav>
+        <!-- <nav>
             <ul>
                 <li onclick = "select_view_html('iframe_about')"><div class="menu selected" id="about">TENQとは？</div></li>
                 <li onclick = "select_view_html('iframe_send')"><div class="menu">荷物を送る</div></li>
                 <li onclick = "select_view_html('iframe_receive')"><div class="menu">荷物を受け取る</div></li>
                 <li onclick = "select_view_html('iframe_order')"><div class="menu">商品を注文する</div></li>
             </ul>
-        </nav>
-        <div class="iframe-container">
+        </nav> -->
+        <!-- <div class="iframe-container">
             <iframe id = "iframe_about" src = "../about/index.html" class="view"></iframe>
             <iframe id = "iframe_send" src = "../send/index.html" class="hide"></iframe>
             <iframe id = "iframe_receive" src = "../receive/index.html" class="hide"></iframe>
             <iframe id = "iframe_order" src = "../order/index.html" class="hide"></iframe>
+        </div> -->
+        <nav>
+            <ul>
+                <li onclick = "select_view_html('about')"><div class="menu selected" id="about">TENQとは？</div></li>
+                <li onclick = "select_view_html('send')"><div class="menu">荷物を送る</div></li>
+                <li onclick = "select_view_html('receive')"><div class="menu">荷物を受け取る</div></li>
+                <li onclick = "select_view_html('order')"><div class="menu">商品を注文する</div></li>
+            </ul>
+        </nav>
+        <div class="iframe-container">
+            <iframe id = "iframe" src = "../about/index.html"></iframe>
         </div>
     </div>
 	<script type = "text/javascript" src="view.js"></script>
