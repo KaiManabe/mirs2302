@@ -2,8 +2,7 @@
 --------------- 要素の定義 ---------------
 */
 const formElement = document.getElementById("form");
-const itemTypeElement = document.getElementById("item_type");
-const itemSelectorElement = document.getElementById("item_selector");
+const itemSelectorElement = document.querySelectorAll(".item_icon");
 const pickingTimeElement = document.getElementById("picking_time");
 
 /*
@@ -15,14 +14,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     pickingTimeElement.innerHTML = "<option value='init' selected disabled>選択してください</option>";
     selectableTime();
 });
-// 商品が選択された時の処理
-itemSelectorElement.addEventListener('change', function(event) {
-    selectableItem(event.target.value);
-});
-// 集荷時間が選択された時の処理
-pickingTimeElement.addEventListener('change', function(event) {
-    selectableItem(event.target.value);
-});
+// 商品が選択された時の処理 -> item_selector.js に記述
 // データを送信するボタンが押された時の処理
 formElement.addEventListener('submit', function(event) {
     event.preventDefault(); // ページのリロードを防ぐ
@@ -46,27 +38,6 @@ function submitProcessing(){
     }else{
         window.alert("エラーが発生しました。\nもう一度お試しください。");
     }
-
-    
-
-
-    /*   2023-12-31  alertに変更
-
-    // 送信中の画面を表示（なぜかできねえ！！！！！！！！！！！！！！）
-    var formElement = document.getElementById("form");
-    formElement.innerHTML = "<div id='sending'>取引情報を送信中です...</div>";
-
-    // 送信結果の画面を表示
-    var sendingElement = document.getElementById("sending");
-    // 正常終了
-    if(result == 0){
-        sendingElement.innerHTML = "<div id='success'>正常に取引を承りました</div>";
-    }
-    // 異常終了
-    else{
-        sendingElement.innerHTML = "<div id='error'>ERROR : 取引を承れませんでした</div>";
-    }
-    */
 }
 
 /*
@@ -129,11 +100,11 @@ function sendDataToPhp(sendData) {
 
 ***クライアントがITEM_TYPEを選択した時に実行するやつ***
 */
-function selectableTime(item_type) {
+function selectableTime(item_selector) {
     // httpリクエストを送信して選択可能な時間を取得
     var xhr = new XMLHttpRequest();
     var url = "get_available_selection.php"; // httpリクエスト先
-    xhr.open("GET", url + "?item_type=" + encodeURIComponent(JSON.stringify(item_type)), false); // 同期通信GETメソッド
+    xhr.open("GET", url + "?item_selector=" + encodeURIComponent(JSON.stringify(item_selector)), false); // 同期通信GETメソッド
     xhr.send();
     var timeList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
 
@@ -168,48 +139,4 @@ function selectableTime(item_type) {
         return 0;
     })
     .forEach(option => pickingTimeElement.appendChild(option));
-}
-
-/*
-選択可能なITEM_TYPEを制限する関数
-
-引数(なしでもいける)：
-    時間: str
-
-***クライアントが集荷時間を選択した時に実行するやつ***
-*/
-function selectableItem(time) {
-    // httpリクエストを送信して選択可能なITEM_TYPEを取得
-    var xhr = new XMLHttpRequest();
-    var url = "get_available_selection.php"; // httpリクエスト先
-    xhr.open("GET", url + "?time=" + encodeURIComponent(JSON.stringify(time)), false); // 同期通信GETメソッド
-    xhr.send();
-    var itemList = xhr.responseText.split(",").filter(Boolean); // httpレスポンスを配列にして受け取る
-
-    // 既存の選択肢の配列を作成
-    var existingOptions = Array.from(itemTypeElement.options).map(option => option.value);
-
-    // 既存の選択肢にない選択可能なITEM_TYPEを追加
-    itemList.forEach(function(item) {
-        if (!existingOptions.includes(item)) {
-            var option = document.createElement("option");
-            option.value = item;
-            option.text = item;
-            itemTypeElement.appendChild(option);
-        }
-    });
-    // 既存の選択肢にある選択可能なITEM_TYPEではないものを削除
-    existingOptions.forEach(function(optionValue) {
-        if (!itemList.includes(optionValue) && optionValue != 'init') {
-            itemTypeElement.querySelectorAll('option[value="' + optionValue + '"]').forEach(option => option.remove());
-        }
-    });
-    // ITEM_TYPEの選択肢をソート
-    const sortRule = ['小物', '資料', '食品（保冷）', '食品（保温）']; // ITEM_TYPEのソート規則（要素の早い順にソートされる）
-    Array.from(itemTypeElement.options)
-    .filter(option => option.value !== 'init')
-    .sort(function(a, b) {
-        return sortRule.indexOf(a.value) - sortRule.indexOf(b.value);
-    })
-    .forEach(option => itemTypeElement.appendChild(option));
 }

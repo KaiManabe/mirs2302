@@ -548,7 +548,10 @@ def api(args):
             time_printer(simulator8(option["id"]))
     
     elif option["mode"] == "ORDER":
-        time_printer(simulator6(option["selected_box"]))
+        if option["selected_box"] == None:
+            time_printer(simulator5())
+        else:
+            time_printer(simulator6(option["selected_box"]))
     
             
     

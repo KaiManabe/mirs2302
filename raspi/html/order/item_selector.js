@@ -5,6 +5,8 @@ function select(event){
     document.querySelectorAll(".item_icon").forEach(function(ele){ele.classList.remove("selected")});
 
     document.querySelector("#item_" + item_num + "_icon").classList.add("selected");
+
+    selectableTime(document.getElementById("item_selector").value);
 }
 
 
