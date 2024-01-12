@@ -87,5 +87,3 @@ iframe.view{
 iframe.hide{
 	display : none;
 }
-
-@media screen and(min-width:750px)and(min-width:1334px){}
