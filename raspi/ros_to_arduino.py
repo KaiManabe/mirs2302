@@ -3,6 +3,8 @@ import serial_com as ser
 import run_ctrl as ctrl
 import threading
 import time
+import sys
+
 
 class ros_to_arduino():
     def __init__(self, c:ctrl.run_controller, s:sock.sock_server):
@@ -16,8 +18,31 @@ class ros_to_arduino():
         t.start()
 
     def send_to_arduino(self, l, r):
+        if l > 600:
+            l = 600
+        if l < -600:
+            l = -600
+        
+        if r > 600:
+            r = 600
+        if r < -600:
+            r = -600
+        
+        if abs(l) < 100:
+            if l < 0:
+                l = -100
+            elif l > 0:
+                l = 100
+        
+        if abs(r) < 100:
+            if r < 0:
+                r = -100
+            elif r > 0:
+                r = 100
+        
         self.c.set_l_speed(l)
         self.c.set_r_speed(r)
+        #print(f"\r {l}   ,   {r}   ", end = "", file = sys.stderr)
 
 def monitor(rta):
     print("[INFO][ros_to_arduino] : cmd_velをarduinoに転送開始しました")

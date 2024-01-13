@@ -21,8 +21,8 @@ if __name__ == "__main__":
             if MODE == "PICKUP":
                 o.modify_order(order["ID"], "STATUS", "PICKED_UP")
                 rsp.update("ROBOT_STATUS", "WAITING")
-                print(True, end = "")
+                print("SuccessfullyConfirmed", end = "")
             else:
                 o.modify_order(order["ID"], "STATUS", "RECEIVED")
                 rsp.update("ROBOT_STATUS", "WAITING")
-                print(True, end = "")
+                print("SuccessfullyConfirmed", end = "")

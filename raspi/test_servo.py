@@ -18,8 +18,16 @@ def init():
 
 
 def pwm(pin, cycle):
-    if not(pin in PINS):
-        return
+    
+    """
+    PWMを出力する
+    
+    引数:
+        GPIOピン
+        
+        パルス幅(us)
+    """
+
     pwm_cycle = 1/ 50
     duty = cycle
     duty /= 1000
@@ -36,6 +44,13 @@ def pwm(pin, cycle):
 
 
 def open_servo(pin, side = "left"):
+    """
+    サーボ解錠
+    
+    引数:
+        GPIOピン
+        どちらの扉か(デフォルト：左)
+    """
     if side == "left":
         #左の扉
         #蝶番が左　サーボが右

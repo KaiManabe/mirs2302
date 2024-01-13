@@ -35,7 +35,7 @@ class arduino_serial():
         for p in PORTS:
             try:
                 #タイムアウト1秒でarduinoに接続を試みる
-                self.serial_port = serial.Serial(p, 115200, timeout = 1.0)
+                self.serial_port = serial.Serial(p, 115200, timeout = 5.0)
             except:
                 continue
             
@@ -66,7 +66,7 @@ class arduino_serial():
         buf_monitor_thread.start()
         print("[INFO][serial_com.arduino_serial] : シリアルバッファの監視を開始しました")
 
-    
+
     def read(self, idx):
         """
         バッファを返す関数
