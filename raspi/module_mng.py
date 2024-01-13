@@ -11,21 +11,25 @@ import threading
 import time
 import sock
 import order_mng as om
-import test_servo
+import robot_state_publisher
+
 
 IDEN_CYCLE = 1 # 搭載モジュール情報更新周期[s]
 AIR_CYCLE = 0.1 # 機体持ち去り検知周期[s]
-MODULE_SURV_CYCLE = 0.5 # モジュール監視周期[s]
+MODULE_SURV_CYCLE = 0.001 # モジュール監視周期[s]
 DOOR_SURV_CYCLE = 1 # 扉監視周期[s]
 SOCK_SURV = 1 # ソケット通信監視周期[s]
-RES_ERR_RATE = 10 # 抵抗値許容誤差範囲[%]
+RES_ERR_RATE = 50 # 抵抗値許容誤差範囲[%]
 """統合時こいつらは調整する"""
+
+
+####################################################################################
 
 class module_controller():
     """
     モジュールを制御するクラス
     """
-    def __init__(self, serial_port: ser.arduino_serial, order_manager: om.order_manager, mail_sender: web_app.mails, serv: sock.sock_server):
+    def __init__(self, serial_port: ser.arduino_serial, order_manager: om.order_manager, mail_sender: web_app.mails or None = None, serv: sock.sock_server or None = None):
         """
         コンストラクタ
         
@@ -36,6 +40,8 @@ class module_controller():
         self.serial = serial_port
         self.order_mng = order_manager
         self.mail_sender = mail_sender
+        self.server = serv
+        self.recently_used_door = None
         time.sleep(1) # インスタンスを渡し切るまでキープ ※必須なので消さないこと！！！！！
         
         # 排他制御：リソースに同時にアクセスするのを防ぐ
@@ -111,7 +117,10 @@ class module_controller():
         
         self.each_module_info = {
             "base": {
-                "height": 230
+                "height": 235
+            },
+            "lidar": {
+                "height": 200
             },
             "accessories": {
                 "height": 120
@@ -154,11 +163,11 @@ class module_controller():
                     door_surv_thread[module_num][door_num].start()
         print("[INFO][module_mng.py] : モジュールと扉の状態の監視を開始しました")
         
-        # ソケット通信のサーバーを立てる
-        self.server = serv
-        door_surv_thread[module_num][door_num] = threading.Thread(target = self.sock_surv)
-        door_surv_thread[module_num][door_num].setDaemon(True)
-        door_surv_thread[module_num][door_num].start()
+        # 指定があった場合にソケット通信のサーバーの監視を開始する
+        if self.server != None:
+            sock_surv_thread = threading.Thread(target = self.sock_surv)
+            sock_surv_thread.setDaemon(True)
+            sock_surv_thread.start()
         
     def sock_surv(self):
         """
@@ -168,11 +177,11 @@ class module_controller():
         door_info = {
             "小物1": [
                 "accessories",
-                "right"
+                "left"
                 ],
             "小物2": [
                 "accessories",
-                "left"
+                "right"
                 ],
             "書類1": [
                 "document",
@@ -184,11 +193,11 @@ class module_controller():
                 ],
             "食品（保冷）": [
                 "insulation",
-                "right"
+                "left"
                 ],
             "食品（保温）": [
                 "insulation",
-                "left"
+                "right"
                 ]
         }
         flag = False
@@ -291,11 +300,14 @@ class module_controller():
                 if name_module_current != name_module_previous:
                     # 未接続の場合
                     if name_module_current == "unconnected":
-                        print(f"[INFO][module_mng.py] : {name_module_previous}が取り外されました")
-                        # self.mail_sender.warning(warn_type="module", module=name_module_current) # 異常検知メールを送信
+                        print(f"[INFO][module_mng.py] : {name_module_previous} が取り外されました")
+                        # self.mail_sender.warning(warn_type="module", module=name_module_previous) # 異常検知メールを送信
+                        if self.mail_sender != None:
+                            MailThread = threading.Thread(target=self.mail_sender.warning, args=("module", name_module_previous,)) # 異常検知メールを送信
+                            MailThread.start()
                     # 取り付けられた場合
                     else:
-                        print(f"[INFO][module_mng.py] : {name_module_current}が取り付けられました")
+                        print(f"[INFO][module_mng.py] : {name_module_current} が取り付けられました")
                     # フラグを更新
                     name_module_previous = name_module_current
                     
@@ -336,15 +348,23 @@ class module_controller():
                     if self.onb_module_info[module_num][door_num]["open"]:
                         # サーボで解錠した場合
                         if self.onb_module_info[module_num][door_num]["unlocked"]:
-                            print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}を解錠しました")
+                            print(f"[INFO][module_mng.py] : {name_module_current} - {name_door_current} を解錠しました")
                         # サーボで解錠していない場合
                         else:
-                            print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}のこじ開けを検知しました")
+                            print(f"[INFO][module_mng.py] : {name_module_current} - {name_door_current} のこじ開けを検知しました")
                             # self.mail_sender.warning(warn_type="door", module=name_module_current, door=name_door_current) # 異常検知メールを送信
+                            if self.mail_sender != None:
+                                MailThread = threading.Thread(target=self.mail_sender.warning, args=("door", name_module_current, name_door_current,)) # 異常検知メールを送信
+                                MailThread.start()
                     # 扉が閉じた場合
                     else:
                         self.onb_module_info[module_num][door_num]["unlocked"]: bool = False # こじ開け検知用フラグをもとに戻す
-                        print(f"[INFO][module_mng.py] : {name_module_current}-{name_door_current}が閉じました")
+                        print(f"[INFO][module_mng.py] : {name_module_current} - {name_door_current} が閉じました")
+                        
+                        if self.recently_used_door == [module_num, door_num]:
+                            robot_state_publisher.update("DOOR", "CLOSE")
+                            self.recently_used_door = None
+                    
                     # フラグを更新
                     openFlag_door_previous = self.onb_module_info[module_num][door_num]["open"]
                     
@@ -377,7 +397,6 @@ class module_controller():
         # else:
         #     rot_dir = 1
         # self.serial.send(10, [rot_dir])
-        print(f"[INFO][module_mng.py] : {module_name}の{door_name}を解錠中...")
         # time.sleep(3) # Arduino側のサーボを開けてから閉じるまでの時間が3s
         # time.sleep(0.5) # 0.5s余裕を持たせておく
 
@@ -385,11 +404,15 @@ class module_controller():
         # GPIO.output(self.onb_module_info[module_num][door_num]["pin"]["SERVO"], False)
         # time.sleep(0.5) # 0.5s余裕を持たせておく
         
+        print(f"[INFO][module_mng.py] : {module_name} - {door_name} 解錠しています...")
+        
         # 2024-1-11変更
         if door_name == "right":
-            test_servo.open_servo(pin=self.onb_module_info[module_num][door_num]["pin"]["SERVO"], side="right")
+            open_servo(pin=self.onb_module_info[module_num][door_num]["pin"]["SERVO"], side="right")
         else:
-            test_servo.open_servo(pin=self.onb_module_info[module_num][door_num]["pin"]["SERVO"])
+            open_servo(pin=self.onb_module_info[module_num][door_num]["pin"]["SERVO"], side="left")
+        
+        self.recently_used_door = [module_num, door_num]
         
         # GPIOピンを解放
         GPIO.cleanup(self.onb_module_info[module_num][door_num]["pin"]["SERVO"])
@@ -402,7 +425,7 @@ class module_controller():
             機体全体の高さ[mm]
         """
         # 土台の高さを設定
-        total_height = self.each_module_info["base"]["height"]
+        total_height = self.each_module_info["base"]["height"] + self.each_module_info["lidar"]["height"]
         
         # 接続されているモジュールの高さを足し合わせる
         for module in self.onb_module_info.values():
@@ -436,12 +459,65 @@ class module_controller():
             # 何も一致しなかった場合、空の文字列を返す
             return "", ""
 
+####################################################################################
+
+def pwm(pin, cycle):
+    
+    """
+    PWMを出力する
+    
+    引数:
+        GPIOピン
+        
+        パルス幅(us)
+    """
+
+    pwm_cycle = 1/ 50
+    duty = cycle
+    duty /= 1000
+    duty /= 1000
+    for i in range(40):
+        GPIO.output(pin, 1)
+        ctime = time.time()
+        while(ctime + duty > time.time()):
+            pass
+        GPIO.output(pin,0)
+        while(ctime + pwm_cycle > time.time()):
+            pass
+
+
+####################################################################################
+
+
+def open_servo(pin, side = "left"):
+    """
+    サーボ解錠
+    
+    引数:
+        GPIOピン
+        どちらの扉か(デフォルト：左)
+    """
+    if side == "left":
+        #左の扉
+        #蝶番が左　サーボが右
+        pwm(pin, 900)
+        time.sleep(1)
+        pwm(pin, 1900)
+    elif side == "right":
+        #右の扉
+        #蝶番が右　サーボが左
+        pwm(pin, 1900)
+        time.sleep(1)
+        pwm(pin, 900)
+
+
+####################################################################################
             
 class airframe_controller():
     """
     機体を制御するクラス
     """
-    def __init__(self, serial_port: ser.arduino_serial, mail_sender: web_app.mails):
+    def __init__(self, serial_port: ser.arduino_serial, mail_sender: web_app.mails or None = None):
         """
         コンストラクタ
         
@@ -474,8 +550,9 @@ class airframe_controller():
             # 持ち去りを検知した時
             if self.airframe_taken:
                 print("[INFO][module_mng.py] : 機体の持ち去りを検知しました")
-                # MailThread = threading.Thread(target=self.mail_sender.warning, args=(warn_type="airframe",)) # 異常検知メールを送信
-                # MailThread.start()
+                if self.mail_sender != None:
+                    MailThread = threading.Thread(target=self.mail_sender.warning, args=("airframe",)) # 異常検知メールを送信
+                    MailThread.start()
                 break
             
             time.sleep(AIR_CYCLE)
@@ -493,11 +570,15 @@ class airframe_controller():
         
         return batt_vol
             
+          
+####################################################################################
+          
             
 if __name__ == '__main__':
     serial = ser.arduino_serial()
     ord = om.order_manager()
     mails = web_app.mails(ord)
+    server = sock.sock_server("127.0.0.1", 56674)
     
-    m = module_controller(serial, ord, mails)
-    a = airframe_controller(serial, mails)
+    m = module_controller(serial, ord, mails, server)
+    # a = airframe_controller(serial, mails)

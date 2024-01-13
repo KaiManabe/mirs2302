@@ -77,7 +77,7 @@ class mails():
         tenq_hp_link = f"http://{config.RASPI_IP_NCT}/main/"
         
         if order_type == 'ORDER':
-            subject = "管理者用通知 - 依頼"
+            subject = "管理者用通知 - REQUEST"
             body = f"""  商品発送の依頼が来ています。以下のリンクから取引の承認・拒否を行なってください。\n\n▼承認用ページ\n  {transactions_link}\n\n※このメールは自動で送信されています。"""
         else:
             subject = "依頼が来ています"
@@ -243,7 +243,7 @@ class mails():
             異常の種類、モジュールの名前、扉の名前
             異常の種類 -> "module":モジュール持ち去り "door":扉こじ開け "airframe":機体持ち去り
         """
-        subject = "TENQの異常を検知しました"
+        subject = "管理者用通知 - WARNING"
         
         if warn_type == "module":
             body = f"""  TENQの異常を検知しました。\n  "{module}"モジュールが持ち去られた可能性があります。\n  直ちに確認作業を行ってください。\n\n※このメールは自動で送信されています。"""

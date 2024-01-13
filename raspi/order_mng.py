@@ -6,7 +6,7 @@ import datetime
 import sys
 import os
 import warnings
-import web_app
+# import web_app
 
 
 #warnings.filterwarnings('ignore', category=pd.core.common.SettingWithCopyWarning)
@@ -58,16 +58,25 @@ class order_manager():
             path : csvファイルのパス（任意・デフォルト値あり）
         """            
         self.file_path = path
-        self.df = pd.read_csv(path, parse_dates=["RECEIPT_TIME", "ACCEPTED_TIME", "PICKUP_TIME", "RECEIVE_TIME"])
-        self.read = datetime.datetime.now()
+        self.reflesh()
 
     
     def reflesh(self):
         """
-        【自動実行するため呼び出し不要】
         変更に応じてcsvを更新する関数
         """
-        self.df = pd.read_csv(self.file_path, parse_dates=["RECEIPT_TIME", "ACCEPTED_TIME", "PICKUP_TIME", "RECEIVE_TIME"] )
+        retries = 0
+        while(1):
+            try:
+                self.df = pd.read_csv(self.file_path, parse_dates=["RECEIPT_TIME", "ACCEPTED_TIME", "PICKUP_TIME", "RECEIVE_TIME"] )
+                break
+            except:
+                time.sleep(0.5)
+                retries += 1
+            if retries > 5:
+                print("[ERR][order_mng] : 例外をキャッチしました", file = sys.stderr)
+                return -1
+            
         self.read = datetime.datetime.now()
     
     
@@ -95,7 +104,7 @@ class order_manager():
             該当する注文情報(DataFrame)
             ない場合には-1を返す
         """
-        #self.reflesh()
+        self.reflesh()
         if type(label) == int:
             return self.df.iloc[label]
         elif label in self.df.columns and value != None:
@@ -478,11 +487,11 @@ if __name__ == '__main__':
                     value = sys.argv[4]
                     )
                 
-                # 依頼結果メール送信の処理
-                if sys.argv[3] == 'STATUS':
-                    mail_sender = web_app.mails(o)
-                    if sys.argv[4] == 'ACCEPTED':
-                        mail_sender.request_result(order_id=sys.argv[2], result="accepted")
-                        mail_sender.accepted(order_id=sys.argv[2])
-                    elif sys.argv[4] == 'DENIED':
-                        mail_sender.request_result(order_id=sys.argv[2], result="denied")
+                # # 依頼結果メール送信の処理
+                # if sys.argv[3] == 'STATUS':
+                #     mail_sender = web_app.mails(o)
+                #     if sys.argv[4] == 'ACCEPTED':
+                #         mail_sender.request_result(order_id=sys.argv[2], result="accepted")
+                #         mail_sender.accepted(order_id=sys.argv[2])
+                #     elif sys.argv[4] == 'DENIED':
+                #         mail_sender.request_result(order_id=sys.argv[2], result="denied")
