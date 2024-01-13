@@ -4,7 +4,6 @@ body{
     margin: 0;
     padding: 0;
     font-weight: 500;
-    height: 100%
 }
 
 /* ページタイトルのスタイル */
@@ -71,7 +70,7 @@ nav .menu.selected:not(:active){
 .iframe-container{
     position: relative;
     overflow: hidden;
-    padding-top: 100%;
+    padding-top: 150%;
 }
 iframe{
     /*margin: 0 50px;*/
