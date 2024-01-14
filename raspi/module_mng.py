@@ -29,7 +29,7 @@ class module_controller():
     """
     モジュールを制御するクラス
     """
-    def __init__(self, serial_port: ser.arduino_serial, order_manager: om.order_manager, mail_sender: web_app.mails or None = None, serv: sock.sock_server or None = None):
+    def __init__(self, serial_port: ser.arduino_serial, order_manager: om.order_manager, mail_sender: web_app.mails = None, serv: sock.sock_server = None):
         """
         コンストラクタ
         

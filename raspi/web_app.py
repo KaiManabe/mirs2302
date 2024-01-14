@@ -9,6 +9,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import order_mng as om
 import config
+import sys
 
 # メール送信用関数
 def send_email(sender_name, sender_email, app_password, receiver_email, subject, body):
@@ -86,7 +87,7 @@ class mails():
         for receiver_email in receiver_list:
             send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
 
-    def accepted(self, order_id: str):
+    def confirm(self, order_id: str):
         """
         確認メールを送信（依頼された側に送る）
         
@@ -261,4 +262,12 @@ class mails():
             
 if __name__ == "__main__":
     order = om.order_manager()
-    mail_sender = mails(order)
+    m = mails(order)
+    
+    if len(sys.argv) > 1:
+        id = sys.argv[1]
+        if sys.argv[2] == 'ACCEPTED':
+            m.request_result(id, "accepted")
+            m.confirm(id)
+        elif sys.argv[2] == 'DENIED':
+            m.request_result(id, "denied")
