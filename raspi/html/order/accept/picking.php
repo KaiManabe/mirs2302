@@ -24,6 +24,8 @@ if(isset($_POST["accept"]) && $_POST["accept"] == "accept"){
     $cmd = "sudo -u pi python3 /home/pi/git/mirs2302/raspi/order_mng.py modify_order " . $ID . " STATUS ACCEPTED";
     $result = shell_exec($cmd);
 
+    $cmd = "sudo -u pi python3 /home/pi/git/mirs2302/raspi/web_app.py $ID ACCEPTED";
+    $result = shell_exec($cmd);
 
 }else{
     $cmd = "sudo -u pi python3 /home/pi/git/mirs2302/raspi/order_mng.py modify_order $ID STATUS DENIED";

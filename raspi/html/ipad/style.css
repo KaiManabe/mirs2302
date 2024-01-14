@@ -1,7 +1,27 @@
+@font-face {
+    /*!
+    "Zen Kaku Gothic Antique" is lisenced under the SIL Open Font License 1.1
+    https://fonts.google.com/specimen/Zen+Kaku+Gothic+Antique
+    https://fonts.google.com/attribution
+
+    ===========================================================================
+
+    ZenKakuGothicAntique-Light.ttf: Copyright 2022 The Zen Project Authors (https://github.com/googlefonts/zen-kakugothic)
+    ZenKakuGothicAntique-Regular.ttf: Copyright 2022 The Zen Project Authors (https://github.com/googlefonts/zen-kakugothic)
+    ZenKakuGothicAntique-Medium.ttf: Copyright 2022 The Zen Project Authors (https://github.com/googlefonts/zen-kakugothic)
+    ZenKakuGothicAntique-Bold.ttf: Copyright 2022 The Zen Project Authors (https://github.com/googlefonts/zen-kakugothic)
+    ZenKakuGothicAntique-Black.ttf: Copyright 2022 The Zen Project Authors (https://github.com/googlefonts/zen-kakugothic)
+    */
+    font-family: 'Zen Kaku Gothic Antique';
+    src: url('/fonts/ZenKakuGothicAntique-Black.ttf') format('truetype');
+    src: url('/fonts/ZenKakuGothicAntique-Bold.ttf') format('truetype');
+    src: url('/fonts/ZenKakuGothicAntique-Medium.ttf') format('truetype');
+}
+
+
 body{
     font-family: 'Zen Kaku Gothic Antique';
 }
-
 
 .title{
     display: inline-block; /* テキストを１行に抑える */

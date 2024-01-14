@@ -13,10 +13,10 @@ function onLoad(){
 
     var order_info = JSON.parse(request.responseText);
 
-    var sender_ele = document.querySelectorAll(".sender");
+    var receiver_ele = document.querySelectorAll(".receiver");
     var item_name_ele = document.querySelectorAll(".item_name");
-    sender_ele.forEach(function(ele){
-        ele.innerHTML = order_info.SENDER;
+    receiver_ele.forEach(function(ele){
+        ele.innerHTML = order_info.RECEIVER;
     })
     item_name_ele.forEach(function(ele){
         ele.innerHTML = order_info.ITEM_NAME;

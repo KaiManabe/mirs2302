@@ -1,7 +1,5 @@
 ID,ORDER_TYPE,ITEM_TYPE,ITEM_NAME,STATUS,RECEIPT_TIME,ACCEPTED_TIME,SENDER,RECEIVER,PICKUP_PLACE,PICKUP_TIME,PICKUP_PIN,RECEIVE_PLACE,RECEIVE_TIME,RECEIVE_PIN,NOTE
-e229d3f0-3a47-4333-b6cd-e78f68c1da01,SEND,小物1,test,DENIED,2023-12-30 13:35:33,,test1@numazu.kosen-ac.jp,test2@numazu.kosen-ac.jp,D科棟,2024-01-10 15:10:00,1234.0,,,,
-5785f303-32bc-4621-856e-f74ea5fee404,SEND,書類1,test2,DENIED,2023-12-30 13:36:31,,test3@numazu.kosen-ac.jp,test4@numazu.kosen-ac.jp,C科棟,2024-01-10 14:50:00,1234.0,,,2345.0,
-dd96f6c1-54de-4101-a4a8-380bb467d47a,RECEIVE,食品（保冷）,123,DENIED,2023-12-31 00:41:13,,asddd@numazu.kosen-ac.jp,wddd@numazu.kosen-ac.jp,,,,D科棟,2024-01-11 15:00:00,12345.0,
-a633cbce-64d6-46de-869d-94303533c7be,SEND,小物1,awwww,DENIED,2024-01-03 01:45:25,,test@numazu.kosen-ac.jp,testt@numazu.kosen-ac.jp,C科棟,2024-01-10 10:40:00,5678.0,,,,notetet
-90f72c64-77a7-4ec7-a14f-e76464558001,ORDER,食品（保冷）,inゼリー,ACCEPTED,2024-01-11 20:08:33,,d20136@numazu.kosen-ac.jp,d20139@numazu.kosen-ac.jp,C科棟,2024-01-11 23:00:00,86675323.0,D科棟,2024-01-11 21:40:00,12978657.0,ないよん
-5c4d9927-0338-4c1b-90fc-735ae2f04f7e,ORDER,食品（保冷）,トロピカーナ,ACCEPTED,2024-01-11 20:26:38,,d20139@numazu.kosen-ac.jp,d20139@numazu.kosen-ac.jp,D科棟,2024-01-11 22:20:00,56733132.0,C科棟,2024-01-11 23:50:00,76781567.0,あいう
+cd76b808-16c3-4b28-998a-e9266254d833,SEND,食品（保冷）,ジュース,DENIED,2024-01-12 02:11:51,,d20136@numazu.kosen-ac.jp,d20136@numazu.kosen-ac.jp,学生係,2024-01-12 02:27:00,1234.0,D科棟,2024-01-12 02:29:00,2345.0,
+e229d3f0-3a47-4333-b6cd-e78f68c1da01,SEND,食品（保冷）,ITEM_NAME,WAITING_FOR_PICKUP,2023-12-30 13:35:33,,test1@numazu.kosen-ac.jp,test2@numazu.kosen-ac.jp,D科棟,2024-01-13 15:10:00,1234.0,S科棟,2024-01-13 20:10:00,1234.0,
+iohaic9q8ob94-buig-udgq-baigug3gduqb,RECEIVE,書類,歴史プリント,DENIED,2023-12-30 13:35:33,,d20139@numazu.kosen-ac.jp,yamamoto2004riku1126@gmail.com,,,,S科棟,2024-01-14 23:40:00,76555444.0,
+289yrh9bu3awd-dd2i-83h893gfhajbsukbf,ORDER,小物,鍵,DENIED,2023-12-30 13:35:33,,,yamamoto2004riku1126@gmail.com,D科棟,2024-01-13 15:10:00,12348012.0,S科棟,2024-01-14 19:40:00,63157533.0,

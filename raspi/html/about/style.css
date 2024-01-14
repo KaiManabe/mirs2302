@@ -43,6 +43,10 @@ ol li{
   line-height: 30px;
 }
 
+details summary{
+  margin-bottom: 10px;
+}
+
 summary{
   font-size: 1.2em;
 }

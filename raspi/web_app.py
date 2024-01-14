@@ -9,6 +9,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import order_mng as om
 import config
+import sys
 
 # メール送信用関数
 def send_email(sender_name, sender_email, app_password, receiver_email, subject, body):
@@ -77,7 +78,7 @@ class mails():
         tenq_hp_link = f"http://{config.RASPI_IP_NCT}/main/"
         
         if order_type == 'ORDER':
-            subject = "管理者用通知 - 依頼"
+            subject = "管理者用通知 - REQUEST"
             body = f"""  商品発送の依頼が来ています。以下のリンクから取引の承認・拒否を行なってください。\n\n▼承認用ページ\n  {transactions_link}\n\n※このメールは自動で送信されています。"""
         else:
             subject = "依頼が来ています"
@@ -86,7 +87,7 @@ class mails():
         for receiver_email in receiver_list:
             send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
 
-    def accepted(self, order_id: str):
+    def confirm(self, order_id: str):
         """
         確認メールを送信（依頼された側に送る）
         
@@ -243,7 +244,7 @@ class mails():
             異常の種類、モジュールの名前、扉の名前
             異常の種類 -> "module":モジュール持ち去り "door":扉こじ開け "airframe":機体持ち去り
         """
-        subject = "TENQの異常を検知しました"
+        subject = "管理者用通知 - WARNING"
         
         if warn_type == "module":
             body = f"""  TENQの異常を検知しました。\n  "{module}"モジュールが持ち去られた可能性があります。\n  直ちに確認作業を行ってください。\n\n※このメールは自動で送信されています。"""
@@ -261,4 +262,12 @@ class mails():
             
 if __name__ == "__main__":
     order = om.order_manager()
-    mail_sender = mails(order)
+    m = mails(order)
+    
+    if len(sys.argv) > 1:
+        id = sys.argv[1]
+        if sys.argv[2] == 'ACCEPTED':
+            m.request_result(id, "accepted")
+            m.confirm(id)
+        elif sys.argv[2] == 'DENIED':
+            m.request_result(id, "denied")

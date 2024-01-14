@@ -17,8 +17,8 @@ STATUS = [
 
 
 #ゴールのindexをjetsonと合わせる
-GOALS = {"D科棟" : 0,
-         "学生係" : 1
+GOALS = {"DEMO1" : 0,
+         "DEMO2" : 1
          }
 
 

@@ -11,9 +11,7 @@ import datetime
 import time
 import sys
 import robot_state_publisher as rsp
-
-
-
+import shutil
 
 
 if __name__ == "__main__":
@@ -23,7 +21,8 @@ if __name__ == "__main__":
     #走行制御コントローラ
     controller = ctrl.run_controller(serial_port)
     
- 
+    shutil.copy("/home/pi/git/mirs2302/raspi/demo_order.csv", "/home/pi/git/mirs2302/raspi/order_info.csv")
+    
     #rosからarduinoに速度指令値を送るためのソケット(サーバ)
     sock_server_rta = sock.sock_server(config.RASPI_IP, 56789)
     #rosからarduinoに速度指令値を送るやつ　これ以降別スレッドで無限ループ
@@ -41,11 +40,13 @@ if __name__ == "__main__":
     order_manager = order_mng.order_manager()
     
     #メール送信用クラス
-    mail_sender = web_app.mails(order_manager)
+    #mail_sender = web_app.mails(order_manager)
     
     #モジュール管理用クラス
     sock_server_mdl = sock.sock_server("127.0.0.1", 56674)
-    module_manager = module_mng.module_controller(serial_port, order_manager, mail_sender, sock_server_mdl)
+    module_manager = module_mng.module_controller(serial_port = serial_port,
+                                                  order_manager = order_manager,
+                                                  serv = sock_server_mdl)
     #機体管理用クラス
     # airframe_manager = module_mng.airframe_controller(serial_port, mail_sender)
     
@@ -64,36 +65,17 @@ if __name__ == "__main__":
             id = current_order["ID"]
             status = current_order["STATUS"]
             
-#*****************************************************************************************************
-#状態    NOT_ACCEPTED_YET
-#デバッグ進捗 : 完
-#*****************************************************************************************************
-            if status == "NOT_ACCEPTED_YET":
-                #取引依頼メールを送信
-                mail_sender.request(id)
-                order_manager.modify_order(id, "STATUS", "MAIL_SENT")
-            
-            
-#*****************************************************************************************************
-#状態    MAIL_SENT
-#デバッグ進捗 : 完
-#*****************************************************************************************************        
-            elif status == "MAIL_SENT":
-                if datetime.datetime.now() > current_order["RECEIPT_TIME"] + datetime.timedelta(hours = 2):
-                    order_manager.modify_order(id, "STATUS", "ACCEPT_TIMEOUT")
-                    mail_sender.request_result(id, "timeout")
-            
+
             
             
 #*****************************************************************************************************
 #状態    ACCEPTED
-#デバッグ進捗 : 完
+#デバッグ進捗 : 未完
 #*****************************************************************************************************
-            elif status == "ACCEPTED":
-                #今のところ10分前に移動させるようにしているが調整するならどうにかする
-                if datetime.datetime.now() >= current_order["PICKUP_TIME"] - datetime.timedelta(minutes = 10):
+            if status == "ACCEPTED":
+                if True:
                     #ゴール設定
-                    ros_controller.set_goal(current_order["PICKUP_PLACE"])
+                    ros_controller.set_goal("DEMO2")
                     
                     #走り出すまで待機
                     time.sleep(0.5)
@@ -104,7 +86,6 @@ if __name__ == "__main__":
                             rsp.update("ROBOT_STATUS", "MOVING")
                             rsp.update("GOAL", current_order['PICKUP_PLACE'])
                             rsp.update("DOOR_NUM", current_order['ITEM_TYPE'])
-                            mail_sender.notice(id, "pickup", "moving")
                             break
                         else:
                             time.sleep(5)
@@ -119,10 +100,9 @@ if __name__ == "__main__":
 #*****************************************************************************************************                
             elif status == "MOVING_FOR_PICKUP":
                 if ros_controller.status == "SUCCEEDED":
-                    print(f"[INFO][main.py][ID:{id}]  : ロボットが{current_order['PICKUP_PLACE']}に到着")
+                    print(f"[INFO][main.py][ID:{id}]  : ロボットがDEMO2に到着")
                     order_manager.modify_order(id, "STATUS", "WAITING_FOR_PICKUP")
                     rsp.update("ROBOT_STATUS", "WAITING_FOR_PICKUP")
-                    mail_sender.notice(id, "pickup", "arrived")
                 else:
                     if ros_controller.status == "ACTIVE":#まだ動いているなら
                         if datetime.datetime.now() >= current_order["PICKUP_TIME"] + datetime.timedelta(minutes = 5):
@@ -138,9 +118,7 @@ if __name__ == "__main__":
 #デバッグ進捗 : 未完
 #***************************************************************************************************** 
             elif status == "WAITING_FOR_PICKUP":
-                if datetime.datetime.now() >= current_order["PICKUP_TIME"] + datetime.timedelta(minutes = 15):
-                    order_manager.modify_order(id, "STATUS", "PICKUP_TIMEOUT")
-                    mail_sender.notice(id, "pickup", "timeout")
+                pass
             
             
 #*****************************************************************************************************
@@ -150,9 +128,9 @@ if __name__ == "__main__":
             elif status == "PICKED_UP":
 #ラボ前に帰る?　予約がどれだけの頻度で入っているかによる
                 #今のところ10分前に移動させるようにしているが調整するならどうにかする
-                if datetime.datetime.now() >= current_order["RECEIVE_TIME"] - datetime.timedelta(minutes = 10):
+                if True:
                     #ゴール設定
-                    ros_controller.set_goal(current_order["RECEIVE_PLACE"])
+                    ros_controller.set_goal("DEMO1")
                     
                     #走り出すまで待機
                     time.sleep(0.5)
@@ -163,7 +141,6 @@ if __name__ == "__main__":
                             rsp.update("ROBOT_STATUS", "MOVING")
                             rsp.update("GOAL", current_order['RECEIVE_PLACE'])
                             rsp.update("DOOR_NUM", current_order['ITEM_TYPE'])
-                            mail_sender.notice(id, "receive", "moving")
                             break
                         else:
                             time.sleep(5)
@@ -179,10 +156,9 @@ if __name__ == "__main__":
 #*****************************************************************************************************                
             elif status == "MOVING_FOR_RECEIVE":
                 if ros_controller.status == "SUCCEEDED":
-                    print(f"[INFO][main.py][ID:{id}]  : ロボットが{current_order['RECEIVE_PLACE']}に到着")
+                    print(f"[INFO][main.py][ID:{id}]  : ロボットがDEMO1に到着")
                     order_manager.modify_order(id, "STATUS", "WAITING_FOR_RECEIVE")
                     rsp.update("ROBOT_STATUS", "WAITING_FOR_RECEIVE")
-                    mail_sender.notice(id, "receive", "arrived")
                 else:
                     if ros_controller.status == "ACTIVE":#まだ動いているなら
                         if datetime.datetime.now() >= current_order["RECEIVE_TIME"] + datetime.timedelta(minutes = 5):
@@ -199,7 +175,8 @@ if __name__ == "__main__":
 #デバッグ進捗 : 未完
 #***************************************************************************************************** 
             elif status == "WAITING_FOR_RECEIVE":
-                if datetime.datetime.now() >= current_order["RECEIVE_TIME"] + datetime.timedelta(minutes = 15):
-                    order_manager.modify_order(id, "STATUS", "RECEIVE_TIMEOUT")
-                    mail_sender.notice(id, "receive", "timeout")
+                pass
+            
+            elif status == "RECEIVED":
+                order_manager.modify_order(id, "STATUS", "ACCEPTED")
 

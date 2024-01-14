@@ -19,7 +19,7 @@ function confirm(){
         if (xhr.readyState == 4){
             if(xhr.status == 200){
                 let resp = xhr.responseText;
-                if(resp != "True"){
+                if(!resp.includes("SuccessfullyConfirmed")){
                     open_modal("error");
                 }
             }else{
@@ -44,7 +44,7 @@ function auth_button_pressed(){
         if (xhr.readyState == 4){
             if(xhr.status == 200){
                 let resp = xhr.responseText;
-                if(resp == "True"){
+                if(resp.includes("SuccessfullyOpenedDoor")){
                     open_modal("auth_success");
                 }else{
                     open_modal("auth_failed");
