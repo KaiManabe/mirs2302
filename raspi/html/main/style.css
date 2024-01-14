@@ -65,7 +65,7 @@ nav .menu.selected:not(:active){
 .iframe-container{
     position: relative;
     overflow: hidden;
-    padding-top: 1000px;
+    padding-top: 150%;
 }
 iframe{
     /*margin: 0 50px;*/
