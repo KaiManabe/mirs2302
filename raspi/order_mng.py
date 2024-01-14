@@ -464,8 +464,13 @@ if __name__ == '__main__':
                 "ID",
                 sys.argv[2]
             )
-            out = f"\"SENDER\":\"{result.iloc[0]['SENDER']}\",\
-                   \"ITEM_NAME\":\"{result.iloc[0]['ITEM_NAME']}\""
+            order_type = result['ORDER_TYPE'][0]
+            if order_type == 'SEND':
+                out = f"\"SENDER\":\"{result.iloc[0]['SENDER']}\",\
+                    \"ITEM_NAME\":\"{result.iloc[0]['ITEM_NAME']}\""
+            elif order_type == 'RECEIVE' or 'ORDER':
+                out = f"\"RECEIVER\":\"{result.iloc[0]['RECEIVER']}\",\
+                    \"ITEM_NAME\":\"{result.iloc[0]['ITEM_NAME']}\""
             if not(pd.isna(result.iloc[0]['NOTE'])):
                 out += f",\"NOTE\":\"{result.iloc[0]['NOTE']}\""
             

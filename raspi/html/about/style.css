@@ -43,8 +43,8 @@ ol li{
   line-height: 30px;
 }
 
-details{
-  margin-bottom: 1em;
+details summary{
+  margin-bottom: 10px;
 }
 
 summary{
