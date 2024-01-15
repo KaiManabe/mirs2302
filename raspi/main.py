@@ -14,9 +14,8 @@ import robot_state_publisher as rsp
 
 
 
-
-
 if __name__ == "__main__":
+    print("[INFO][main.py] : TENQ内部アプリケーションの初期化を開始します...")
     #シリアルポート
     serial_port = ser.arduino_serial()
     
