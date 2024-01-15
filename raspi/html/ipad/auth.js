@@ -75,7 +75,20 @@ function onload(){
     confirm_button_elements.forEach(function(ele){
         ele.style.visibility = "hidden";
     })
-    door_number_element.innerHTML = read_status()["DOOR_NUM"];
+    var door_name = read_status()["DOOR_NUM"];
+    if (door_name == "小物1"){
+        door_number_element.innerHTML = "A1";
+    }else if (door_name == "小物2"){
+        door_number_element.innerHTML = "A2";
+    }else if (door_name == "書類1"){
+        door_number_element.innerHTML = "D1";
+    }else if (door_name == "書類2"){
+        door_number_element.innerHTML = "D2";
+    }else if (door_name == "食品（保冷）"){
+        door_number_element.innerHTML = "F1";
+    }else if (door_name == "食品（保温）"){
+        door_number_element.innerHTML = "F2";
+    }
 }
 
 function view_open_button(){

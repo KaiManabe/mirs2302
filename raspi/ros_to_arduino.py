@@ -18,6 +18,7 @@ class ros_to_arduino():
         t.start()
 
     def send_to_arduino(self, l, r):
+        """
         if l > 600:
             l = 600
         if l < -600:
@@ -27,19 +28,19 @@ class ros_to_arduino():
             r = 600
         if r < -600:
             r = -600
-        
-        if abs(l) < 100:
+        """
+        if abs(l) < 75:
             if l < 0:
-                l = -100
+                l = -75
             elif l > 0:
-                l = 100
+                l = 75
         
-        if abs(r) < 100:
+        if abs(r) < 75:
             if r < 0:
-                r = -100
+                r = -75
             elif r > 0:
-                r = 100
-        
+                r = 75
+                
         self.c.set_l_speed(l)
         self.c.set_r_speed(r)
         #print(f"\r {l}   ,   {r}   ", end = "", file = sys.stderr)

@@ -9,33 +9,49 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import order_mng as om
 import config
+import time
 import sys
 
 # メール送信用関数
 def send_email(sender_name, sender_email, app_password, receiver_email, subject, body):
-    # メールの設定
-    message = MIMEMultipart()
-    message["From"] = sender_name
-    message["To"] = receiver_email
-    message["Subject"] = subject
+    retries = 0
+    while(1):
+        try:
+            # メールの設定
+            message = MIMEMultipart()
+            message["From"] = sender_name
+            message["To"] = receiver_email
+            message["Subject"] = subject
 
-    # メール本文の追加
-    message.attach(MIMEText(body, "plain"))
+            # メール本文の追加
+            message.attach(MIMEText(body, "plain"))
 
-    # GmailのSMTPサーバーとポート
-    smtp_server = "smtp.gmail.com"
-    port = 587
+            # GmailのSMTPサーバーとポート
+            smtp_server = "smtp.gmail.com"
+            port = 587
 
-    # SMTPサーバーへの接続
-    with smtplib.SMTP(smtp_server, port) as server:
-        # 暗号化の開始
-        server.starttls()
+            # SMTPサーバーへの接続
+            with smtplib.SMTP(smtp_server, port) as server:
+                # 暗号化の開始
+                server.starttls()
 
-        # ログイン
-        server.login(sender_email, app_password)
+                # ログイン
+                server.login(sender_email, app_password)
 
-        # メールの送信
-        server.sendmail(sender_email, receiver_email, message.as_string())
+                # メールの送信
+                server.sendmail(sender_email, receiver_email, message.as_string())
+            
+            break
+        
+        except:
+            break
+            
+            #非同期処理なら10秒待ってリトライするようにしても良い
+            time.sleep(10)
+            retries += 1
+            if retries >= 2:
+                print("[ERR] : メールの送信に失敗しました")
+                break
         
         
 class mails():

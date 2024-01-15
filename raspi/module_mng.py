@@ -19,7 +19,7 @@ AIR_CYCLE = 0.1 # 機体持ち去り検知周期[s]
 MODULE_SURV_CYCLE = 0.001 # モジュール監視周期[s]
 DOOR_SURV_CYCLE = 1 # 扉監視周期[s]
 SOCK_SURV = 1 # ソケット通信監視周期[s]
-RES_ERR_RATE = 50 # 抵抗値許容誤差範囲[%]
+# RES_ERR_RATE = 50 # 抵抗値許容誤差範囲[%]
 """統合時こいつらは調整する"""
 
 
@@ -240,9 +240,12 @@ class module_controller():
             self.onb_module_info[module_num][door_num]["name"] -> str
         """
         # 抵抗値の許容誤差範囲を定義
-        acc_res_range = [240 * (100 - RES_ERR_RATE) / 100, 240 * (100 + RES_ERR_RATE) / 100] # 小物抵抗値範囲
-        doc_res_range = [1000 * (100 - RES_ERR_RATE) / 100, 1000 * (100 + RES_ERR_RATE) / 100] # 資料抵抗値範囲
-        ins_res_range = [2000 * (100 - RES_ERR_RATE) / 100, 2000 * (100 + RES_ERR_RATE) / 100] # 保冷・保温抵抗値範囲
+        # acc_res_range = [240 * (100 - RES_ERR_RATE) / 100, 240 * (100 + RES_ERR_RATE) / 100] # 小物抵抗値範囲
+        # doc_res_range = [1000 * (100 - RES_ERR_RATE) / 100, 1000 * (100 + RES_ERR_RATE) / 100] # 資料抵抗値範囲
+        # ins_res_range = [2000 * (100 - RES_ERR_RATE) / 100, 2000 * (100 + RES_ERR_RATE) / 100] # 保冷・保温抵抗値範囲
+        acc_res_range = [100, 600]
+        doc_res_range = [800, 1200]
+        ins_res_range = [1600, 2400]
         
         # 一定周期で搭載モジュール情報を更新し続ける
         while True:

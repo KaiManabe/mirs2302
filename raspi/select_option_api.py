@@ -5,8 +5,10 @@ from math import ceil
 import sys
 
 #稼働可能な時間帯
-open_hour = [{"begin" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(8, 0)),
-              "end" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(23, 59))}
+open_hour = [{"begin" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(11, 0)),
+              "end" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(12, 50))},
+             {"begin" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(15, 0)),
+              "end" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(16, 50))}
             ]
 
 

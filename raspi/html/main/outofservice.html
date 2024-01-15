@@ -34,16 +34,17 @@
         <nav>
             <ul>
                 <li onclick = "select_view_html('about')"><div class="menu selected" id="about">TENQとは？</div></li>
-                <li onclick = "select_view_html('send')"><div class="menu">荷物を送る</div></li>
-                <li onclick = "select_view_html('receive')"><div class="menu">荷物を受け取る</div></li>
-                <li onclick = "select_view_html('order')"><div class="menu">商品を注文する</div></li>
+                <li onclick = ""><div class="menu">荷物を送る</div></li>
+                <li onclick = ""><div class="menu">荷物を受け取る</div></li>
+                <li onclick = ""><div class="menu">商品を注文する</div></li>
             </ul>
         </nav>
+        <p style = "color: red;">受付時間外です。webアプリを閲覧することは可能ですが、手配をすることはできません。<br>
+        受付時間については、<a href = "https://www2.denshi.numazu-ct.ac.jp/mirsdoc2/mirs2302/prsn/num0003a/index.html" style = "color:blue">こちら</a>を参照してください。</p>
         <div class="iframe-container">
             <iframe id = "iframe" src = "../about/index.html"></iframe>
         </div>
     </div>
 	<script type = "text/javascript" src="view.js"></script>
-    <script type = "text/javascript" src="isopen.js"></script>
 </body>
 </html>
