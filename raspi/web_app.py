@@ -67,24 +67,26 @@ class mails():
         order_info = self.order_manager.get_order("ID", order_id)
         order_type = order_info["ORDER_TYPE"][0]
         if order_type == "SEND":
-            receiver_list = [order_info["RECEIVER"][0]]
+            receiver_email = order_info["RECEIVER"][0]
         elif order_type == "RECEIVE":
-            receiver_list = [order_info["SENDER"][0]]
-        elif order_type == "ORDER":
-            # 依頼メールを各管理者に送信し、承認した人をオーダーリストに書き込むようにしたい
-            receiver_list = self.manager_list # order/accept/も必要だなこれ
+            receiver_email = order_info["SENDER"][0]
             
         transactions_link = f"http://{config.RASPI_IP_NCT}/{order_type.lower()}/accept/index.html?id={order_id}"
         tenq_hp_link = f"http://{config.RASPI_IP_NCT}/main/"
         
-        if order_type == 'ORDER':
+        if order_type == "ORDER":
             subject = "管理者用通知 - REQUEST"
             body = f"""  商品発送の依頼が来ています。以下のリンクから取引の承認・拒否を行なってください。\n\n▼承認用ページ\n  {transactions_link}\n\n※このメールは自動で送信されています。"""
+            # 各管理者に送信
+            for receiver_email in self.manager_list:
+                send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
         else:
             subject = "依頼が来ています"
             body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n  取引の依頼が来ています。以下のリンクから取引の承認・拒否を行なってください。\n\n▼承認用ページ\n  {transactions_link}\n\n  また、TENQの概要・使い方については以下のTENQホームページをご覧ください。\n\n▼TENQホームページ\n  {tenq_hp_link}\n\n※このメールは自動で送信されています。"""
-        
-        for receiver_email in receiver_list:
+            send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
+            
+            subject = "依頼が来ています(予備通知)"
+            body = f"""  D科4年のプロジェクト「学内配達ロボットTENQ」です。\n\n  取引の依頼が来ています。依頼メールがリンク付きの為、迷惑メールに入ってしまっている可能性があります。\n  迷惑メールフォルダをご確認頂けますと幸いです。\n\n※このメールは自動で送信されています。"""
             send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
 
     def confirm(self, order_id: str):
