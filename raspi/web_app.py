@@ -61,7 +61,7 @@ class mails():
     def __init__(self, order_manager: om.order_manager):
         self.sender_name = "学内配達ロボット TENQ" # 送信元の名前
         self.sender_email = "mirs2302tenq@gmail.com"  # 送信元のメールアドレス
-        self.app_password = "lvst oefb zsfw kmmk"  # 送信元のアプリパスワード
+        self.app_password = "xnfk cbhx bvmo abqj"  # 送信元のアプリパスワード
         
         # 管理者のメールアドレスリスト
         self.manager_list = [
