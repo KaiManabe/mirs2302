@@ -65,10 +65,10 @@ class mails():
         
         # 管理者のメールアドレスリスト
         self.manager_list = [
-            "d20139@numazu.kosen-ac.jp"
+            "d20139@numazu.kosen-ac.jp",
+            "d20136@numazu.kosen-ac.jp"
             ]
         # "d20102@numazu.kosen-ac.jp",
-        # "d20136@numazu.kosen-ac.jp",
         
         self.order_manager = order_manager
     
@@ -277,15 +277,28 @@ class mails():
         for receiver_email in self.manager_list:
             send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
             
+    def new_order(self):
+        """
+        管理者にオーダーが入ったことを知らせる
+        """
+        subject = "管理者用通知 - NEW ORDER"
+        body = f"""  新しくオーダーが入りました。確認してください\n\n※このメールは自動で送信されています。"""
+        
+        # 各管理者に送信
+        for receiver_email in self.manager_list:
+            send_email(self.sender_name, self.sender_email, self.app_password, receiver_email, subject, body)
             
 if __name__ == "__main__":
     order = om.order_manager()
     m = mails(order)
     
     if len(sys.argv) > 1:
-        id = sys.argv[1]
-        if sys.argv[2] == 'ACCEPTED':
-            m.request_result(id, "accepted")
-            m.confirm(id)
-        elif sys.argv[2] == 'DENIED':
-            m.request_result(id, "denied")
+        if sys.argv[1] == 'new_order':
+            m.new_order()
+        else:
+            id = sys.argv[1]
+            if sys.argv[2] == 'ACCEPTED':
+                m.request_result(id, "accepted")
+                m.confirm(id)
+            elif sys.argv[2] == 'DENIED':
+                m.request_result(id, "denied")

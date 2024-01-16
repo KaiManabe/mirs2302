@@ -18,6 +18,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $command = "sudo -u pi python3 $pythonScript new_order '$ORDER_TYPE' '$ITEM_TYPE' '$ITEM_NAME' '$SENDER' '$RECEIVER' '$PICKING_PLACE' '$PICKING_TIME' '$PICKING_PINCODE' '$NOTE'";
     $result = exec($command, $output, $return_var);
 
+    // 管理者に新オーダーを通知
+    if ($return_var === 0){
+        $pythonScript = "/home/pi/git/mirs2302/raspi/web_app.py";
+        $command = "sudo -u pi python3 $pythonScript new_order";
+        $result = shell_exec($command);
+    }
+
     echo $return_var; // 正常終了:0 異常終了:0以外
 }
 ?>
