@@ -1,5 +1,7 @@
 import sys
 import time
+import datetime
+
 
 class timestamp_logger:
     def __init__(self, original_stream):
@@ -10,6 +12,8 @@ class timestamp_logger:
         """
         self.original_stream = original_stream
         self.enabled = True
+        self.logpath = "/home/pi/log/tenq_"
+        self.logpath += datetime.datetime.now().strftime("%Y%m%d%H%M%S.log")
 
     def write(self, message):
         if len(message) < 2:
@@ -17,6 +21,8 @@ class timestamp_logger:
         if self.enabled:
             timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
             self.original_stream.write(f"{timestamp} : {message}\n")
+            with open(self.logpath, "a") as f:
+                f.write(f"{timestamp} : {message}\n")
         else:
             self.original_stream.write(f"{message}\n")
     

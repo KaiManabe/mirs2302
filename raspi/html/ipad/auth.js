@@ -81,9 +81,9 @@ function onload(){
     }else if (door_name == "小物2"){
         door_number_element.innerHTML = "A2";
     }else if (door_name == "書類1"){
-        door_number_element.innerHTML = "D1";
-    }else if (door_name == "書類2"){
         door_number_element.innerHTML = "D2";
+    }else if (door_name == "書類2"){
+        door_number_element.innerHTML = "D1";
     }else if (door_name == "食品（保冷）"){
         door_number_element.innerHTML = "F1";
     }else if (door_name == "食品（保温）"){

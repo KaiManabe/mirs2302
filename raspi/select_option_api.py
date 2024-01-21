@@ -5,10 +5,8 @@ from math import ceil
 import sys
 
 #稼働可能な時間帯
-open_hour = [{"begin" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(11, 0)),
-              "end" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(12, 50))},
-             {"begin" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(15, 0)),
-              "end" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(16, 50))}
+open_hour = [{"begin" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(12, 10)),
+              "end" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(17, 00))}
             ]
 
 
@@ -550,11 +548,14 @@ def api(args):
             time_printer(simulator8(option["id"]))
     
     elif option["mode"] == "ORDER":
-        if option["selected_box"] == None:
-            time_printer(simulator5())
+        if option["id"] == None:
+            if option["selected_box"] == None:
+                time_printer(simulator5())
+            else:
+                time_printer(simulator6(option["selected_box"]))
         else:
-            time_printer(simulator6(option["selected_box"]))
-    
+            
+            time_printer(simulator8(option["id"]))
             
     
 

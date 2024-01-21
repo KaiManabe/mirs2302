@@ -102,9 +102,21 @@
                         <option value="E科棟">E科棟 - 外通路間</option>
                         <option value="印刷室">印刷室前</option>
                         <option value="学生課">学生課前</option>
-                        <option value="S科棟">S科棟前</option>
-                        <!-- <option value="C科棟">C科棟</option> -->
+                        <option value="S科棟">M・S科棟前</option>
+                        <option value="C科棟">C科棟前</option>
                     </select>
+                    <div class="map" style="display: inline-block; text-align: center;">
+                        <div class="target_place_container">
+                            <div style="font-size: 0.8em; margin-left: 1em;">マップを表示▼</div>
+                            <img src="../target-place.svg" alt="target-place" onclick="showImage('../map.jpg')" style="width: 3em; margin-left: 1em; vertical-align: middle;">
+                        </div>
+                        <div id="overlay">
+                            <div id="image-container">
+                                <span id="close-button" onclick="hideImage()">&times;</span>
+                                <img src="" alt="map" id="overlay-img" style="width: 85vw;">
+                            </div>
+                        </div>
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -118,12 +130,25 @@
                 </td>
             </tr>
             <tr>
+                <th></th>
+                <td>
+                    <span style = "color:red; margin-left:30px; font-weight: bold;">選択可能な時間がない場合、予約が埋まってしまっています。<br>商品をほかのものに変えてみてください。
+                    </span>
+                </td>
+            </tr>
+            <tr>
                 <th>
                     <label for="picking_pincode">受け取り時のPINコード（4~8桁）</label>
                 </th>
                 <td>
                     <input type="password" name="picking_pincode" id="picking_pincode" pattern="[0-9]{4,8}" maxlength="8" title="4~8桁の半角数字を入力してください" required>
-                    <span style = "color:red; margin-left:30px; font-weight: bold;">スマホ等で普段づかいしているパスワードなどは入力しないでください</span>
+                    
+                </td>
+            </tr>
+            <tr>
+                <th></th>
+                <td>
+                    <span style = "color:red; margin-left:30px; font-weight: bold;">パスワードはハッシュ化されません！<br>スマホ等で普段づかいしているパスワードなどは入力しないでください</span>
                 </td>
             </tr>
             <tr>
@@ -143,5 +168,6 @@
     <script src="modal.js"></script>
     <script src="get_available_selection.js"></script>
     <script src="item_selector.js"></script>
+    <script src="map.js"></script>
 </body>
 </html>

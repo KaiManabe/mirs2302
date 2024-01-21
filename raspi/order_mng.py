@@ -11,7 +11,7 @@ import warnings
 #warnings.filterwarnings('ignore', category=pd.core.common.SettingWithCopyWarning)
 
 def option_to_datetime(opt):
-    strdt = opt.split("-")[-1]
+    strdt = opt.split("-")[0]
     hour = int(strdt.split(":")[0])
     minute = int(strdt.split(":")[-1])
     return datetime.datetime.combine(datetime.datetime.today(), datetime.time(hour, minute))
@@ -224,7 +224,19 @@ class order_manager():
                     usage[box]["end"].append(df["RECEIVE_TIME"].iloc[i])
                 
         return usage
-        
+    
+    
+    def get_next_movement(self):
+        movements = self.get_moving_schedule()
+        recent = pd.Timestamp(year = 2030, month = 12, day = 31)
+        for m in movements:
+            current = m["begin"] + datetime.timedelta(minutes = (TIME_MARGIN - 10))
+            if current < recent and current > datetime.datetime.now():
+                recent = m["begin"]
+                
+        return recent + datetime.timedelta(minutes = (TIME_MARGIN - 10))
+                
+    
         
     def get_moving_schedule(self):
         """
@@ -292,12 +304,18 @@ class order_manager():
         box_usage = self.get_box_usage()
         
         if PICKUP_TIME == None:
-            begin = datetime.datetime.now()
+            if RECEIVE_TIME != None:
+                begin = RECEIVE_TIME - datetime.timedelta(minutes = 50)
+            else:
+                begin = datetime.datetime.now()
         else:
             begin = PICKUP_TIME
         
         if RECEIVE_TIME == None:
-            end = datetime.datetime(year = 2050, month = 12, day = 31, hour = 23, minute = 50)
+            if PICKUP_TIME !=None:
+                end = PICKUP_TIME + datetime.timedelta(minutes = 50)
+            else:
+                end = datetime.datetime(year = 2050, month = 12, day = 31, hour = 23, minute = 50)
         else:
             end = RECEIVE_TIME
         
@@ -414,10 +432,10 @@ if __name__ == '__main__':
                     note = ""
             # "送る"の場合
             if(sys.argv[2] == 'SEND'):
-                if o.box_decider(sys.argv[3]) != -1:
+                if o.box_decider(box_type = sys.argv[3], PICKUP_TIME = option_to_datetime(sys.argv[8])) != -1:
                     o.new_order(
                         ORDER_TYPE = sys.argv[2],
-                        ITEM_TYPE = o.box_decider(sys.argv[3]),
+                        ITEM_TYPE = o.box_decider(box_type = sys.argv[3], PICKUP_TIME = option_to_datetime(sys.argv[8])),
                         ITEM_NAME = sys.argv[4],
                         SENDER = sys.argv[5],
                         RECEIVER = sys.argv[6],
@@ -428,10 +446,10 @@ if __name__ == '__main__':
                     )
             # "送ってもらう"の場合
             elif(sys.argv[2] == 'RECEIVE'):
-                if o.box_decider(sys.argv[3]) != -1:
+                if o.box_decider(box_type = sys.argv[3], RECEIVE_TIME = option_to_datetime(sys.argv[8])) != -1:
                     o.new_order(
                         ORDER_TYPE = sys.argv[2],
-                        ITEM_TYPE = o.box_decider(sys.argv[3]),
+                        ITEM_TYPE = o.box_decider(box_type = sys.argv[3], RECEIVE_TIME = option_to_datetime(sys.argv[8])) ,
                         ITEM_NAME = sys.argv[4],
                         SENDER = sys.argv[5],
                         RECEIVER = sys.argv[6],
@@ -446,10 +464,10 @@ if __name__ == '__main__':
                     note = sys.argv[9]
                 else:
                     note = ""
-                if o.box_decider(sys.argv[3]) != -1:
+                if o.box_decider(box_type = sys.argv[3], PICKUP_TIME = None, RECEIVE_TIME = option_to_datetime(sys.argv[7])) != -1:
                     o.new_order(
                         ORDER_TYPE = sys.argv[2],
-                        ITEM_TYPE = o.box_decider(sys.argv[3]),
+                        ITEM_TYPE = o.box_decider(box_type = sys.argv[3], PICKUP_TIME = None, RECEIVE_TIME = option_to_datetime(sys.argv[7])),
                         ITEM_NAME = sys.argv[4],
                         RECEIVER = sys.argv[5],
                         RECEIVE_PLACE = sys.argv[6],

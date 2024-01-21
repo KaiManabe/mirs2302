@@ -1,4 +1,4 @@
-function isopen(){
+function onload(){
     let request = new XMLHttpRequest();
 
     request.onreadystatechange = function(){
@@ -16,3 +16,4 @@ function isopen(){
     request.send();
 }
 
+onload();

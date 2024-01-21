@@ -26,7 +26,7 @@ def getgain(s:ser.arduino_serial, output:bool = True):
     """
     pid = [[0,0,0],[0,0,0],[0,0,0],0]
     
-    response = s.send_and_read_response(4,[],13)
+    response = s.send_and_read_response(4,[],13)[0]
     
     if(output):
         print("    P               I               D")
@@ -248,6 +248,11 @@ def sendresult(result):
     serv.send(int_arr)
     
     
+
+def straight(spd, t):
+    ctrl.send_straight(spd)
+    time.sleep(t)
+    ctrl.send_straight(0)
 
 if __name__ == "__main__":
     #学内LANにサーバを公開

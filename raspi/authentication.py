@@ -53,7 +53,7 @@ def auth(PASS):
 def tostr(raw):
     truth = 0
     try:
-        truth = str(int(float(raw)))
+        truth = str(int(float(raw))).zfill(4)
     except:
         truth = raw
     return truth

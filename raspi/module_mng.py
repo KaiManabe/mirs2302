@@ -243,8 +243,8 @@ class module_controller():
         # acc_res_range = [240 * (100 - RES_ERR_RATE) / 100, 240 * (100 + RES_ERR_RATE) / 100] # 小物抵抗値範囲
         # doc_res_range = [1000 * (100 - RES_ERR_RATE) / 100, 1000 * (100 + RES_ERR_RATE) / 100] # 資料抵抗値範囲
         # ins_res_range = [2000 * (100 - RES_ERR_RATE) / 100, 2000 * (100 + RES_ERR_RATE) / 100] # 保冷・保温抵抗値範囲
-        acc_res_range = [100, 600]
-        doc_res_range = [800, 1200]
+        acc_res_range = [100, 900]
+        doc_res_range = [901, 1200]
         ins_res_range = [1600, 2400]
         
         # 一定周期で搭載モジュール情報を更新し続ける

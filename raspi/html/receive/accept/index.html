@@ -45,6 +45,13 @@
                 </td>
             </tr>
             <tr>
+                <th></th>
+                <td>
+                    <span style = "color:red; margin-left:30px; font-weight: bold;">選択可能な時間がない場合、予約が埋まってしまっています。<br>『送りたいもの - カテゴリ』をほかのものに変えてみてください。
+                    </span>
+                </td>
+            </tr>
+            <tr>
                 <th>
                     <label for="pickup_place">集荷場所</label>
                 </th>
@@ -66,6 +73,12 @@
                 </th>
                 <td>
                     <input disabled = "disabled" type="password" name="pickup_pincode" id="pickup_pincode" pattern="[0-9]{4,8}" maxlength="8" required><br>
+                </td>
+            </tr>
+            <tr>
+                <th></th>
+                <td>
+                    <span style = "color:red; margin-left:30px; font-weight: bold;">パスワードはハッシュ化されません！<br>スマホ等で普段づかいしているパスワードなどは入力しないでください</span>
                 </td>
             </tr>
         </table>

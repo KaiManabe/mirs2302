@@ -1,6 +1,14 @@
 ID,ORDER_TYPE,ITEM_TYPE,ITEM_NAME,STATUS,RECEIPT_TIME,ACCEPTED_TIME,SENDER,RECEIVER,PICKUP_PLACE,PICKUP_TIME,PICKUP_PIN,RECEIVE_PLACE,RECEIVE_TIME,RECEIVE_PIN,NOTE
-cd76b808-16c3-4b28-998a-e9266254d833,SEND,食品（保冷）,ジュース,DENIED,2024-01-12 02:11:51,,d20136@numazu.kosen-ac.jp,d20136@numazu.kosen-ac.jp,学生係,2024-01-12 02:27:00,1234.0,D科棟,2024-01-12 02:29:00,2345.0,
-e229d3f0-3a47-4333-b6cd-e78f68c1da01,SEND,食品（保冷）,ITEM_NAME,DENIED,2023-12-30 13:35:33,,test1@numazu.kosen-ac.jp,test2@numazu.kosen-ac.jp,D科棟,2024-01-13 15:10:00,1234.0,S科棟,2024-01-13 20:10:00,1234.0,
-iohaic9q8ob94-buig-udgq-baigug3gduqb,RECEIVE,書類,歴史プリント,DENIED,2023-12-30 13:35:33,,d20139@numazu.kosen-ac.jp,yamamoto2004riku1126@gmail.com,,,,S科棟,2024-01-14 23:40:00,76555444.0,
-289yrh9bu3awd-dd2i-83h893gfhajbsukbf,ORDER,小物,鍵,DENIED,2023-12-30 13:35:33,,,yamamoto2004riku1126@gmail.com,D科棟,2024-01-13 15:10:00,12348012.0,S科棟,2024-01-14 19:40:00,63157533.0,
-42c6456f-4362-4687-abf0-032800bdc37d,SEND,書類1,TEST_DOC,RECEIVED,2024-01-15 11:08:45,,d20136@numazu.kosen-ac.jp,d20136@numazu.kosen-ac.jp,印刷室,2024-01-15 11:47:00,1234.0,D科棟,2024-01-15 11:49:00,1234.0,TESTNOTE
+cd76b808-16c3-4b28-998a-e9266254d833,SEND,食品（保冷）,ジュース,DENIED,2024-01-12 02:11:51,,d20136@numazu.kosen-ac.jp,d20136@numazu.kosen-ac.jp,学生係,2024-01-12 02:27:00,1234.0,D科棟,2024-01-12 02:29:00,2345.0,ダミーデータ
+8c781d64-8eb9-42bf-8b18-9efeccd491bf,ORDER,食品（保冷）,inゼリー,RECEIVED,2024-01-16 15:16:01,,d20139@numazu.kosen-ac.jp,d21112@numazu.kosen-ac.jp,学生課,2024-01-16 15:50:00,1234.0,D科棟,2024-01-16 16:30:00,4545.0,お願いします。
+5ee2296c-582a-4791-9892-28184b068064,ORDER,食品（保温）,カフェオレホット,RECEIVED,2024-01-17 10:13:09,,d20139@numazu.kosen-ac.jp,s20128@numazu.kosen-ac.jp,D科棟,2024-01-17 12:20:00,1234.0,S科棟,2024-01-17 12:40:00,1005.0,
+0486c04f-867a-4bed-a585-edfe31e60496,ORDER,食品（保冷）,トロピカーナ,RECEIVED,2024-01-17 10:21:35,,d20139@numazu.kosen-ac.jp,m22106@numazu.kosen-ac.jp,D科棟,2024-01-17 13:10:00,1234.0,学生課,2024-01-17 14:40:00,2694.0,
+307528f4-8796-420a-8b0b-9ed25f6dddca,ORDER,食品（保温）,カフェオレホット,RECEIVED,2024-01-17 12:56:19,,d20136@numazu.kosen-ac.jp,s20137@numazu.kosen-ac.jp,D科棟,2024-01-17 13:40:00,1234.0,S科棟,2024-01-17 14:10:00,2449.0,
+d0075175-1f30-4342-b815-e4e5f1341401,ORDER,食品（保温）,カフェオレホット,RECEIVED,2024-01-17 14:16:15,,d20139@numazu.kosen-ac.jp,d19102@numazu.kosen-ac.jp,印刷室,2024-01-17 14:55:00,1234.0,D科棟,2024-01-17 15:10:00,2302.0,
+6c40e35c-7b25-4a28-a08b-cf2505ac05f9,SEND,書類1,ブルーバックス,RECEIVED,2024-01-17 14:45:23,,shizuo.suzuki@numazu.kosen-ac.jp,sumita@numazu.kosen-ac.jp,D科棟,2024-01-17 16:20:00,1234.0,学生課,2024-01-17 16:50:00,1234.0,1234
+8006faf8-8d2f-422a-9be3-b63eb586ba45,ORDER,食品（保冷）,inゼリー,RECEIVED,2024-01-17 15:03:00,,d20139@numazu.kosen-ac.jp,a22130@numazu.kosen-ac.jp,D科棟,2024-01-17 15:30:00,1234.0,C科棟,2024-01-17 15:50:00,1103.0,
+2d09ecb0-8f7f-41a5-a3f2-580c8be4b5b2,ORDER,食品（保冷）,トロピカーナ,RECEIVED,2024-01-18 10:17:33,,d20139@numazu.kosen-ac.jp,s20118@numazu.kosen-ac.jp,D科棟,2024-01-18 12:20:00,1234.0,C科棟,2024-01-18 12:40:00,987.0,
+2ad84da2-f821-4a78-ad72-39ec4efdb18d,ORDER,食品（保冷）,inゼリー,RECEIVED,2024-01-19 08:32:47,,d20139@numazu.kosen-ac.jp,e23110@numazu.kosen-ac.jp,S科棟,2024-01-19 16:05:00,1234.0,印刷室,2024-01-19 16:10:00,1234123.0,
+fa4ffe3a-6cd3-4645-a965-ae90982b274c,ORDER,食品（保冷）,inゼリー,RECEIVED,2024-01-19 12:08:01,,d20139@numazu.kosen-ac.jp,ushimaru@numazu.kosen-ac.jp,印刷室,2024-01-19 12:30:00,1234.0,D科棟,2024-01-19 12:50:00,1234.0,
+422305d4-2940-4956-9c2d-e25ee446d6d5,ORDER,食品（保冷）,トロピカーナ,RECEIVED,2024-01-19 13:11:09,,,d19124@numazu.kosen-ac.jp,印刷室,2024-01-19 13:15:00,1234.0,D科棟,2024-01-19 13:30:00,1112.0,
+ce2b1cd1-2414-40c1-bceb-fa762ae20c4d,ORDER,食品（保冷）,カフェオレアイス,RECEIVED,2024-01-19 13:29:28,,d20139@numazu.kosen-ac.jp,d20111@numazu.kosen-ac.jp,C科棟,2024-01-19 15:50:00,1234.0,D科棟,2024-01-19 16:40:00,0.0,

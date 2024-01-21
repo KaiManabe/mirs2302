@@ -2,7 +2,7 @@
 if ($_SERVER['REQUEST_METHOD'] === 'GET'){
     if(isset($_GET['id'])){
         $pythonScriptPath = "/home/pi/git/mirs2302/raspi/select_option_api.py";
-        $receivedData = json_decode($_GET['id']); // GETメソッドのクエリ文字列のtimeデータを取得
+        $receivedData = $_GET['id']; // GETメソッドのクエリ文字列のtimeデータを取得
     }
 
     // pythonスクリプトを実行

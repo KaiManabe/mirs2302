@@ -59,6 +59,15 @@
                     </select><br>
                 </td>
             </tr>
+            
+            <tr>
+                <th></th>
+                <td>
+                    <span style = "color:red; margin-left:30px; font-weight: bold;">選択可能な時間がない場合、予約が埋まってしまっています。<br>大変申し訳ありませんが、拒否してください。
+                    </span>
+                </td>
+            </tr>
+
             <tr>
                 <th>
                     <label for="receive_place">受け取る場所</label>
@@ -81,6 +90,12 @@
                 </th>
                 <td>
                     <input disabled = "disabled" type="password" name="receive_pincode" id="receive_pincode" pattern="[0-9]{4,8}" maxlength="8" required><br>
+                </td>
+            </tr>
+            <tr>
+                <th></th>
+                <td>
+                    <span style = "color:red; margin-left:30px; font-weight: bold;">パスワードはハッシュ化されません！<br>スマホ等で普段づかいしているパスワードなどは入力しないでください</span>
                 </td>
             </tr>
         </table>
