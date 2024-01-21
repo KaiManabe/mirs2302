@@ -6,7 +6,7 @@ import sys
 
 #稼働可能な時間帯
 open_hour = [{"begin" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(12, 10)),
-              "end" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(17, 00))}
+              "end" : datetime.datetime.combine(datetime.datetime.today(), datetime.time(19, 00))}
             ]
 
 
@@ -54,6 +54,7 @@ def simulator1():
     while(1):
         kaburi = False
         ctime += datetime.timedelta(minutes = 10)
+        
         
         #すべての時間について検証を終えたらbreak
         if ctime > latest:
@@ -296,12 +297,15 @@ def simulator5():
         
             
         if isok and isopen:
-            ctime2 = ctime
+            ctime2 = ctime - datetime.timedelta(minutes = 40)
             while(1):
                 ctime2 -= datetime.timedelta(minutes = 10)
                 if ctime2 < earliest:
                     break
                 
+                if ctime2 < datetime.datetime.now():
+                    break
+                    
                 #ctime2が営業時間内か検証する
                 isopen2 = False
                 for oh in open_hour:
@@ -312,6 +316,7 @@ def simulator5():
                     continue
                 
                 if o.box_decider(box_type = box, PICKUP_TIME = ctime2, RECEIVE_TIME = ctime) != -1:
+                    #print(ctime, ctime2)
                     available.append(ctime)
                     break
     
@@ -362,13 +367,15 @@ def simulator6(box_type):
         if o.box_decider(box_type = box_type, RECEIVE_TIME = ctime) != -1:
             isok = True
         
-        
             
         if isok and isopen:
-            ctime2 = ctime
+            ctime2 = ctime - datetime.timedelta(minutes = 40)
             while(1):
                 ctime2 -= datetime.timedelta(minutes = 10)
                 if ctime2 < earliest:
+                    break
+                
+                if ctime2 < datetime.datetime.now():
                     break
                 
                 #ctime2が営業時間内か検証する
@@ -434,7 +441,7 @@ def simulator8(ID):
     
     
     #今からTIME_MARGIN分後の時間を、10分単位で切り上げる
-    ctime = datetime.datetime.now() + datetime.timedelta(minutes = TIME_MARGIN)
+    ctime = datetime.datetime.now() + datetime.timedelta(minutes = 10)
     margin = (ceil(ctime.minute / 10) * 10) - ctime.minute
     ctime += datetime.timedelta(minutes = margin)
     
@@ -448,7 +455,7 @@ def simulator8(ID):
     while(1):
         kaburi = False
         ctime += datetime.timedelta(minutes = 10)
-        
+        #print(ctime)
         #すべての時間について検証を終えたらbreak
         if ctime > latest:
             break
