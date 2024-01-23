@@ -1,6 +1,6 @@
 <?php
 
-// $STATUS = "open";
+//$STATUS = "open";
 $STATUS = "close";
 
 echo($STATUS);
