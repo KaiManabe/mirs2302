@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!--
+Software License Agreement (BSD)
+
+\file      amcl_demo.launch
+\authors   Paul Bovbel <pbovbel@clearpathrobotics.com>, Prasenjit Mukherjee <pmukherj@clearpathrobotics.com>
+\copyright Copyright (c) 2015, Clearpath Robotics, Inc., All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the
+   following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the 
+   following disclaimer in the documentation and/or other materials provided with the distribution.
+ * Neither the name of Clearpath Robotics nor the names of its contributors may be used to endorse or promote
+   products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WAR-
+RANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, IN-
+DIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<launch>
+<!-- odometryトピックと tf(odom to base_link) を飛ばすやつ -->
+    <node name="odom_publisher"    pkg="odom_publisher" type="tf_odom_pub" output="screen"/>
+
+    <!-- cmd_velをarduinoに飛ばすやつ -->
+    <node name="cmd_vel_subscriber"    pkg="cmd_vel_subscriber" type="cmd_vel_subscriber" output="screen"/>
+
+    <!-- ゴールをraspiから受け取るやつ -->
+    <node name="goal_publisher"    pkg="goal_publisher" type="goal_publisher" output="screen"/>
+
+
+    <!-- rplidarで測距してscanトピックを飛ばすやつ -->
+    <node name="rplidarNode" pkg="rplidar_ros" type="rplidarNode" output="screen">
+        <param name="serial_port" type="string" value="/dev/ttyUSB0"/>
+        <param name="serial_baudrate"     type="int"    value="1000000"/>
+        <param name="frame_id" type="string" value="laser"/>
+        <param name="inverted" type="bool" value="false"/>
+        <param name="angle_compensate" type="bool" value="true"/>
+    </node>
+
+
+    <!-- LiDARの場所をいじるならここ tf(baselink to laser) を飛ばすやつ -->
+    <node pkg="tf" type="static_transform_publisher" name="baselink_to_laser" args="-0.10 0 0 0 0 0 base_link laser 100" /> 
+
+  <!-- Run the map server -->
+  <node name="map_server" pkg="map_server" type="map_server" args="/home/mirs2302/maps/LAB_C_wall.yaml"/>
+  
+
+  <!--- Run AMCL -->
+  <include file="$(find husky_navigation)/launch/amcl.launch" />
+
+  <!--- Run Move Base -->
+  <include file="$(find husky_navigation)/launch/move_base.launch" />
+
+  
+
+
+</launch>

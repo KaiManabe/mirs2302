@@ -1,0 +1,5 @@
+<library path="lib/libsample_rviz_arrow_plugin">
+  <class name="rviz/SampleInitialPoseTool" type="rviz::SampleInitialPoseTool" base_class_type="rviz::Tool">
+    <description>put sample initial pose</description>
+  </class>
+</library>
